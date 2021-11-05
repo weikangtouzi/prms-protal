@@ -1,13 +1,11 @@
 import type { ReactElement } from 'react';
 import Layout from '../components/layout';
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Recruitment.module.css';
 
-export default function Home() {
+export default function Recruitment() {
     return (
         <div className={styles.container}>
-            <main className={styles.main}>
-                欢迎使用 <a href='https://nextjs.org'>趁早找</a>
-            </main>
+            <main className={styles.main}>recruitment</main>
         </div>
     );
 }
@@ -20,6 +18,6 @@ export async function getServerSideProps() {
     return { props: {} };
 }
 
-Home.getLayout = function getLayout(page: ReactElement) {
+Recruitment.getLayout = function getLayout(page: ReactElement) {
     return <Layout>{page}</Layout>;
 };

@@ -3,12 +3,14 @@ import { createStitches } from '@stitches/react';
 export const { styled, getCssText } = createStitches({
     theme: {
         fonts: {
-            system: 'SourceHanSansSC-regular',
-            fang: '方正兰亭黑-细',
+            system: 'PingFangSC-Semibold, PingFang SC;',
+            fr: ' PingFangSC-Regular, PingFang SC;',
         },
         colors: {
-            primary: '#1990FF',
+            primary: '#00DA8A',
             w: 'rgba(255, 255, 255, 100)',
+            gray: 'rgba(0,0,0,0.4)',
+            dangerous: '#FF0000',
         },
         fontSizes: {
             14: '14px',
@@ -17,6 +19,7 @@ export const { styled, getCssText } = createStitches({
             20: '20px',
             26: '26px',
             28: '28px',
+            50: '50px',
         },
     },
     utils: {
@@ -76,6 +79,28 @@ export const { styled, getCssText } = createStitches({
         }),
         h: (value: any) => ({
             height: value,
+        }),
+        fs: (value: any) => ({
+            fontSize: value,
+        }),
+        fw: (value: any) => ({
+            fontWeight: value,
+        }),
+        ff: (value: any) => ({
+            fontFamily: value,
+        }),
+        bc: (value: any) => ({
+            backgroundColor: value,
+        }),
+        flexCenter: (value: any) => ({
+            display: 'flex',
+            justifyContent: 'center',
+        }),
+        flexDirectionCenter: (value: any) => ({
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: value,
         }),
     },
 });

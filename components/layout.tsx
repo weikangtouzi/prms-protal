@@ -1,13 +1,18 @@
 import Footer from './footer';
-import MainLayout from './mainLayout';
-
-import styles from './layout.module.css';
+import Head from 'next/head';
+import Navbar from './navbar';
 
 export default function Layout({ children }: any) {
     return (
-        <MainLayout>
+        <>
+            <Head>
+                <title>趁早找</title>
+                <meta name='description' content='趁早找' />
+                <link rel='icon' href='/favicon.ico' />
+            </Head>
+            <Navbar />
             <main>{children}</main>
             <Footer />
-        </MainLayout>
+        </>
     );
 }

@@ -1,13 +1,8 @@
 import type { ReactElement } from 'react';
 import Layout from '../components/layout';
-import styles from '../styles/News.module.css';
 
 export default function News() {
-    return (
-        <div className={styles.container}>
-            <main className={styles.main}>news</main>
-        </div>
-    );
+    return <main>news</main>;
 }
 
 export async function getServerSideProps() {

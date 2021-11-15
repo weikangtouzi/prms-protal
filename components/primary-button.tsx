@@ -21,12 +21,12 @@ const ButtonDiv = styled('button', {
 
 interface IProps {
     text: any;
-    onClick: () => void;
+    onClick?: () => void;
     css?: any;
     disabled?: boolean;
 }
 
-export default function PrimaryButton({ text, onClick, css, disabled = false }: IProps) {
+export default function PrimaryButton({ text, onClick = () => {}, css, disabled = false }: IProps) {
     return (
         <ButtonDiv css={css} disabled={disabled} onClick={disabled ? () => {} : onClick}>
             {text}

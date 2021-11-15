@@ -1,13 +1,8 @@
 import type { ReactElement } from 'react';
 import Layout from '../components/layout';
-import styles from '../styles/Company.module.css';
 
 export default function Company() {
-    return (
-        <div className={styles.container}>
-            <main className={styles.main}>company</main>
-        </div>
-    );
+    return <main>company</main>;
 }
 
 export async function getServerSideProps() {

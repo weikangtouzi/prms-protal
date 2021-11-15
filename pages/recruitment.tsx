@@ -1,13 +1,8 @@
 import type { ReactElement } from 'react';
 import Layout from '../components/layout';
-import styles from '../styles/Recruitment.module.css';
 
 export default function Recruitment() {
-    return (
-        <div className={styles.container}>
-            <main className={styles.main}>recruitment</main>
-        </div>
-    );
+    return <main>recruitment</main>;
 }
 
 export async function getServerSideProps() {

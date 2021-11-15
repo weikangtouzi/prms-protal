@@ -1,13 +1,8 @@
 import type { ReactElement } from 'react';
 import Layout from '../components/layout';
-import styles from '../styles/Job.module.css';
 
 export default function Job() {
-    return (
-        <div className={styles.container}>
-            <main className={styles.main}>Job</main>
-        </div>
-    );
+    return <main>Job</main>;
 }
 
 export async function getServerSideProps() {

@@ -17,3 +17,19 @@ a {
 .use-image-round {
     border-radius: 50%;
 }
+
+.icon {
+    width: 32px;
+    height: 32px;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
+.image-4-radius {
+    border-radius: 4px;
+}
+
+.image-shrink {
+    flex-shrink: 0;
+}

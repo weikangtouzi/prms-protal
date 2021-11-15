@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
+import MainLayout from '../components/main-layout';
 import Image from 'next/image';
 import PrimaryInput from '../components/primary-input';
 import PrimaryButton from '../components/primary-button';
@@ -39,6 +39,8 @@ import {
     IdentityCard,
     QzyxText,
 } from '../components/login-components';
+
+import type { ReactElement } from 'react';
 
 const identityCards = [
     {
@@ -435,11 +437,6 @@ export default function Login() {
 
     return (
         <>
-            <Head>
-                <title>趁早找</title>
-                <meta name='description' content='趁早找' />
-                <link rel='icon' href='/favicon.ico' />
-            </Head>
             <Main>
                 {isZc ? (
                     stepNode
@@ -610,3 +607,7 @@ export async function getServerSideProps() {
     // Pass data to the page via props
     return { props: {} };
 }
+
+Login.getLayout = function getLayout(page: ReactElement) {
+    return <MainLayout>{page}</MainLayout>;
+};

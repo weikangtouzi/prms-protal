@@ -6,11 +6,12 @@ interface IProps {
     name: string;
     withClassName?: boolean;
     css?: any;
+    onClick?: any;
 }
 
-export default function Icon({ name, css, withClassName = true }: IProps) {
+export default function Icon({ name, css, withClassName = true, onClick }: IProps) {
     return (
-        <IconWrap className={withClassName ? 'icon' : ''} css={css} aria-hidden='true'>
+        <IconWrap onClick={onClick} className={withClassName ? 'icon' : ''} css={css} aria-hidden='true'>
             <use xlinkHref={`#${name}`}></use>
         </IconWrap>
     );

@@ -177,11 +177,11 @@ const hots = [
 const menus = [
     {
         text: '个人信息',
-        href: '/',
+        href: '/me',
     },
     {
         text: '我的简历',
-        href: '/',
+        href: '/resume',
     },
     {
         text: '求职管理',

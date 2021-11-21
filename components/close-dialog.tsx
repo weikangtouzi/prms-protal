@@ -1,6 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { styled } from '../stitches.config';
-import PrimaryButton from './primary-button';
 import Icon from './icon';
 
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
@@ -19,14 +18,14 @@ function Root({ children, ...props }: any) {
 }
 const StyledContent = styled(DialogPrimitive.Content, {
     backgroundColor: '$w',
-    borderRadius: 2,
+    borderRadius: 10,
     position: 'fixed',
-    top: 278,
+    top: 425,
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    w: 512,
-    h: 238,
-    p: '94px 62px 0',
+    w: 639,
+    h: 575,
+    pt: 40,
     color: '#3C4441',
     textAlign: 'center',
     ff: '$fr',
@@ -36,12 +35,12 @@ const StyledContent = styled(DialogPrimitive.Content, {
 const StyledTitle = styled(DialogPrimitive.Title, {
     display: 'flex',
     alignItems: 'center',
-    flexDirection: 'column',
+    // flexDirection: 'column',
     position: 'absolute',
-    top: '2px',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    w: '100%',
+    right: 22,
+    top: '-5px',
+    // left: '50%',
+    // transform: 'translate(-50%, -50%)',
 });
 
 const TitledText = styled('div', {
@@ -56,43 +55,29 @@ const DialogTitle = StyledTitle;
 
 interface IProps {
     title: string;
-    bodyText: string;
+    children: any;
     open: boolean;
     onOpenChange: (o: boolean) => void;
+    dialogCss?: any;
+    hasCloseIcon?: boolean;
+    onClose: (c: boolean) => void;
+    titleCss?: any;
 }
 
-export default function ConfirmDialog({ title, bodyText, open, onOpenChange }: IProps) {
+export default function CloseDialog({ hasCloseIcon = true, title, children, open, onOpenChange, dialogCss, titleCss, onClose }: IProps) {
     return (
         <Dialog modal open={open} onOpenChange={onOpenChange}>
             <DialogContent
+                css={dialogCss}
                 onOpenAutoFocus={(e) => {
                     e.preventDefault();
                 }}
                 onPointerDownOutside={(e) => {
                     e.preventDefault();
                 }}>
-                <DialogTitle>
-                    <Icon css={{ size: 70, mb: 13 }} withClassName={false} name='icon-icon_gantanhao' />
-                    <TitledText>{title}</TitledText>
-                </DialogTitle>
-                {bodyText}
-                <div>
-                    <PrimaryButton
-                        onClick={() => {
-                            onOpenChange(false);
-                        }}
-                        css={{ mt: 20, mr: 40, w: 120, h: 46, backgroundColor: '$w', color: '#3C4441', border: '1px solid rgba(0, 0, 0, 0.2)' }}
-                        text='取消'
-                    />
-                    <PrimaryButton
-                        css={{ mt: 20, w: 120, h: 46 }}
-                        text='确定'
-                        onClick={() => {
-                            console.log('queding');
-                            onOpenChange(false);
-                        }}
-                    />
-                </div>
+                <DialogTitle>{hasCloseIcon ? <Icon onClick={onClose} withClassName={false} css={{ size: 27 }} name='icon-icon_guanbi' /> : null}</DialogTitle>
+                <TitledText css={titleCss}>{title}</TitledText>
+                {children}
             </DialogContent>
         </Dialog>
     );

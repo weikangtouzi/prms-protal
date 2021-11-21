@@ -14,7 +14,7 @@ const InputDiv = styled('div', {
                 border: '1px solid $primary',
             },
             false: {
-                border: '1px solid $gray',
+                border: '1px solid rgba(0,0,0,0.2)',
             },
         },
     },
@@ -63,7 +63,7 @@ export default function PrimaryInput({ err = '', value = '', type = 'text', plac
 
     if (size === 'small') {
         return (
-            <InputDiv css={{ h: 42, mt: 0, p: 0, w: 420 }} active={active}>
+            <InputDiv css={{ h: 42, mt: 0, p: 0, w: 420, ...css }} active={active}>
                 <RealInput
                     css={{ pl: 0, ml: 20, w: '100%' }}
                     type={type}

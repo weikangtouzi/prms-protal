@@ -97,7 +97,7 @@ export default function UploadHead({ css }: IProps) {
                 type='file'
                 accept='.jpg,.png'
             />
-            <EmptyText>只支持.jpg/.png格式</EmptyText>
+            <EmptyText>只支持.jpg/.png格式（单张）</EmptyText>
         </WrapDiv>
     );
 }

@@ -106,6 +106,7 @@ const dataSource = [
 
 export default function Op() {
     const [current, setCurrent] = useState(2);
+
     return (
         <RightWrap>
             <Table>

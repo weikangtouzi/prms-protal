@@ -6,6 +6,7 @@ import PrimaryInput from '../components/primary-input';
 import PrimaryButton from '../components/primary-button';
 import UploadHead from '../components/upload-haed';
 import UploadZZ from '../components/upload-zz';
+import PrimarySelect from '../components/primary-select';
 import {
     Main,
     LoginCard,
@@ -38,6 +39,8 @@ import {
     NextButtonWrp,
     IdentityCard,
     QzyxText,
+    FormWrap,
+    InputFormItem,
 } from '../components/login-components';
 
 import type { ReactElement } from 'react';
@@ -98,8 +101,10 @@ export default function Login() {
     // 3 注册 填写企业认证
     // 4 注册 填写企业认证补充
     // 5 注册 填写认证审核中
-    const [step, setStep] = useState(4);
+    const [step, setStep] = useState(3);
     const [identityNum, setIdentityNum] = useState(1);
+
+    const [jobPosition, setJobPosition] = useState('');
 
     const checkAll = () => {
         if (pwd && pwd2) {
@@ -248,6 +253,31 @@ export default function Login() {
                         <BackText css={{ ml: 20 }}>欢迎注册趁早找！</BackText>
                     </BackTitle>
                     <QzyxText>求职意向</QzyxText>
+                    <FormWrap>
+                        <InputFormItem css={{ w: 260 }} label='期望岗位'>
+                            <PrimarySelect css={{ w: 220, mt: 10 }} value={jobPosition} onSelect={setJobPosition} />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ w: 220 }} label='期望行业'>
+                            <PrimarySelect css={{ w: 220, mt: 10 }} value={jobPosition} onSelect={setJobPosition} />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ mt: 30, w: 260 }} label='期望城市'>
+                            <PrimarySelect css={{ w: 220, mt: 10 }} value={jobPosition} onSelect={setJobPosition} />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ mt: 30, w: 220 }} label='工作性质'>
+                            <PrimarySelect css={{ w: 220, mt: 10 }} value={jobPosition} onSelect={setJobPosition} />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ mt: 30, w: 480 }} label='期望薪资'>
+                            <YZWrap css={{ alignItems: 'center', mt: 10 }}>
+                                <PrimarySelect css={{ w: 220, mr: 12 }} value={jobPosition} onSelect={setJobPosition} />
+                                至
+                                <PrimarySelect css={{ w: 220, ml: 12 }} value={jobPosition} onSelect={setJobPosition} />
+                            </YZWrap>
+                        </InputFormItem>
+                    </FormWrap>
                 </ZcLeft>
                 <ZcRight>
                     <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
@@ -272,6 +302,44 @@ export default function Login() {
                         <BackText css={{ ml: 20 }}>欢迎注册趁早找！</BackText>
                     </BackTitle>
                     <QzyxText>企业认证</QzyxText>
+                    <FormWrap>
+                        <InputFormItem css={{ w: 480, mt: 10 }} label='企业名称'>
+                            <PrimaryInput
+                                value={jobPosition}
+                                onChange={(e) => {
+                                    const { value } = e.target;
+                                    setJobPosition(value);
+                                }}
+                                size='small'
+                                css={{ backgroundColor: '$w', w: 480, h: 42 }}
+                                placeholder='请填写'
+                            />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ w: 480, mt: 30 }} label='企业地区'>
+                            <YZWrap css={{ alignItems: 'center', mt: 10 }}>
+                                <PrimarySelect css={{ w: 220 }} placeholder='请选择省份' value={jobPosition} onSelect={setJobPosition} />
+                                <PrimarySelect css={{ w: 220, ml: 40 }} placeholder='请选择城市' value={jobPosition} onSelect={setJobPosition} />
+                            </YZWrap>
+                        </InputFormItem>
+
+                        <InputFormItem css={{ mt: 30, w: 260 }} label='企业类型'>
+                            <PrimarySelect css={{ w: 220, mt: 10 }} value={jobPosition} onSelect={setJobPosition} />
+                        </InputFormItem>
+
+                        <InputFormItem css={{ mt: 30, w: 220 }} label='您的职务'>
+                            <PrimaryInput
+                                value={jobPosition}
+                                onChange={(e) => {
+                                    const { value } = e.target;
+                                    setJobPosition(value);
+                                }}
+                                size='small'
+                                css={{ backgroundColor: '$w', w: 220, h: 42, mt: 10 }}
+                                placeholder='请填写'
+                            />
+                        </InputFormItem>
+                    </FormWrap>
                 </ZcLeft>
                 <ZcRight>
                     <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />

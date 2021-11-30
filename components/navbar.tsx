@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -218,6 +218,19 @@ export default function Navbar() {
     const [zxOpen, setZxOpen] = useState(false);
 
     const router = useRouter();
+
+    useEffect(() => {
+        const pathname = router.pathname;
+        if (pathname.includes('/job')) {
+            setCurrent(1);
+        } else if (pathname.includes('/recruitment')) {
+            setCurrent(2);
+        } else if (pathname.includes('/company')) {
+            setCurrent(3);
+        } else if (pathname.includes('/news')) {
+            setCurrent(4);
+        }
+    }, [router.pathname]);
 
     let list = provinceList;
     let bottomDiff = selectedProvince;

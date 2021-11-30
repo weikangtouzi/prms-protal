@@ -9,7 +9,7 @@ export default function HeadWrap() {
                 <meta name='description' content='趁早找' />
                 <link rel='icon' href='/favicon.ico' />
             </Head>
-            <Script src='//at.alicdn.com/t/font_2924631_l8mdy4wclz.js' />
+            <Script src='//at.alicdn.com/t/font_2924631_pi79zozwhfd.js' />
         </>
     );
 }

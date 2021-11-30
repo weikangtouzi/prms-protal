@@ -18,9 +18,23 @@ const InputDiv = styled('div', {
             },
         },
     },
+    zIndex: 2,
 });
 
 const RealInput = styled('input', {
+    border: 'none',
+    outline: 'none',
+    fs: 18,
+    ml: 26,
+    w: 'calc(100% - 72px)',
+    '&::placeholder': {
+        fw: 400,
+        opacity: 0.2,
+        ff: '$fr',
+    },
+});
+
+const RealTextarea = styled('textarea', {
     border: 'none',
     outline: 'none',
     fs: 18,
@@ -61,6 +75,24 @@ interface IProps {
 export default function PrimaryInput({ err = '', value = '', type = 'text', placeholder = '', icon = null, onChange, size = 'normal', css = {}, inputCss = {} }: IProps) {
     const [active, setActive] = useState(false);
 
+    if (type === 'textarea') {
+        return (
+            <InputDiv css={{ h: 42, mt: 0, p: 20, w: 420, ...css }} active={active}>
+                <RealTextarea
+                    css={{ pl: 0, ml: 20, w: '100%' }}
+                    onFocus={() => {
+                        setActive(true);
+                    }}
+                    onBlur={() => {
+                        setActive(false);
+                    }}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}></RealTextarea>
+                <ErrDiv>{err}</ErrDiv>
+            </InputDiv>
+        );
+    }
     if (size === 'small') {
         return (
             <InputDiv css={{ h: 42, mt: 0, p: 0, w: 420, ...css }} active={active}>

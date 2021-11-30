@@ -256,3 +256,35 @@ export const QyzzImg = styled('div', {
     w: 480,
     h: 240,
 });
+
+export const FormWrap = styled('div', {
+    display: 'flex',
+    flexWrap: 'wrap',
+    ml: 79,
+});
+
+const FormItemLabel = styled('div', {
+    fs: 16,
+    ff: '$fr',
+    color: '#616A67',
+});
+
+export const FormItemWrap = styled('div', {
+    display: 'flex',
+    flexDirection: 'column',
+});
+
+interface InProps {
+    label: string;
+    css?: any;
+    children: any;
+}
+
+export function InputFormItem({ label, css, children }: InProps) {
+    return (
+        <FormItemWrap css={css}>
+            <FormItemLabel>{label}</FormItemLabel>
+            {children}
+        </FormItemWrap>
+    );
+}

@@ -56,15 +56,19 @@ const DialogTitle = StyledTitle;
 
 interface IProps {
     title: string;
-    bodyText: string;
+    bodyText: any;
     open: boolean;
     onOpenChange: (o: boolean) => void;
+    iconName?: string;
+    hideBtns?: boolean;
+    css?: any;
 }
 
-export default function ConfirmDialog({ title, bodyText, open, onOpenChange }: IProps) {
+export default function ConfirmDialog({ title, bodyText, open, onOpenChange, css, iconName = 'icon-icon_gantanhao', hideBtns = false }: IProps) {
     return (
         <Dialog modal open={open} onOpenChange={onOpenChange}>
             <DialogContent
+                css={css}
                 onOpenAutoFocus={(e) => {
                     e.preventDefault();
                 }}
@@ -72,27 +76,29 @@ export default function ConfirmDialog({ title, bodyText, open, onOpenChange }: I
                     e.preventDefault();
                 }}>
                 <DialogTitle>
-                    <Icon css={{ size: 70, mb: 13 }} withClassName={false} name='icon-icon_gantanhao' />
+                    <Icon css={{ size: 70, mb: 13 }} withClassName={false} name={iconName} />
                     <TitledText>{title}</TitledText>
                 </DialogTitle>
                 {bodyText}
-                <div>
-                    <PrimaryButton
-                        onClick={() => {
-                            onOpenChange(false);
-                        }}
-                        css={{ mt: 20, mr: 40, w: 120, h: 46, backgroundColor: '$w', color: '#3C4441', border: '1px solid rgba(0, 0, 0, 0.2)' }}
-                        text='取消'
-                    />
-                    <PrimaryButton
-                        css={{ mt: 20, w: 120, h: 46 }}
-                        text='确定'
-                        onClick={() => {
-                            console.log('queding');
-                            onOpenChange(false);
-                        }}
-                    />
-                </div>
+                {hideBtns ? null : (
+                    <div>
+                        <PrimaryButton
+                            onClick={() => {
+                                onOpenChange(false);
+                            }}
+                            css={{ mt: 20, mr: 40, w: 120, h: 46, backgroundColor: '$w', color: '#3C4441', border: '1px solid rgba(0, 0, 0, 0.2)' }}
+                            text='取消'
+                        />
+                        <PrimaryButton
+                            css={{ mt: 20, w: 120, h: 46 }}
+                            text='确定'
+                            onClick={() => {
+                                console.log('queding');
+                                onOpenChange(false);
+                            }}
+                        />
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     );

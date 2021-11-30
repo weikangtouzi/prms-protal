@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
@@ -27,6 +28,8 @@ import {
 } from '../components/home-components';
 
 const searchWords = ['高级产品经理', '项目经理', '后台开发', '前段开发', '自动化测试'];
+
+const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png';
 
 const zys = [
     {
@@ -128,7 +131,7 @@ const rzList = [
         zy: '产品经理',
         price: '15-20K',
         needs: ['深圳', '1-3年', '本科', '全职'],
-        companyImg: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        companyImg: imgUrl,
         companyName: '公司名称',
         companyNeeds: ['A轮', '50-150人', '移动互联网，数据服'],
     },
@@ -137,7 +140,7 @@ const rzList = [
         zy: '产品经理',
         price: '15-20K',
         needs: ['深圳', '1-3年', '本科', '全职'],
-        companyImg: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        companyImg: imgUrl,
         companyName: '公司名称',
         companyNeeds: ['A轮', '50-150人', '移动互联网，数据服'],
     },
@@ -146,7 +149,7 @@ const rzList = [
         zy: '产品经理',
         price: '15-20K',
         needs: ['深圳', '1-3年', '本科', '全职'],
-        companyImg: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        companyImg: imgUrl,
         companyName: '公司名称',
         companyNeeds: ['A轮', '50-150人', '移动互联网，数据服'],
     },
@@ -155,24 +158,24 @@ const rzList = [
         zy: '产品经理',
         price: '15-20K',
         needs: ['深圳', '1-3年', '本科', '全职'],
-        companyImg: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        companyImg: imgUrl,
         companyName: '公司名称',
         companyNeeds: ['A轮', '50-150人', '移动互联网，数据服'],
     },
 ];
 
 const qyList = [
-    { id: 1, img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png', name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 1344 },
-    { id: 2, img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png', name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 134 },
-    { id: 3, img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png', name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 24 },
-    { id: 4, img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png', name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 99 },
-    { id: 5, img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png', name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 12345 },
+    { id: 1, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 1344 },
+    { id: 2, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 134 },
+    { id: 3, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 24 },
+    { id: 4, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 99 },
+    { id: 5, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 12345 },
 ];
 
 const zcList = [
     {
         id: 1,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开征求《深圳市人力资源和社会保障事业发展“十四五”规划（征求意见稿）》意见的通告',
         content:
             '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -181,7 +184,7 @@ const zcList = [
     },
     {
         id: 2,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开征求《深圳市人力资源和社会保障事业发展“十四五”规划（征求意见稿）》意见的通告',
         content:
             '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -190,7 +193,7 @@ const zcList = [
     },
     {
         id: 3,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开征求《深圳市人力资源和社会保障事业发展“十四五”规划（征求意见稿）》意见的通告',
         content:
             '为持续推动全市人力资源和社会保障事业业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -199,7 +202,7 @@ const zcList = [
     },
     {
         id: 4,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开征求《深圳市人力资源和社会保障事业发展“十四五”规划（征求意见稿）》意见的通告',
         content:
             '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -208,7 +211,7 @@ const zcList = [
     },
     {
         id: 5,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开',
         content:
             '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -217,7 +220,7 @@ const zcList = [
     },
     {
         id: 6,
-        img: 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png',
+        img: imgUrl,
         title: '深圳人力资源和社会保障局关于公开征求《深圳市人力资源和社会保障事业发展“十四五”规划（征求意见稿）》意见的通告',
         content:
             '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》《关于支持深圳建设中国特色社会主义先行示范区的意见》《中华人民共和国国民经济和社会发展第十四个五年规划和二〇三五年远景目标纲要》《广东省国美女阿什拉维啊神烦我了啊是对方为啦说的氛围阿双方为阿隆索范围阿斯顿发威',
@@ -280,8 +283,12 @@ export default function Home() {
                     </FirstLeftWrap>
                     <FirstRightWrap>
                         <Splide options={{ arrows: false, autoplay: true, type: 'loop' }}>
-                            <SplideSlide>0001</SplideSlide>
-                            <SplideSlide>0002</SplideSlide>
+                            <SplideSlide>
+                                <Image alt='header' src={imgUrl} width={684} height={364} />
+                            </SplideSlide>
+                            <SplideSlide>
+                                <Image alt='header' src={imgUrl} width={684} height={364} />
+                            </SplideSlide>
                         </Splide>
                     </FirstRightWrap>
                 </FirstWrap>

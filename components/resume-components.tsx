@@ -17,6 +17,7 @@ export const LeftWrap = styled('div', {
     mt: 16,
     mr: 16,
     p: '40px 20px',
+    mb: 90,
 });
 
 export const RightWrap = styled('div', {
@@ -230,18 +231,23 @@ interface LProps {
     title: string;
     onEdit: any;
     children: any;
+    edit: boolean;
 }
 
-export function LeftMenuTitle({ title, children, onEdit }: LProps) {
+export function LeftMenuTitle({ title, children, onEdit, edit = false }: LProps) {
     return (
         <>
-            <FlexDiv css={{ alignItems: 'center', justifyContent: 'space-between', mt: 40, p: '0 20px' }}>
-                <FlexDiv>
-                    <VerticalDivider />
-                    {title}
+            {edit ? null : (
+                <FlexDiv css={{ alignItems: 'center', justifyContent: 'space-between', mt: 40, p: '0 20px' }}>
+                    <FlexDiv css={{ fw: 600 }}>
+                        <VerticalDivider />
+                        {title}
+                    </FlexDiv>
+                    <RightBtn onClick={onEdit} css={{ fs: 16 }}>
+                        添加
+                    </RightBtn>
                 </FlexDiv>
-                <RightBtn css={{ fs: 16 }}>添加</RightBtn>
-            </FlexDiv>
+            )}
             {children}
         </>
     );
@@ -303,4 +309,12 @@ export const RadioItem = styled('div', {
     defaultVariants: {
         active: false,
     },
+});
+
+export const NormalText = styled('div', {
+    fs: 16,
+    color: '#3C4441',
+    ml: 32,
+    ff: '$fr',
+    whiteSpace: 'pre',
 });

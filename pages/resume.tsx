@@ -7,6 +7,7 @@ import ConfirmDialog from '../components/confirm-dialog';
 import CloseDialog from '../components/close-dialog';
 import PrimaryInput from '../components/primary-input';
 import PrimaryButton from '../components/primary-button';
+import PrimarySelect from '../components/primary-select';
 import {
     EditWrap,
     ResuTitle,
@@ -28,6 +29,7 @@ import {
     FormWrap,
     RadioItem,
     FormItemLabel,
+    NormalText,
 } from '../components/resume-components';
 
 const jlIcon = [
@@ -89,14 +91,32 @@ export default function Resume() {
     const [modifyOpen, setModifyOpen] = useState(false);
     const [menuActive, setMenuActive] = useState(0);
 
-    const [editInfo, setEditInfo] = useState(true);
+    const [editInfo, setEditInfo] = useState(false);
+    const [editQz, setEditQz] = useState(false);
+    const [editGr, setEditGr] = useState(false);
+    const [editGz, setEditGz] = useState(false);
+    const [editXm, setEditXm] = useState(false);
+    const [editJy, setEditJy] = useState(false);
+
+    const [name, setName] = useState('');
+
+    const [city, setCity] = useState('');
 
     const meInfoDom = (
         <EditWrap>
             <ResuTitle css={{ fs: 18 }}>我的简历</ResuTitle>
             <FormWrap>
                 <InputFormItem css={{ mt: 30, w: 430 }} label='昵称：'>
-                    <PrimaryInput size='small' css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }} placeholder='昵称' />
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30 }} label='性别：'>
                     <FlexDiv css={{ mt: 10 }}>
@@ -107,10 +127,19 @@ export default function Resume() {
                     </FlexDiv>
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30, w: 430 }} label='出生日期：'>
-                    <PrimaryInput size='small' css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }} placeholder='出生日期' />
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30 }} label='所在城市：'>
-                    <PrimaryInput size='small' css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }} placeholder='昵称' />
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30, w: 430 }} label='手机号码：'>
                     <FlexDiv css={{ mt: 10, flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -119,10 +148,19 @@ export default function Resume() {
                     </FlexDiv>
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30 }} label='您的学历：'>
-                    <PrimaryInput size='small' css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }} placeholder='昵称' />
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
                 </InputFormItem>
                 <InputFormItem css={{ mt: 30, w: 430 }} label='首次参加工作时间：'>
-                    <PrimaryInput size='small' css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }} placeholder='首次参加工作时间' />
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
                 </InputFormItem>
                 <FlexDiv>
                     <PrimaryButton
@@ -142,6 +180,357 @@ export default function Resume() {
                 </FlexDiv>
             </FormWrap>
         </EditWrap>
+    );
+
+    const qzEditDom = (
+        <EditWrap>
+            <ResuTitle css={{ fs: 18 }}>编辑求职意向</ResuTitle>
+            <FormWrap>
+                <InputFormItem css={{ mt: 30, w: 430 }} label='期望岗位'>
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='期望行业'>
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30, w: 430 }} label='期望城市'>
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='期望薪资'>
+                    <FlexDiv css={{ mt: 10 }}>
+                        <PrimarySelect css={{ w: 132, mr: 10 }} value={city} onSelect={setCity} />
+                        至
+                        <PrimarySelect css={{ w: 132, ml: 10 }} value={city} onSelect={setCity} />
+                    </FlexDiv>
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30, w: 430 }} label='工作性质'>
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
+                </InputFormItem>
+                <FlexDiv>
+                    <PrimaryButton
+                        onClick={() => {
+                            setEditQz(false);
+                        }}
+                        css={{ w: 80, h: 42, fs: 16, border: '1px solid #8C9693', backgroundColor: '#F5F6F8', color: '#616A67', mt: 56, ml: 120 }}
+                        text='取消'
+                    />
+                    <PrimaryButton
+                        onClick={() => {
+                            setEditQz(false);
+                        }}
+                        css={{ w: 80, h: 42, ml: 20, fs: 16, mt: 56 }}
+                        text='完成'
+                    />
+                </FlexDiv>
+            </FormWrap>
+        </EditWrap>
+    );
+    const grEditDom = (
+        <EditWrap css={{ pr: 20 }}>
+            <ResuTitle css={{ fs: 18 }}>编辑个人优势</ResuTitle>
+            <PrimaryInput
+                type='textarea'
+                value={name}
+                onChange={(e) => {
+                    const { value } = e.target;
+                    setName(value);
+                }}
+                size='small'
+                css={{ backgroundColor: '$w', w: 804, h: 240, mt: 20 }}
+                placeholder='请输入'
+            />
+            <FlexDiv css={{ justifyContent: 'flex-end' }}>
+                <PrimaryButton
+                    onClick={() => {
+                        setEditGr(false);
+                    }}
+                    css={{ w: 80, h: 42, fs: 16, border: '1px solid #8C9693', backgroundColor: '#F5F6F8', color: '#616A67', mt: 20, ml: 120 }}
+                    text='取消'
+                />
+                <PrimaryButton
+                    onClick={() => {
+                        setEditGr(false);
+                    }}
+                    css={{ w: 80, h: 42, ml: 20, fs: 16, mt: 20 }}
+                    text='完成'
+                />
+            </FlexDiv>
+        </EditWrap>
+    );
+    const gzEditDom = (
+        <EditWrap css={{ pr: 20 }}>
+            <ResuTitle css={{ fs: 18 }}>编辑工作经历</ResuTitle>
+            <FormWrap>
+                <InputFormItem css={{ mt: 30, w: 524 }} label='公司名称'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 400, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='职位名称'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 206, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='在职时间'>
+                    <FlexDiv css={{ mt: 10 }}>
+                        <PrimarySelect css={{ w: 177, mr: 15 }} value={city} onSelect={setCity} />
+                        至
+                        <PrimarySelect css={{ w: 177, ml: 15 }} value={city} onSelect={setCity} />
+                    </FlexDiv>
+                </InputFormItem>
+            </FormWrap>
+            <InputFormItem css={{ mt: 30 }} label='工作内容'>
+                <PrimaryInput
+                    type='textarea'
+                    value={name}
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        setName(value);
+                    }}
+                    size='small'
+                    css={{ backgroundColor: '$w', w: 804, h: 240, mt: 10 }}
+                    placeholder='请输入'
+                />
+            </InputFormItem>
+            <FlexDiv css={{ justifyContent: 'flex-end' }}>
+                <PrimaryButton
+                    onClick={() => {
+                        setEditGz(false);
+                    }}
+                    css={{ w: 80, h: 42, fs: 16, border: '1px solid #8C9693', backgroundColor: '#F5F6F8', color: '#616A67', mt: 20, ml: 120 }}
+                    text='取消'
+                />
+                <PrimaryButton
+                    onClick={() => {
+                        setEditGz(false);
+                    }}
+                    css={{ w: 80, h: 42, ml: 20, fs: 16, mt: 20 }}
+                    text='完成'
+                />
+            </FlexDiv>
+        </EditWrap>
+    );
+    const xmEditDom = (
+        <EditWrap css={{ pr: 20 }}>
+            <ResuTitle css={{ fs: 18 }}>编辑项目经历</ResuTitle>
+            <FormWrap>
+                <InputFormItem css={{ mt: 30, w: 524 }} label='项目名称'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 400, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='担任名称'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 206, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='项目时间'>
+                    <FlexDiv css={{ mt: 10 }}>
+                        <PrimarySelect css={{ w: 177, mr: 15 }} value={city} onSelect={setCity} />
+                        至
+                        <PrimarySelect css={{ w: 177, ml: 15 }} value={city} onSelect={setCity} />
+                    </FlexDiv>
+                </InputFormItem>
+            </FormWrap>
+            <InputFormItem css={{ mt: 30 }} label='项目描述'>
+                <PrimaryInput
+                    type='textarea'
+                    value={name}
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        setName(value);
+                    }}
+                    size='small'
+                    css={{ backgroundColor: '$w', w: 804, h: 240, mt: 10 }}
+                    placeholder='请输入'
+                />
+            </InputFormItem>
+
+            <InputFormItem css={{ mt: 30 }} label='项目业绩'>
+                <PrimaryInput
+                    type='textarea'
+                    value={name}
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        setName(value);
+                    }}
+                    size='small'
+                    css={{ backgroundColor: '$w', w: 804, h: 240, mt: 10 }}
+                    placeholder='请输入'
+                />
+            </InputFormItem>
+            <FlexDiv css={{ justifyContent: 'flex-end' }}>
+                <PrimaryButton
+                    onClick={() => {
+                        setEditXm(false);
+                    }}
+                    css={{ w: 80, h: 42, fs: 16, border: '1px solid #8C9693', backgroundColor: '#F5F6F8', color: '#616A67', mt: 20, ml: 120 }}
+                    text='取消'
+                />
+                <PrimaryButton
+                    onClick={() => {
+                        setEditXm(false);
+                    }}
+                    css={{ w: 80, h: 42, ml: 20, fs: 16, mt: 20 }}
+                    text='完成'
+                />
+            </FlexDiv>
+        </EditWrap>
+    );
+    const jyEditDom = (
+        <EditWrap css={{ pr: 20 }}>
+            <ResuTitle css={{ fs: 18 }}>编辑教育经历</ResuTitle>
+            <FormWrap>
+                <InputFormItem css={{ mt: 30, w: 430 }} label='学校名称'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='学历'>
+                    <PrimarySelect css={{ w: 300, mt: 10 }} value={city} onSelect={setCity} />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30, w: 430 }} label='专业'>
+                    <PrimaryInput
+                        value={name}
+                        onChange={(e) => {
+                            const { value } = e.target;
+                            setName(value);
+                        }}
+                        size='small'
+                        css={{ backgroundColor: '$w', w: 300, h: 42, mt: 10 }}
+                        placeholder='请填写'
+                    />
+                </InputFormItem>
+                <InputFormItem css={{ mt: 30 }} label='时间段'>
+                    <FlexDiv css={{ mt: 10 }}>
+                        <PrimarySelect css={{ w: 132, mr: 10 }} value={city} onSelect={setCity} />
+                        至
+                        <PrimarySelect css={{ w: 132, ml: 10 }} value={city} onSelect={setCity} />
+                    </FlexDiv>
+                </InputFormItem>
+            </FormWrap>
+            <InputFormItem css={{ mt: 30 }} label='在校经历'>
+                <PrimaryInput
+                    type='textarea'
+                    value={name}
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        setName(value);
+                    }}
+                    size='small'
+                    css={{ backgroundColor: '$w', w: 804, h: 240, mt: 10 }}
+                    placeholder='请输入'
+                />
+            </InputFormItem>
+            <FlexDiv css={{ justifyContent: 'flex-end' }}>
+                <PrimaryButton
+                    onClick={() => {
+                        setEditJy(false);
+                    }}
+                    css={{ w: 80, h: 42, fs: 16, border: '1px solid #8C9693', backgroundColor: '#F5F6F8', color: '#616A67', mt: 20, ml: 120 }}
+                    text='取消'
+                />
+                <PrimaryButton
+                    onClick={() => {
+                        setEditJy(false);
+                    }}
+                    css={{ w: 80, h: 42, ml: 20, fs: 16, mt: 20 }}
+                    text='完成'
+                />
+            </FlexDiv>
+        </EditWrap>
+    );
+
+    const qzDom = <NormalText css={{ mt: 30 }}>期望岗位｜期望行业｜期望城市｜期望薪资｜工作性质</NormalText>;
+    const grDom = (
+        <NormalText css={{ mt: 30, lineHeight: '30px' }}>
+            1、精通Photoshop，Illustrator等设计软件，精准的视觉设计把控 <br />
+            2、有手机端和pc端设计以及平面设计经验 3、能合理分析用户需求，制作高保真低保真原型图 <br />
+            4、具有一定的手绘功底
+            <br /> 5、爱好写作，能及时分析热点
+            <br /> 6、性格开朗，乐观向上，勤奋刻苦，喜欢接触不同的事物，也喜欢尝试不同的事情
+        </NormalText>
+    );
+
+    const gzDom = (
+        <FlexDiv css={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32, mt: 30 }}>
+            <FlexDiv css={{ fw: 600 }}>深圳市华为科技有限公司</FlexDiv>
+            <FlexDiv css={{ fw: 600, mt: 10 }}>2010.01.10-2021.10.1 ｜UI设计</FlexDiv>
+            <NormalText css={{ ml: 0, mt: 20 }}>工作内容：</NormalText>
+            <NormalText css={{ ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px' }}>
+                1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
+                2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
+                3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
+                4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
+            </NormalText>
+        </FlexDiv>
+    );
+    const xmDom = (
+        <FlexDiv css={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32, mt: 30 }}>
+            <FlexDiv css={{ fw: 600, fs: 18 }}>抖音APP</FlexDiv>
+            <FlexDiv css={{ fw: 600, mt: 10 }}>2010.01.10-2021.10.1 ｜UI设计</FlexDiv>
+            <NormalText css={{ ml: 0, mt: 20 }}>项目描述：</NormalText>
+            <NormalText css={{ ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px' }}>
+                1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
+                2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
+                3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
+                4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
+            </NormalText>
+            <NormalText css={{ ml: 0, mt: 30 }}>项目业绩：</NormalText>
+            <NormalText css={{ ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px' }}>
+                1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
+                2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
+                3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
+                4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
+            </NormalText>
+        </FlexDiv>
+    );
+    const jyDom = (
+        <FlexDiv css={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32, mt: 30 }}>
+            <FlexDiv css={{ fw: 600 }}>深圳大学</FlexDiv>
+            <FlexDiv css={{ fw: 600, mt: 10 }}>视觉传达艺术设计 ｜本科</FlexDiv>
+            <NormalText css={{ ml: 0, mt: 20 }}>在校经历：</NormalText>
+            <NormalText css={{ ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px' }}>
+                1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
+                2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
+                3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
+                4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
+            </NormalText>
+        </FlexDiv>
     );
 
     return (
@@ -174,8 +563,28 @@ export default function Resume() {
                     </FlexDiv>
                 )}
                 {resumeMenu.slice(1).map((lr, idx) => (
-                    <LeftMenuTitle key={lr.text} title={lr.text} onEdit={() => {}}>
-                        {idx === 0 ? 'aaaa' : null}
+                    <LeftMenuTitle
+                        key={lr.text}
+                        title={lr.text}
+                        edit={idx === 0 ? editQz : idx === 1 ? editGr : idx === 2 ? editGz : idx === 3 ? editXm : idx === 4 ? editJy : false}
+                        onEdit={() => {
+                            if (idx === 0) {
+                                setEditQz(true);
+                            } else if (idx === 1) {
+                                setEditGr(true);
+                            } else if (idx === 2) {
+                                setEditGz(true);
+                            } else if (idx === 3) {
+                                setEditXm(true);
+                            } else if (idx === 4) {
+                                setEditJy(true);
+                            }
+                        }}>
+                        {idx === 0 ? (editQz ? qzEditDom : qzDom) : null}
+                        {idx === 1 ? (editGr ? grEditDom : grDom) : null}
+                        {idx === 2 ? (editGz ? gzEditDom : gzDom) : null}
+                        {idx === 3 ? (editXm ? xmEditDom : xmDom) : null}
+                        {idx === 4 ? (editJy ? jyEditDom : jyDom) : null}
                     </LeftMenuTitle>
                 ))}
             </LeftWrap>

@@ -26,13 +26,15 @@ const PlaceHolderText = styled('div', {
 interface IProps {
     placeholder?: string;
     placeholderCss?: any;
+    list?: any[];
     css?: any;
     value?: any;
     onSelect?: any;
     iconName?: string;
+    valueCloseable?: boolean;
 }
 
-const list = [
+const defaultList = [
     {
         key: 'nolimit',
         value: '不限',
@@ -97,6 +99,13 @@ const OpenListWrap = styled('div', {
     backgroundColor: '$w',
 });
 
+const CloseableValueWrap = styled('div', {
+    color: '$primary',
+    fw: 600,
+    display: 'flex',
+    alignItems: 'center',
+});
+
 const OpenItem = styled('div', {
     w: 180,
     h: 42,
@@ -119,7 +128,16 @@ const OpenItem = styled('div', {
     },
 });
 
-export default function PrimarySelect({ placeholder = '请选择', placeholderCss = {}, value, onSelect, css, iconName = 'icon-icon_xialaxuanxiang' }: IProps) {
+export default function PrimarySelect({
+    placeholder = '请选择',
+    list = defaultList,
+    placeholderCss = {},
+    value,
+    valueCloseable = false,
+    onSelect,
+    css,
+    iconName = 'icon-icon_xialaxuanxiang',
+}: IProps) {
     const [open, setOpen] = useState(false);
     const [firstSelected, setFirstSelected] = useState<any>();
     const [secondSelected, setSecondSelected] = useState<any>();
@@ -155,7 +173,22 @@ export default function PrimarySelect({ placeholder = '请选择', placeholderCs
             onClick={() => {
                 setOpen(true);
             }}>
-            {value ? value.value : null}
+            {value ? (
+                valueCloseable ? (
+                    <CloseableValueWrap>
+                        <Icon
+                            onClick={(e: any) => {
+                                e.stopPropagation();
+                                onSelect('');
+                            }}
+                            name='icon-icon_guanbi'
+                        />
+                        {value.value}
+                    </CloseableValueWrap>
+                ) : (
+                    value.value
+                )
+            ) : null}
             {value ? null : <PlaceHolderText css={placeholderCss}>{placeholder}</PlaceHolderText>}
             <Icon name={iconName} />
             {open ? (

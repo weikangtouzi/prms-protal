@@ -121,6 +121,7 @@ const ZhiYeItemsRight = styled('div', {
     backgroundColor: '$w',
     borderRadius: 2,
     boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)',
+    zIndex: 9,
 });
 
 export const FoldBtn = styled('div', {

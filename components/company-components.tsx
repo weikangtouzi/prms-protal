@@ -286,7 +286,7 @@ const JobItemHoverDiv = styled('div', {
 });
 
 export function JobItem({ item }: JobIProps) {
-    const { job, subs, money, time, subscribed, jobTitle, details, location, img } = item;
+    const { job, subs, money, time } = item;
     const [active, setActive] = useState(false);
 
     return (
@@ -306,42 +306,114 @@ export function JobItem({ item }: JobIProps) {
                 <TitleText css={{ fs: 14, fw: 400, color: '#616A67' }}>{subs}</TitleText>
                 <TitleText css={{ fs: 14, fw: 400, color: '#616A67' }}>{time}</TitleText>
             </FlexDiv>
-            {active ? (
-                <JobItemHoverDiv>
-                    <FlexDiv css={{ backgroundColor: '#EFF2F1', w: 625, p: '30px 40px', justifyContent: 'space-between' }}>
-                        <FlexDiv css={{ flexDirection: 'column' }}>
-                            <FlexDiv>
-                                <TitleText css={{ fs: 18 }}>{jobTitle}</TitleText>
-                                <TitleText css={{ color: '#FF6500', fs: 18 }}>{money}</TitleText>
-                            </FlexDiv>
-                            <TitleText css={{ fs: 18, fw: 400, mt: 10 }}>{subs}</TitleText>
-                        </FlexDiv>
-                        <FlexDiv css={{ alignItems: 'center' }}>
-                            <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
-                            <TitleText css={{ fs: 18, color: '$primary', ml: 10, mr: 20 }}>收藏</TitleText>
-                            <PrimaryButton onClick={() => {}} text='投简历' css={{ w: 120, h: 54, mt: 0 }} />
-                        </FlexDiv>
-                    </FlexDiv>
-                    <FlexDiv css={{ p: '20px 40px', w: 625 }}>
-                        <FlexDiv css={{ color: '#3C4441', fs: 18, ff: '$fr', flexDirection: 'column', borderBottom: '1px dashed rgba(0, 0, 0, 0.1)' }}>
-                            <FlexDiv>职位描述：</FlexDiv>
-                            <FlexDiv css={{ mt: 10, w: 545, whiteSpace: 'break-spaces', mb: 20 }}>{details}</FlexDiv>
-                        </FlexDiv>
-                    </FlexDiv>
-
-                    <FlexDiv css={{ justifyContent: 'space-between', backgroundColor: '$w', p: '20px 40px', alignItems: 'center' }}>
-                        <FlexDiv css={{ flexDirection: 'column', fs: 18, color: '#3C4441' }}>
-                            工作地点 <FlexDiv css={{ fs: 14, mt: 10 }}>{location}</FlexDiv>
-                        </FlexDiv>
-                        <FlexDiv>
-                            <FlexDiv css={{ flexDirection: 'column', fs: 18, color: '#3C4441', alignItems: 'flex-end', justifyContent: 'center', mr: 17 }}>
-                                APP扫码 <FlexDiv css={{ fs: 14, mt: 10 }}>聊一聊</FlexDiv>
-                            </FlexDiv>
-                            <Image alt='ewm' width={76} height={76} src={img} />
-                        </FlexDiv>
-                    </FlexDiv>
-                </JobItemHoverDiv>
-            ) : null}
+            <JobHoverItem active={active} item={item} />
         </JobItemWrap>
+    );
+}
+
+interface JHProps {
+    item: any;
+    active: boolean;
+}
+
+function JobHoverItem({ active, item }: JHProps) {
+    const { subs, money, time, subscribed, jobTitle, details, location, img } = item;
+
+    return active ? (
+        <JobItemHoverDiv>
+            <FlexDiv css={{ backgroundColor: '#EFF2F1', w: 625, p: '30px 40px', justifyContent: 'space-between' }}>
+                <FlexDiv css={{ flexDirection: 'column' }}>
+                    <FlexDiv>
+                        <TitleText css={{ fs: 18 }}>{jobTitle}</TitleText>
+                        <TitleText css={{ color: '#FF6500', fs: 18 }}>{money}</TitleText>
+                    </FlexDiv>
+                    <TitleText css={{ fs: 18, fw: 400, mt: 10 }}>{subs}</TitleText>
+                </FlexDiv>
+                <FlexDiv css={{ alignItems: 'center' }}>
+                    <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
+                    <TitleText css={{ fs: 18, color: '$primary', ml: 10, mr: 20 }}>收藏</TitleText>
+                    <PrimaryButton onClick={() => {}} text='投简历' css={{ w: 120, h: 54, mt: 0 }} />
+                </FlexDiv>
+            </FlexDiv>
+            <FlexDiv css={{ p: '20px 40px', w: 625 }}>
+                <FlexDiv css={{ color: '#3C4441', fs: 18, ff: '$fr', flexDirection: 'column', borderBottom: '1px dashed rgba(0, 0, 0, 0.1)' }}>
+                    <FlexDiv>职位描述：</FlexDiv>
+                    <FlexDiv css={{ mt: 10, w: 545, whiteSpace: 'break-spaces', mb: 20 }}>{details}</FlexDiv>
+                </FlexDiv>
+            </FlexDiv>
+
+            <FlexDiv css={{ justifyContent: 'space-between', backgroundColor: '$w', p: '20px 40px', alignItems: 'center' }}>
+                <FlexDiv css={{ flexDirection: 'column', fs: 18, color: '#3C4441' }}>
+                    工作地点 <FlexDiv css={{ fs: 14, mt: 10 }}>{location}</FlexDiv>
+                </FlexDiv>
+                <FlexDiv>
+                    <FlexDiv css={{ flexDirection: 'column', fs: 18, color: '#3C4441', alignItems: 'flex-end', justifyContent: 'center', mr: 17 }}>
+                        APP扫码 <FlexDiv css={{ fs: 14, mt: 10 }}>聊一聊</FlexDiv>
+                    </FlexDiv>
+                    <Image alt='ewm' width={76} height={76} src={img} />
+                </FlexDiv>
+            </FlexDiv>
+        </JobItemHoverDiv>
+    ) : null;
+}
+
+const FindJobItemWrap = styled('div', {
+    w: 884,
+    h: 161,
+    p: 20,
+    backgroundColor: '$w',
+    mt: 16,
+    position: 'relative',
+    borderRadius: 2,
+});
+
+export function FindJobItem({ item }: JobIProps) {
+    const { job, subs, money, time, isUrgent, company, companyText, fl = [], headImg, hr, onLine } = item;
+    const [active, setActive] = useState(false);
+
+    return (
+        <FindJobItemWrap
+            css={active ? { boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)' } : {}}
+            onMouseMove={() => {
+                setActive(true);
+            }}
+            onMouseLeave={() => {
+                setActive(false);
+            }}>
+            <FlexDiv css={{ justifyContent: 'space-between', pb: 20, borderBottom: '1px dashed rgba(0,0,0,0.1)' }}>
+                <FlexDiv css={{ flexDirection: 'column' }}>
+                    <FlexDiv css={{ alignItems: 'center' }}>
+                        <TitleText css={active ? { fs: 18, color: '$primary', mr: 10 } : { fs: 18, mr: 10 }}>{job}</TitleText>
+                        {isUrgent ? <TitleText css={{ fs: 14, color: '#FF4B4B', border: '1px solid #FF4B4B', p: '3px 15px', mr: 15 }}>急招</TitleText> : null}
+                        <TitleText css={{ fs: 14, fw: 400, color: '#616A67', ff: '$fr' }}>{time}</TitleText>
+                    </FlexDiv>
+                    <FlexDiv css={{ alignItems: 'center', mt: 13 }}>
+                        <TitleText css={{ color: '#FF6500', fs: 18 }}>{money}</TitleText>
+                        <TitleText css={{ fs: 14, fw: 400, color: '#616A67', ml: 15, ff: '$fr' }}>{subs}</TitleText>
+                    </FlexDiv>
+                </FlexDiv>
+                <FlexDiv css={{ justifyContent: 'space-between', w: 398, alignItems: 'center' }}>
+                    <FlexDiv css={{ flexDirection: 'column' }}>
+                        <TitleText css={{ color: '#3C4441', fs: 16, ff: '$fr', fw: 400 }}>{company}</TitleText>
+                        <TitleText css={{ color: '#616A67', fs: 14, ff: '$fr', fw: 400, mt: 16 }}>{companyText}</TitleText>
+                    </FlexDiv>
+                    <Image src={headImg} width={58} height={58} alt='xxx' />
+                </FlexDiv>
+            </FlexDiv>
+            <FlexDiv css={{ justifyContent: 'space-between', mt: 13 }}>
+                <FlexDiv>
+                    <TitleText css={{ fs: 14, fw: 400, color: '#616A67' }}>{hr}</TitleText>
+                    {onLine ? <TitleText css={{ fs: 14, fw: 400, color: '$primary', ml: 15 }}>在线</TitleText> : null}
+                </FlexDiv>
+                <FlexDiv css={{ w: 398 }}>
+                    {fl.map((f: string) => (
+                        <TitleText key={f} css={{ fs: 14, fw: 400, color: '#616A67', ff: '$fr', backgroundColor: '#EFF2F1', p: '4px 10px', mr: 20 }}>
+                            {f}
+                        </TitleText>
+                    ))}
+                </FlexDiv>
+            </FlexDiv>
+            <JobHoverItem active={active} item={item} />
+        </FindJobItemWrap>
     );
 }

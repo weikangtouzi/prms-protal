@@ -3,13 +3,15 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
-import { Main, InputWrap, RealInput, SearchWorldWrap, SearchWorldText, PartTitle } from '../../components/home-components';
+import { Main } from '../../components/home-components';
+import { SearchInput, LocationItem, HotCity } from '../../components/job-components';
 import { FindJobItem } from '../../components/company-components';
 import { FlexDiv } from '../../components/recruitment-components';
 
 import PrimaryButton from '../../components/primary-button';
 import Pagination from '../../components/pagination';
 import PrimarySelect from '../../components/primary-select';
+import Icon from '../../components/icon';
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png';
 const jobList = [
@@ -119,8 +121,10 @@ const gzjyList = [
     },
 ];
 
+const hotcitys = ['全国', '重庆', '上海', '北京'];
+const ls = ['我的', '益田假日', '深圳湾', '深圳湾2', '深圳湾3', '深圳湾4', '深圳湾5'];
+
 export default function Job() {
-    const [active, setActive] = useState(false);
     const [current, setCurrent] = useState(2);
 
     const [gzjy, setGzjy] = useState('');
@@ -131,20 +135,30 @@ export default function Job() {
 
     return (
         <Main>
-            <InputWrap>
-                <RealInput
-                    onFocus={() => {
-                        setActive(true);
-                    }}
-                    onBlur={() => {
-                        setActive(false);
-                    }}
-                    active={active}
-                    placeholder='搜索招聘会名称、主办公司'
-                />
-                <PrimaryButton css={{ w: 120, h: 54, mt: 0, borderRadius: 0 }} text='搜索' />
-            </InputWrap>
+            <SearchInput onClickSearch={() => {}} />
             <FlexDiv css={{ backgroundColor: 'rgba(242,244,246,1)', flexDirection: 'column', pt: 20, mt: 20, width: '100%', alignItems: 'center' }}>
+                <FlexDiv css={{ w: 1184, p: '20px 20px 20px 16px', backgroundColor: '$w', flexDirection: 'column', mb: 20 }}>
+                    <FlexDiv>
+                        <LocationItem text='广东' />
+                        <LocationItem text='深圳' />
+                        <LocationItem text='南山区' />
+                        <LocationItem text='科技园' noIcon />
+                        <FlexDiv>
+                            <HotCity css={{ ml: 66 }}>热门城市:</HotCity>
+                            {hotcitys.map((h) => (
+                                <HotCity key={h}>{h}</HotCity>
+                            ))}
+                        </FlexDiv>
+                    </FlexDiv>
+
+                    <FlexDiv css={{ ml: 85, mt: 20, pt: 20, borderTop: '1px dashed rgba(0,0,0,0.1)', flexWrap: 'wrap' }}>
+                        {ls.map((ll) => (
+                            <HotCity css={{ ml: 0, mr: 30, color: '#3C4441' }} key={ll}>
+                                {ll}
+                            </HotCity>
+                        ))}
+                    </FlexDiv>
+                </FlexDiv>
                 <FlexDiv css={{ w: 1184, h: 52, backgroundColor: '#EFF2F1', p: '0 20px', justifyContent: 'space-between', alignItems: 'center' }}>
                     <FlexDiv>
                         <PrimarySelect

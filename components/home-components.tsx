@@ -290,9 +290,9 @@ const TabBottomLine = styled('div', {
     },
 });
 
-export const Tabs = ({ list, active, onClickItem }: { list: string[]; active: number; onClickItem: (e: any) => void }) => {
+export const Tabs = ({ css = {}, list, active, onClickItem }: { css?: any; list: string[]; active: number; onClickItem: (e: any) => void }) => {
     return (
-        <TabWrap>
+        <TabWrap css={css}>
             {list.map((l, idx) => (
                 <TabItem
                     active={idx === active}
@@ -500,9 +500,13 @@ const ZhiChangItemWrap = styled('div', {
 });
 
 export const ZhiChangItem = ({ item }: any) => {
-    const { img, title, content, writer, time } = item;
+    const router = useRouter();
+    const { img, title, content, writer, time, id } = item;
     return (
-        <ZhiChangItemWrap>
+        <ZhiChangItemWrap
+            onClick={() => {
+                router.push(`/news/${id}`);
+            }}>
             <Image src={img} width={342} height={140} alt='logo' />
             <ReZhaoZhiYe
                 css={{ mt: 10, mb: 10, overflow: 'hidden', textOverflow: 'ellipsis', '-webkit-line-clamp': 2, display: '-webkit-box', '-webkit-box-orient': 'vertical' }}>

@@ -1,8 +1,10 @@
 import { styled } from '../stitches.config';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Icon from './icon';
 import PrimaryButton from './primary-button';
+import CloseDialog from './close-dialog';
 
 const JudgeStarWrap = styled('div', {
     display: 'flex',
@@ -316,10 +318,151 @@ interface JHProps {
     active: boolean;
 }
 
+const defaultJlList = [
+    {
+        id: 1,
+        name: '陈小小的简历',
+        isZx: true,
+    },
+    {
+        id: 2,
+        name: '附件简简历名称应该有这么长的文字简历名称应该有这么长的文字简历名称应该有这么长的文字历名称应该有这么长的文字名称',
+        isZx: false,
+    },
+    {
+        id: 3,
+        name: '附件简历名称应该该有这么长的文字名称该有这么长的文字名称该有这么长的文字名称该有这么长的文字名称该有这么长的文字名称有这么长的文字名称',
+        isZx: false,
+    },
+];
+
+export const OutlinedText = styled('label', {
+    color: '#616A67',
+    fs: 16,
+    fw: 400,
+    ff: '$fr',
+    textDecoration: 'underline',
+});
+export const RealInput = styled('input', {
+    display: 'none',
+});
+
 function JobHoverItem({ active, item }: JHProps) {
     const { subs, money, time, subscribed, jobTitle, details, location, img } = item;
+    const [open, setOpen] = useState(false);
+    const [stage, setStage] = useState(0);
+    const [list, setList] = useState(defaultJlList);
+    const [selectedId, setSelectedId] = useState(0);
 
-    return active ? (
+    const onClose = () => {
+        setOpen(false);
+        setStage(0);
+    };
+
+    let top = 190;
+    if (stage === 1) {
+        top = 292;
+    }
+
+    const dialogDom = (
+        <CloseDialog
+            dialogCss={{ w: 698, borderRadius: 2, h: 'fit-content', top, textAlign: 'left' }}
+            title={stage === 1 ? '投个简历' : '投简历确认'}
+            titleCss={{ fs: 18, color: '#3C4441', ml: 40, textAlign: 'left', h: 'auto' }}
+            open={open}
+            onOpenChange={setOpen}
+            onClose={onClose}>
+            {stage === 0 ? (
+                <FlexDiv>
+                    <PrimaryButton
+                        css={{ mt: 20, w: 120, h: 42, ml: 40, fs: 16, mb: 40 }}
+                        onClick={() => {
+                            setStage(1);
+                        }}
+                        text='确认投递'
+                    />
+                    <FlexDiv onClick={onClose} css={{ mt: 20, alignItems: 'center', fs: 16, color: '#3C4441', h: 42, w: 120, pl: 24, userSelect: 'none' }}>
+                        放弃投递
+                    </FlexDiv>
+                </FlexDiv>
+            ) : null}
+            {stage === 1 ? (
+                <FlexDiv css={{ flexDirection: 'column' }}>
+                    <FlexDiv css={{ flexDirection: 'column', ml: 40, mb: 30, mr: 40, color: '#616A67' }}>
+                        {list.map((li) => (
+                            <FlexDiv
+                                key={li.id}
+                                onClick={() => {
+                                    setSelectedId(li.id);
+                                }}
+                                css={{ justifyContent: 'space-between', mt: 20, alignItems: 'center' }}>
+                                <FlexDiv css={{ alignItems: 'center' }}>
+                                    <Icon name={selectedId === li.id ? 'icon-icon_dianji' : 'icon-icon_weidianji'} />
+                                    <FlexDiv css={{ ff: '$fr' }}>{li.isZx ? '在线简历：' : '附件简历：'}</FlexDiv>
+                                    <FlexDiv
+                                        css={{
+                                            w: 288,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            '-webkit-line-clamp': 1,
+                                            display: '-webkit-box',
+                                            '-webkit-box-orient': 'vertical',
+                                            color: '#3C4441',
+                                            fw: 600,
+                                        }}>
+                                        {li.name}
+                                    </FlexDiv>
+                                </FlexDiv>
+                                <FlexDiv>
+                                    {li.isZx ? (
+                                        <>
+                                            <OutlinedText>预览</OutlinedText>&nbsp;|&nbsp;<OutlinedText>修改</OutlinedText>
+                                        </>
+                                    ) : (
+                                        <OutlinedText>下载</OutlinedText>
+                                    )}
+                                </FlexDiv>
+                            </FlexDiv>
+                        ))}
+                    </FlexDiv>
+                    <OutlinedText htmlFor='realJLInputId' css={{ ml: 40 }}>
+                        上传附件简历
+                    </OutlinedText>
+                    <RealInput
+                        id='realJLInputId'
+                        onChange={(e) => {
+                            const { files = [] } = e.target;
+                            if (files && files.length > 0) {
+                                console.log('files', files[0]);
+                            }
+                        }}
+                        type='file'
+                        accept='.doc,.docx,.pdf'
+                    />
+                    <FlexDiv>
+                        <PrimaryButton
+                            css={{ mt: 20, w: 140, h: 42, ml: 40, fs: 16, mb: 40 }}
+                            onClick={() => {
+                                setStage(2);
+                            }}
+                            text='确认投递简历'
+                        />
+                        <FlexDiv onClick={onClose} css={{ mt: 20, alignItems: 'center', fs: 16, color: '#3C4441', h: 42, w: 120, pl: 24, userSelect: 'none' }}>
+                            取消
+                        </FlexDiv>
+                    </FlexDiv>
+                </FlexDiv>
+            ) : null}
+            {stage === 2 ? (
+                <FlexDiv css={{ flexDirection: 'column', mt: 25, ml: 40 }}>
+                    <FlexDiv css={{ ff: '$fr' }}>简历已成功投出去了，请静候佳音</FlexDiv>
+                    <PrimaryButton css={{ mt: 20, w: 120, h: 42, fs: 16, mb: 40 }} onClick={onClose} text='我知道了' />
+                </FlexDiv>
+            ) : null}
+        </CloseDialog>
+    );
+
+    let JobDom = active ? (
         <JobItemHoverDiv>
             <FlexDiv css={{ backgroundColor: '#EFF2F1', w: 625, p: '30px 40px', justifyContent: 'space-between' }}>
                 <FlexDiv css={{ flexDirection: 'column' }}>
@@ -332,7 +475,13 @@ function JobHoverItem({ active, item }: JHProps) {
                 <FlexDiv css={{ alignItems: 'center' }}>
                     <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
                     <TitleText css={{ fs: 18, color: '$primary', ml: 10, mr: 20 }}>收藏</TitleText>
-                    <PrimaryButton onClick={() => {}} text='投简历' css={{ w: 120, h: 54, mt: 0 }} />
+                    <PrimaryButton
+                        onClick={() => {
+                            setOpen(true);
+                        }}
+                        text='投简历'
+                        css={{ w: 120, h: 54, mt: 0 }}
+                    />
                 </FlexDiv>
             </FlexDiv>
             <FlexDiv css={{ p: '20px 40px', w: 625 }}>
@@ -355,6 +504,13 @@ function JobHoverItem({ active, item }: JHProps) {
             </FlexDiv>
         </JobItemHoverDiv>
     ) : null;
+
+    return (
+        <>
+            {JobDom}
+            {dialogDom}
+        </>
+    );
 }
 
 const FindJobItemWrap = styled('div', {
@@ -368,11 +524,15 @@ const FindJobItemWrap = styled('div', {
 });
 
 export function FindJobItem({ item }: JobIProps) {
-    const { job, subs, money, time, isUrgent, company, companyText, fl = [], headImg, hr, onLine } = item;
+    const { job, subs, money, id, time, isUrgent, company, companyText, fl = [], headImg, hr, onLine } = item;
     const [active, setActive] = useState(false);
+    const router = useRouter();
 
     return (
         <FindJobItemWrap
+            onClick={() => {
+                router.push(`/job/${id}`);
+            }}
             css={active ? { boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)' } : {}}
             onMouseMove={() => {
                 setActive(true);

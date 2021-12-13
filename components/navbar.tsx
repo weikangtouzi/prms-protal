@@ -189,11 +189,11 @@ const menus = [
     },
     {
         text: '我的收藏',
-        href: '/',
+        href: '/sc',
     },
     {
         text: '资产管理',
-        href: '/',
+        href: '/zc',
     },
 ];
 

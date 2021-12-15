@@ -1,0 +1,6 @@
+query LogIn($account: String!, $password: String) {
+  UserLogIn(info: {account: $account, password: $password}) {
+    username
+    token
+  }
+}

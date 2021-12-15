@@ -1,0 +1,12 @@
+schema: https://be.chenzaozhao.com/graphql
+
+generates:
+  ./generated.ts:
+    documents: 'graphql/**/*.graphql'
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      addDocBlocks: true
+      skipTypename: true

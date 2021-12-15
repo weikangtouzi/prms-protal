@@ -1,0 +1,48 @@
+query AllLocations {
+  StaticGetAllRegion {
+    data {
+      province_id
+      name
+      Cities {
+        city_id
+        name
+        Counties {
+          county_id
+          name
+          Towns {
+            town_id
+            name
+          }
+        }
+      }
+    }
+  }
+}
+
+query AllProvinces {
+  StaticGetProvinces {
+    name
+    province_id
+  }
+}
+
+query getCities($provinceId: String!) {
+  StaticGetCities(provinceId: $provinceId) {
+    name
+    city_id
+  }
+}
+
+query getCounties($cityId: String!) {
+  StaticGetCounties(cityId: $cityId) {
+    name
+    county_id
+  }
+}
+
+query getTowns($countyId: String!) {
+  StaticGetTowns(countyId: $countyId) {
+    name
+    town_id
+  }
+}

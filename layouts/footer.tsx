@@ -79,18 +79,43 @@ export default function Footer() {
             <FirstLineText>链接方式</FirstLineText>
           </FirstLine>
           <FirstLine css={{mb: 20}}>
-            <FirstLineText css={{fs: 14}}>职位搜索</FirstLineText>
-            <FirstLineText css={{fs: 14}}>企业服务</FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/job' target='_blank' rel='noreferrer'>
+                职位搜索
+              </a>
+            </FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/about/agreement' target='_blank' rel='noreferrer'>
+                用户协议
+              </a>
+            </FirstLineText>
             <FirstLineText css={{fs: 14, w: 253}}>服务热线：400 1234 56（9:00-18:00）</FirstLineText>
           </FirstLine>
           <FirstLine css={{mb: 20}}>
-            <FirstLineText css={{fs: 14}}>公司搜素</FirstLineText>
-            <FirstLineText css={{fs: 14}}>隐私政策</FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/company' target='_blank' rel='noreferrer'>
+                公司搜素
+              </a>
+            </FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/about/privacy' target='_blank' rel='noreferrer'>
+                隐私政策
+              </a>
+            </FirstLineText>
+
             <FirstLineText css={{fs: 14, w: 253}}>企业服务邮箱：Wendy@chenzaozhao</FirstLineText>
           </FirstLine>
           <FirstLine>
-            <FirstLineText css={{fs: 14}}>招聘会</FirstLineText>
-            <FirstLineText css={{fs: 14}}>关于我们</FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/recruitment' target='_blank' rel='noreferrer'>
+                招聘会
+              </a>
+            </FirstLineText>
+            <FirstLineText css={{fs: 14}}>
+              <a href='/about' target='_blank' rel='noreferrer'>
+                关于我们
+              </a>
+            </FirstLineText>
           </FirstLine>
         </TopRightWrap>
       </TopWrap>

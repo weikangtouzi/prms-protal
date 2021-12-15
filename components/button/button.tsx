@@ -21,7 +21,7 @@ const ButtonStyled = styled('button', {
 
 interface IProps {
   text: any
-  onClick?: () => void
+  onClick?: (e: any) => void
   css?: any
   disabled?: boolean
 }

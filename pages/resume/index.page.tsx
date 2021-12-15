@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Icon from '@/components/icon'
 import {CloseDialog, ConfirmDialog} from '@/components/dialogs'
 import {TextField} from '@/components/textfield'
@@ -29,6 +29,7 @@ import ResumeMenuItem from './components/resume-menu-item'
 import LeftMenuTitle from './components/left-menu-title'
 import InputFormItem from '../login/components/input-form'
 import {useUploadFileMutation} from '@/generated'
+import {fetchIndustry, fetchJob} from './api/josn'
 
 const jlIcon = [
   {
@@ -100,6 +101,13 @@ export default function Resume() {
   const [city, setCity] = useState('')
 
   const [uploadFile] = useUploadFileMutation()
+
+  useEffect(() => {
+    const industry = fetchIndustry()
+    const job = fetchJob()
+
+    console.log('inducstry', industry, job)
+  }, [])
 
   const meInfoDom = (
     <EditWrap>

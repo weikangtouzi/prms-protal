@@ -1,6 +1,5 @@
 import {useState, useEffect} from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import {useRouter} from 'next/router'
 import Icon from '@/components/icon'
 import {styled} from '@/stitches.config'
@@ -185,11 +184,11 @@ const menus = [
   },
   {
     text: '求职管理',
-    href: '/job',
+    href: '/submission',
   },
   {
     text: '我的收藏',
-    href: '/collect',
+    href: '/collections',
   },
   {
     text: '资产管理',
@@ -354,15 +353,10 @@ export default function Navbar() {
         </DialogContent>
       </Dialog>
       {links.map((l, index) => (
-        <LinkButton
-          active={index === current}
-          onClick={() => {
-            setCurrent(index)
-          }}
-          css={{mr: 10}}
-          key={l.title}
-        >
-          <Link href={l.href}>{l.title}</Link>
+        <LinkButton active={index === current} css={{mr: 10}} key={l.title}>
+          <a href={l.href} target='_blank' rel='noreferrer'>
+            {l.title}
+          </a>
         </LinkButton>
       ))}
       <Notify>
@@ -379,13 +373,10 @@ export default function Navbar() {
         <DropdownMenuContent align='end' sideOffset={5}>
           {menus.map((m) => {
             return (
-              <DropdownMenuItem
-                onSelect={() => {
-                  router.push(m.href)
-                }}
-                key={m.text}
-              >
-                {m.text}
+              <DropdownMenuItem key={m.text}>
+                <a href={m.href} target='_blank' rel='noreferrer'>
+                  {m.text}
+                </a>
               </DropdownMenuItem>
             )
           })}

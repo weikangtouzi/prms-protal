@@ -252,9 +252,7 @@ const zcList = [
   },
 ]
 
-export default function Home({countries}: any) {
-  console.log('countries', countries)
-
+export default function Home() {
   const [active, setActive] = useState(false)
   const [isFold, setIsFold] = useState(true)
   const [zyList] = useState(zys)

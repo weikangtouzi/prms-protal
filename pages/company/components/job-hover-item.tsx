@@ -35,7 +35,8 @@ export default function JobHoverItem({active, item}: JHProps) {
   const [list] = useState(defaultJlList)
   const [selectedId, setSelectedId] = useState(0)
 
-  const onClose = () => {
+  const onClose = (e: any) => {
+    e.stopPropagation()
     setOpen(false)
     setStage(0)
   }
@@ -58,7 +59,8 @@ export default function JobHoverItem({active, item}: JHProps) {
         <Flex>
           <Button
             css={{mt: 20, w: 120, h: 42, ml: 40, fs: 16, mb: 40}}
-            onClick={() => {
+            onClick={(e: any) => {
+              e.stopPropagation()
               setStage(1)
             }}
             text='确认投递'
@@ -77,7 +79,8 @@ export default function JobHoverItem({active, item}: JHProps) {
             {list.map((li) => (
               <Flex
                 key={li.id}
-                onClick={() => {
+                onClick={(e: any) => {
+                  e.stopPropagation()
                   setSelectedId(li.id)
                 }}
                 css={{justifyContent: 'space-between', mt: 20, alignItems: 'center'}}
@@ -118,6 +121,7 @@ export default function JobHoverItem({active, item}: JHProps) {
           <RealInput
             id='realJLInputId'
             onChange={(e: any) => {
+              e.stopPropagation()
               const {files = []} = e.target
               if (files && files.length > 0) {
                 console.log('files', files[0])
@@ -129,7 +133,8 @@ export default function JobHoverItem({active, item}: JHProps) {
           <Flex>
             <Button
               css={{mt: 20, w: 140, h: 42, ml: 40, fs: 16, mb: 40}}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setStage(2)
               }}
               text='确认投递简历'
@@ -166,7 +171,8 @@ export default function JobHoverItem({active, item}: JHProps) {
           <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
           <TitleText css={{fs: 18, color: '$primary', ml: 10, mr: 20}}>收藏</TitleText>
           <Button
-            onClick={() => {
+            onClick={(e: any) => {
+              e.stopPropagation()
               setOpen(true)
             }}
             text='投简历'

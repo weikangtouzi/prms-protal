@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Image from 'next/image'
 import {styled} from '@/stitches.config'
 import {useUploadFileMutation} from '@/generated'
@@ -9,6 +9,8 @@ const WrapDiv = styled('div', {
 
 interface IProps {
   css?: any
+  fileUrl?: string
+  setFileUrl: any
 }
 
 const EmptyDiv = styled('label', {
@@ -50,9 +52,24 @@ const SecondLine = styled('div', {
   mt: 3,
 })
 
-export function AvatarUploader({css}: IProps) {
-  const [uploadFile] = useUploadFileMutation()
-  const [url, setUrl] = useState('')
+export function AvatarUploader({css, fileUrl, setFileUrl}: IProps) {
+  const [uploadFile, {data: uploadUrl}] = useUploadFileMutation()
+  const [url, setUrl] = useState(fileUrl)
+
+  useEffect(() => {
+    setUrl(fileUrl)
+  }, [fileUrl])
+
+  useEffect(() => {
+    if (!uploadUrl) {
+      return
+    }
+
+    const {CommonSingleUpload} = uploadUrl
+    setFileUrl(CommonSingleUpload)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadUrl])
 
   return (
     <WrapDiv css={css}>

@@ -6,12 +6,7 @@ export async function fetchJob() {
     method: 'get',
   })
 
-  const json = await res.json()
-  console.log('json', json)
-  if (json.errors) {
-    console.error(json.errors)
-  }
-  return json.data
+  return await res.json()
 }
 
 export async function fetchIndustry() {
@@ -19,9 +14,5 @@ export async function fetchIndustry() {
     method: 'get',
   })
 
-  const json = await res.json()
-  if (json.errors) {
-    console.error(json.errors)
-  }
-  return json.data
+  return await res.json()
 }

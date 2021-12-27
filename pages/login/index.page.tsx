@@ -9,7 +9,7 @@ import {Button} from '@/components/button'
 import {AvatarUploader} from '@/components/avatar'
 import UploadZZ from './components/uploader'
 import {Select} from '@/components/select'
-import {useSignUpMutation, useLogInLazyQuery} from '../../generated'
+import {useSignUpMutation, useLogInLazyQuery, useChooseIdentityMutation} from '../../generated'
 import {
   Main,
   LoginCard,
@@ -49,33 +49,39 @@ import InputFormItem from './components/input-form'
 const identityCards = [
   {
     url: '/qz-black.png',
-    activeUrl: '',
+    activeUrl: '/qz.png',
     text: '求职',
+    identity: 'PersonalUser',
   },
   {
-    url: '/',
+    url: '/qz-black',
     activeUrl: '/qz.png',
     text: '招聘',
+    identity: 'EnterpriseUser',
   },
   {
     url: '/cy-black.png',
-    activeUrl: '',
+    activeUrl: '/qz.png',
     text: 'balalala',
+    identity: '',
   },
   {
     url: '/cy-black.png',
     activeUrl: '/cy.png',
     text: '创业',
+    identity: '',
   },
   {
     url: '/tz-black.png',
     activeUrl: '/tz.png',
     text: '投资',
+    identity: '',
   },
   {
     url: '/gw-black.png',
     activeUrl: '/gw.png',
     text: '顾问',
+    identity: 'Counselor',
   },
 ]
 
@@ -87,6 +93,8 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [accountErr, setAccountErr] = useState('')
   const [passwordErr, setPasswordErr] = useState('')
+
+  const [loginFinish, setLoginFinish] = useState(false)
   // 验证码登录
   const [isYzm, setIsYzm] = useState(false)
   // 扫码
@@ -121,18 +129,38 @@ export default function Login() {
 
   const [onLogin, {loading: loginLoading, data: loginData, error: loginError}] = useLogInLazyQuery()
 
+  const [chooseIdentityMutation, {data: identityToken}] = useChooseIdentityMutation()
+
   useEffect(() => {
     if (!loginData) {
       return
     }
+
     const {
       UserLogIn: {token},
     } = loginData
 
     localStorage.setItem('chenZaoZhaoKey', token)
-    router.push('/')
+
+    setLoginFinish(true)
+    setStep(1)
+
+    // router.push('/')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginData])
+
+  useEffect(() => {
+    if (!identityToken) {
+      return
+    }
+
+    const {UserChooseOrSwitchIdentity: token} = identityToken
+
+    localStorage.setItem('chenZaoZhaoKey', token)
+
+    router.push('/')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [identityToken])
 
   const [signUpMutation] = useSignUpMutation({
     variables: {
@@ -278,8 +306,16 @@ export default function Login() {
           <Button
             text='确定'
             onClick={() => {
-              // to 2/3
-              setStep(2)
+              if (loginFinish) {
+                chooseIdentityMutation({
+                  variables: {
+                    identity: identityCards[identityNum].identity,
+                  },
+                })
+              } else {
+                // to 2/3
+                setStep(2)
+              }
             }}
           />
         </ZcRight>
@@ -549,7 +585,7 @@ export default function Login() {
   return (
     <>
       <Main>
-        {isZc ? (
+        {isZc || loginFinish ? (
           stepNode
         ) : isForget ? (
           forgetNode
@@ -704,6 +740,8 @@ export default function Login() {
                           setPasswordErr('请输入密码')
                           return
                         }
+
+                        localStorage.clear()
                         onLogin({variables: {account, password}})
                       }}
                     />

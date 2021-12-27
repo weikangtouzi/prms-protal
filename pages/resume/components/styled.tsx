@@ -132,8 +132,8 @@ export const VerticalDivider = styled('div', {
 
 export const EditWrap = styled('div', {
   bg: '#F5F6F8',
-  p: '20px 88px 16px 20px',
-  w: 844,
+  p: '20px 68px 16px 0px',
+  // w: 844,
   mt: 19,
 })
 
@@ -183,7 +183,7 @@ export const RadioItem = styled('div', {
 export const NormalText = styled('div', {
   fs: 16,
   color: '#3C4441',
-  ml: 32,
+  ml: 0,
   ff: '$fr',
   whiteSpace: 'pre',
 })

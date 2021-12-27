@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import {useRouter} from 'next/router'
 import {useState} from 'react'
 import Icon from '@/components/icon'
 import {
@@ -97,8 +96,7 @@ const commentList = [
 ]
 
 export default function Recruitment() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState(2)
+  const [activeTab, setActiveTab] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
@@ -284,23 +282,22 @@ export default function Recruitment() {
               ))}
             </Flex>
 
-            <Flex
-              onClick={() => {
-                router.push('/recruitment/companies')
-              }}
-              css={{
-                color: '$primary',
-                border: '1px solid $primary',
-                w: 135,
-                h: 42,
-                borderRadius: 2,
-                alignItems: 'center',
-                justifyContent: 'center',
-                mt: 20,
-              }}
-            >
-              查看999企业 &gt;
-            </Flex>
+            <a href='/recruitment/companies' target='_blank' rel='noreferrer'>
+              <Flex
+                css={{
+                  color: '$primary',
+                  border: '1px solid $primary',
+                  w: 135,
+                  h: 42,
+                  borderRadius: 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mt: 20,
+                }}
+              >
+                查看999企业 &gt;
+              </Flex>
+            </a>
           </RightWrap>
         </Flex>
       </CompanyBodyWrap>

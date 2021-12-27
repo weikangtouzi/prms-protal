@@ -9,3 +9,15 @@ mutation SignUp($username: String!, $email: String!, $password: String!, $phoneN
     }
   )
 }
+
+mutation ChooseIdentity($identity: Identity!) {
+  UserChooseOrSwitchIdentity(targetIdentity: $identity)
+}
+
+mutation EditBasicInfo($info: BasicData!) {
+  UserEditBasicInfo(info: $info)
+}
+
+mutation ResetPassword($password: String!, $confirmPassword: String!) {
+  UserResetPassword(info: {password: $password, confirmPassword: $confirmPassword})
+}

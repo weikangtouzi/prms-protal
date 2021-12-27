@@ -2,7 +2,7 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ['modao.cc'],
+    domains: ['modao.cc', 'be.chenzaozhao.com'],
   },
   pageExtensions: ['page.tsx', 'page.js'],
   async rewrites() {

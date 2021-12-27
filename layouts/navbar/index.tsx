@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
 } from './styled'
 import {ConfirmDialog} from '@/components/dialogs'
+import {useGetBasicInfoQuery} from '@/generated'
 
 const links = [
   {title: '首页', href: '/'},
@@ -196,6 +197,11 @@ const menus = [
   },
 ]
 
+const defaultBasicInfo = {
+  username: '',
+  image_url: '/qyshz.png',
+}
+
 const defaultTitle = ['省', '市', '区、县', '街道、镇']
 const defaultProvince = ['安徽', '湖南', '浙江', '山东', '湖北', '河南', '河北', '黑龙江', '新疆']
 const citys = ['合肥', '深圳', '马鞍山', '哈尔滨', '北京', '上海', '天津', '阜阳', '杭州']
@@ -213,6 +219,25 @@ export default function Navbar() {
   const [cityList, setCityList] = useState(citys)
   const [countyList] = useState([])
   const [zhenList] = useState([])
+
+  const [basicInfo, setBasicInfo] = useState(defaultBasicInfo)
+
+  const {data: userBasicData} = useGetBasicInfoQuery()
+
+  useEffect(() => {
+    if (!userBasicData) {
+      return
+    }
+
+    const {
+      UserGetBasicInfo: {username, image_url},
+    } = userBasicData
+
+    setBasicInfo({
+      username,
+      image_url,
+    })
+  }, [userBasicData])
 
   const [zxOpen, setZxOpen] = useState(false)
 
@@ -353,11 +378,11 @@ export default function Navbar() {
         </DialogContent>
       </Dialog>
       {links.map((l, index) => (
-        <LinkButton active={index === current} css={{mr: 10}} key={l.title}>
-          <a href={l.href} target='_blank' rel='noreferrer'>
+        <a href={l.href} key={l.title} target='_blank' rel='noreferrer'>
+          <LinkButton active={index === current} css={{mr: 10}}>
             {l.title}
-          </a>
-        </LinkButton>
+          </LinkButton>
+        </a>
       ))}
       <Notify>
         <Image src='/cy-black.png' alt='notification' width={32} height={32} />
@@ -365,8 +390,8 @@ export default function Navbar() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Flex css={{alignItems: 'center', flexShrink: 0}}>
-            <Image src='/qyshz.png' alt='user' width={30} height={30} />
-            <DLink>hhh</DLink>
+            <Image className='use-image-round' src={basicInfo.image_url} alt='user' width={30} height={30} />
+            <DLink>{basicInfo.username}</DLink>
           </Flex>
         </DropdownMenuTrigger>
 

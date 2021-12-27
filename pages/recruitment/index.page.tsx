@@ -106,34 +106,20 @@ export default function Recruitment() {
       <PartTitle text='线下招聘会' />
       <Flex css={{w: 1184, flexWrap: 'wrap', justifyContent: 'space-between'}}>
         {list.map((l) => (
-          <ZhaopinItem
-            onClick={() => {
-              router.push(`/recruitment/${l.id}`)
-            }}
-            key={l.id}
-            item={l}
-          ></ZhaopinItem>
+          <a key={l.id} href={`/recruitment/${l.id}`} target='_blank' rel='noreferrer'>
+            <ZhaopinItem item={l}></ZhaopinItem>
+          </a>
         ))}
       </Flex>
-      <Button
-        css={{mt: 30, mb: 0, w: 200, h: 46, fs: 14}}
-        text='查看更多'
-        onClick={() => {
-          console.log('查看更多 ')
-          router.push('/recruitment/list')
-        }}
-      />
+      <a href='/recruitment/list' target='_blank' rel='noreferrer'>
+        <Button css={{mt: 30, mb: 0, w: 200, h: 46, fs: 14}} text='查看更多' />
+      </a>
       <PartTitle text='视频招聘会' />
       <Flex css={{w: 1184, flexWrap: 'wrap', justifyContent: 'space-between'}}>
         {list.map((l) => (
-          <ZhaopinItem
-            onClick={() => {
-              console.log('login')
-              router.push(`/recruitment/${l.id}`)
-            }}
-            key={l.id}
-            item={l}
-          ></ZhaopinItem>
+          <a key={l.id} href={`/recruitment/${l.id}`} target='_blank' rel='noreferrer'>
+            <ZhaopinItem item={l}></ZhaopinItem>
+          </a>
         ))}
       </Flex>
       <Button

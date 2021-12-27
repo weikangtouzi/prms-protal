@@ -90,13 +90,17 @@ const OpenWrap = styled('div', {
   display: 'flex',
 })
 const OpenListWrap = styled('div', {
-  w: 180,
+  // w: 180,
+  minWidth: 180,
   h: 272,
   overflowY: 'scroll',
   boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)',
   zIndex: 20,
   borderRight: '1px solid #8C9693',
   bg: '$w',
+  flexShrink: 0,
+  display: 'flex',
+  flexDirection: 'column',
 })
 
 const CloseableValueWrap = styled('div', {
@@ -107,10 +111,13 @@ const CloseableValueWrap = styled('div', {
 })
 
 const OpenItem = styled('div', {
-  w: 180,
+  minWidth: 180,
+  userSelect: 'none',
+  display: 'inline-block',
   h: 42,
   color: '#616A67',
   pl: 20,
+  pr: 20,
   pt: 10,
   pb: 10,
   variants: {
@@ -142,6 +149,8 @@ export function Select({
   const [firstSelected, setFirstSelected] = useState<any>()
   const [secondSelected, setSecondSelected] = useState<any>()
   const [secondList, setSecondList] = useState<any[]>([])
+  const [thirdSelected, setThirdSelected] = useState<any>()
+  const [thirdList, setThirdList] = useState<any[]>([])
 
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
@@ -166,6 +175,8 @@ export function Select({
   const wrapperRef = useRef(null)
   useOutsideAlerter(wrapperRef)
 
+  const shownValue = Array.isArray(value) ? value[value.length - 1] : value
+
   return (
     <Container
       ref={wrapperRef}
@@ -174,7 +185,7 @@ export function Select({
         setOpen(true)
       }}
     >
-      {value ? (
+      {shownValue ? (
         valueCloseable ? (
           <CloseableValueWrap>
             <Icon
@@ -184,10 +195,10 @@ export function Select({
               }}
               name='icon-icon_guanbi'
             />
-            {value.value}
+            {shownValue.value}
           </CloseableValueWrap>
         ) : (
-          value.value
+          shownValue.value
         )
       ) : null}
       {value ? null : <PlaceHolderText css={placeholderCss}>{placeholder}</PlaceHolderText>}
@@ -208,6 +219,7 @@ export function Select({
                     setSecondList([])
                     setFirstSelected(l)
                     setSecondSelected('')
+                    setThirdSelected('')
                     setOpen(false)
                     onSelect(l)
                   }
@@ -225,13 +237,37 @@ export function Select({
                   active={secondSelected && secondSelected.key === sc.key}
                   onClick={(e) => {
                     e.stopPropagation()
-                    setSecondSelected(sc)
-                    onSelect(sc)
-                    setOpen(false)
+
+                    if (sc.children && sc.children.length > 0) {
+                      setThirdList(sc.children)
+                      setSecondSelected(sc)
+                    } else {
+                      setSecondSelected(sc)
+                      onSelect([firstSelected, sc])
+                      setOpen(false)
+                    }
                   }}
                   key={sc.key}
                 >
                   {sc.value}
+                </OpenItem>
+              ))}
+            </OpenListWrap>
+          ) : null}
+          {thirdList.length > 0 ? (
+            <OpenListWrap>
+              {thirdList.map((th) => (
+                <OpenItem
+                  active={thirdSelected && thirdSelected.key === th.key}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setThirdSelected(th)
+                    onSelect([firstSelected, secondSelected, th])
+                    setOpen(false)
+                  }}
+                  key={th.key}
+                >
+                  {th.value}
                 </OpenItem>
               ))}
             </OpenListWrap>

@@ -114,25 +114,17 @@ export default function Recruitment() {
         {activeTab === 1 ? (
           <Flex css={{w: 1184, flexWrap: 'wrap', justifyContent: 'space-between'}}>
             {list.map((l) => (
-              <ZhaopinItem
-                onClick={() => {
-                  router.push(`/recruitment/${l.id}`)
-                }}
-                key={l.id}
-                item={l}
-              ></ZhaopinItem>
+              <a key={l.id} href={`/recruitment/${l.id}`} target='_blank' rel='noreferrer'>
+                <ZhaopinItem item={l}></ZhaopinItem>
+              </a>
             ))}
           </Flex>
         ) : (
           <Flex css={{w: 1184, flexWrap: 'wrap', justifyContent: 'space-between'}}>
             {list.map((l) => (
-              <ZhaopinItem
-                onClick={() => {
-                  router.push(`/recruitment/${l.id}`)
-                }}
-                key={l.id}
-                item={l}
-              ></ZhaopinItem>
+              <a key={l.id} href={`/recruitment/${l.id}`} target='_blank' rel='noreferrer'>
+                <ZhaopinItem item={l}></ZhaopinItem>
+              </a>
             ))}
           </Flex>
         )}

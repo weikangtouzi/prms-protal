@@ -1,10 +1,11 @@
 import type {ReactElement} from 'react'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import InfoLayout from '@/layouts/info'
 import {styled} from '@/stitches.config'
 import {AvatarUploader} from '@/components/avatar'
 import {TextField} from '@/components/textfield'
 import {Button} from '@/components/button'
+import {useEditBasicInfoMutation, useGetBasicInfoQuery} from '@/generated'
 
 const RightWrap = styled('div', {
   w: 884,
@@ -31,20 +32,39 @@ const InputLabel = styled('div', {
   textAlign: 'end',
 })
 
-const WarnLabel = styled('div', {
-  fs: 14,
-  color: '#616A67',
-  mt: 28,
-  mb: 40,
-})
+// const WarnLabel = styled('div', {
+//   fs: 14,
+//   color: '#616A67',
+//   mt: 28,
+//   mb: 40,
+// })
 
 export default function Me() {
   const [name, setName] = useState('')
   const [zhiye, setZhiye] = useState('')
 
+  const [fileUrl, setFileUrl] = useState('')
+
+  const [editBasicInfoMutation] = useEditBasicInfoMutation()
+
+  const {data: userBasicData} = useGetBasicInfoQuery()
+
+  useEffect(() => {
+    if (!userBasicData) {
+      return
+    }
+
+    const {
+      UserGetBasicInfo: {username, image_url},
+    } = userBasicData
+
+    setFileUrl(image_url)
+    setName(username)
+  }, [userBasicData])
+
   return (
     <RightWrap>
-      <AvatarUploader />
+      <AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />
       <InputWrp css={{mt: 36}}>
         <InputLabel>昵称：</InputLabel>
         <TextField
@@ -58,7 +78,7 @@ export default function Me() {
           }}
         />
       </InputWrp>
-
+      {/* 
       <InputWrp css={{mt: 16}}>
         <InputLabel>职业：</InputLabel>
         <TextField
@@ -72,12 +92,19 @@ export default function Me() {
           }}
         />
       </InputWrp>
-      <WarnLabel>*此信息用于站内学习社区功能，不会同步修改简历</WarnLabel>
+      <WarnLabel>*此信息用于站内学习社区功能，不会同步修改简历</WarnLabel> */}
       <Button
         text='提交'
         css={{w: 120, h: 46}}
         onClick={() => {
-          console.log('submit')
+          editBasicInfoMutation({
+            variables: {
+              info: {
+                username: name,
+                logo: fileUrl,
+              },
+            },
+          })
         }}
       />
     </RightWrap>

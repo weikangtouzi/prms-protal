@@ -1,7 +1,7 @@
 import Image from 'next/image'
-import {useRouter} from 'next/router'
 import {styled} from '@/stitches.config'
 import {Main} from '../components/styled'
+import AboutLeftMenu from './components/about-left-menu'
 
 const Flex = styled('div', {
   display: 'flex',
@@ -12,47 +12,11 @@ const companyName = '深圳人力资源和社会保障局关于公开征求《�
 const companyText =
   '为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》为持续推动全市人力资源和社会保障事业高质量发展，依据《粤港澳大湾区发展规划纲要》'
 
-const list = [
-  {
-    title: '关于我们',
-    url: '/about',
-  },
-  {
-    title: '用户协议',
-    url: '/about/agreement',
-  },
-  {
-    title: '隐私政策',
-    url: '/about/privacy',
-  },
-]
-
 export default function About() {
-  const router = useRouter()
   return (
     <Main css={{pt: 16, bg: '#F5F6F8'}}>
       <Flex>
-        <Flex css={{w: 284, flexDirection: 'column'}}>
-          {list.map((li) => (
-            <Flex
-              onClick={() => {
-                router.push(li.url)
-              }}
-              key={li.url}
-              css={{
-                mb: 16,
-                bg: '$w',
-                color: router.pathname === li.url ? '$primary' : '#3C4441',
-                fw: 600,
-                fs: 18,
-                p: '15px 20px',
-                userSelect: 'none',
-              }}
-            >
-              {li.title}
-            </Flex>
-          ))}
-        </Flex>
+        <AboutLeftMenu />
         <Flex
           css={{
             w: 884,

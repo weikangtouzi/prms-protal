@@ -5,6 +5,9 @@ module.exports = {
     domains: ['modao.cc', 'be.chenzaozhao.com'],
   },
   pageExtensions: ['page.tsx', 'page.js'],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async rewrites() {
     return [
       {
@@ -16,5 +19,8 @@ module.exports = {
         destination: process.env.NEXT_PUBLIC_INDUSTRY_CATEGORY,
       },
     ]
+  },
+  experimental: {
+    outputStandalone: true,
   },
 }

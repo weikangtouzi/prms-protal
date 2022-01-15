@@ -14,7 +14,7 @@ export default function EditCardItem({onDelete, onEdit, children, css = {}}: LPr
   return (
     <Flex
       css={{
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         bg: '$w',
         w: '100%',

@@ -117,7 +117,7 @@ export default function JobHoverItem({active, item}: JHProps) {
           </OutlinedText>
           <RealInput
             id='realJLInputId'
-            onChange={() => {
+            onChange={(e) => {
               const {files = []} = e.target
               if (files && files.length > 0) {
                 console.log('files', files[0])

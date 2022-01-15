@@ -7,43 +7,9 @@ import {TextField} from '@/components/textfield'
 import InputFormItem from '../../login/components/input-form'
 import CitySelect from './city-select'
 import {useGetBasicInfoQuery, useEditBasicInfoMutation} from '@/generated'
+import {educationList} from './constant'
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
-
-const educationList = [
-  {
-    key: 'Doctor',
-    value: '博士',
-  },
-  {
-    key: 'Postgraduate',
-    value: '研究生',
-  },
-  {
-    key: 'RegularCollege',
-    value: '本科',
-  },
-  {
-    key: 'JuniorCollege',
-    value: '职业技术学校',
-  },
-  {
-    key: 'High',
-    value: '高中',
-  },
-  {
-    key: 'Junior',
-    value: '初中',
-  },
-  {
-    key: 'Primary',
-    value: '小学',
-  },
-  {
-    key: 'LessThanPrime',
-    value: '小学以下',
-  },
-]
 
 const defaultBasicInfo = {
   username: '',
@@ -65,11 +31,7 @@ function BasicInfo() {
   const [newBasicInfo, setNewBasicInfo] = useState<any>(defaultBasicInfo)
 
   const {data: userBasicData} = useGetBasicInfoQuery()
-  const [editBasicInfoMutation, {loading}] = useEditBasicInfoMutation()
-
-  useEffect(() => {
-    console.log('loading....', loading)
-  }, [loading])
+  const [editBasicInfoMutation] = useEditBasicInfoMutation()
 
   useEffect(() => {
     if (!userBasicData) {
@@ -189,8 +151,7 @@ function BasicInfo() {
                   info: {
                     username: newBasicInfo.username,
                     gender: newBasicInfo.gender,
-                    // birthday: newBasicInfo.birth_date,
-                    birthday: 22,
+                    birthday: newBasicInfo.birth_date,
                     education: education.key,
                     currentCity: newBasicInfo.current_city,
                     firstTimeWorking: newBasicInfo.first_time_working,

@@ -113,7 +113,7 @@ function JobExpectations({jobExp}: JProps) {
         <Flex>
           <Button
             onClick={() => {
-              //   setEditQz(false)
+              setEdit(false)
             }}
             css={{
               w: 80,
@@ -129,8 +129,6 @@ function JobExpectations({jobExp}: JProps) {
           />
           <Button
             onClick={() => {
-              console.log(jobIndustry, jobCategory, minSalary, maxSalary, city, fullTime)
-
               updateJobExpectation({
                 variables: {
                   jobInfo: {

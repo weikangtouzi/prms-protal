@@ -26,7 +26,6 @@ function CitySelect({css, value, onSelect}: CProps) {
             } || [])
         ),
       })) || []
-    console.log('data', data)
 
     setCityList(list)
   }, [data])

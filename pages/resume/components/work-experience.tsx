@@ -1,27 +1,41 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {Button} from '@/components/button'
 import {TextField} from '@/components/textfield'
-import {Select} from '@/components/select'
 import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
+import {useUpdateWorkExprienceMutation} from '@/generated'
+import EditCardItem from './edit-card-item'
 
-function WorkExperience() {
+interface WProps {
+  workExp?: any[]
+}
+
+const empty = {
+  compName: '',
+  posName: '',
+  department: '',
+  startAt: '',
+  endAt: '',
+  workDetail: '',
+}
+
+function WorkExperience({workExp = []}: WProps) {
   const [edit, setEdit] = useState(false)
-  const [content, setContent] = useState('')
-  const [name, setName] = useState('')
-  const [city, setCity] = useState('')
+  const [editIndex, setEditIndex] = useState(-1)
+  const [editDetail, setEditDetail] = useState(empty)
+  const [updateWorkExprienceMutation] = useUpdateWorkExprienceMutation()
 
   const gzEditDom = (
     <EditWrap css={{pr: 20}}>
-      <ResuTitle css={{fs: 18}}>编辑工作经历</ResuTitle>
+      <ResuTitle css={{fs: 18}}>{editIndex < 0 ? '新增' : '编辑'}工作经历</ResuTitle>
       <FormWrap>
         <InputFormItem css={{mt: 30, w: 524}} label='公司名称'>
           <TextField
-            value={name}
+            value={editDetail.compName}
             onChange={(e) => {
               const {value} = e.target
-              setName(value)
+              setEditDetail((d) => ({...d, compName: value}))
             }}
             size='small'
             css={{bg: '$w', w: 400, h: 42, mt: 10}}
@@ -30,10 +44,10 @@ function WorkExperience() {
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='职位名称'>
           <TextField
-            value={name}
+            value={editDetail.posName}
             onChange={(e) => {
               const {value} = e.target
-              setName(value)
+              setEditDetail((d) => ({...d, posName: value}))
             }}
             size='small'
             css={{bg: '$w', w: 206, h: 42, mt: 10}}
@@ -42,19 +56,37 @@ function WorkExperience() {
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='在职时间'>
           <Flex css={{mt: 10}}>
-            <Select css={{w: 177, mr: 15}} value={city} onSelect={setCity} />
+            <TextField
+              css={{bg: '$w', w: 177, mr: 15}}
+              value={editDetail.startAt}
+              onChange={(e) => {
+                const {value} = e.target
+                setEditDetail((d) => ({...d, startAt: value}))
+              }}
+              size='small'
+              placeholder='请填写'
+            />
             至
-            <Select css={{w: 177, ml: 15}} value={city} onSelect={setCity} />
+            <TextField
+              css={{bg: '$w', w: 177, ml: 15}}
+              value={editDetail.endAt}
+              onChange={(e) => {
+                const {value} = e.target
+                setEditDetail((d) => ({...d, endAt: value}))
+              }}
+              size='small'
+              placeholder='请填写'
+            />
           </Flex>
         </InputFormItem>
       </FormWrap>
       <InputFormItem css={{mt: 30}} label='工作内容'>
         <TextField
           type='textarea'
-          value={name}
+          value={editDetail.workDetail}
           onChange={(e) => {
             const {value} = e.target
-            setName(value)
+            setEditDetail((d) => ({...d, workDetail: value}))
           }}
           size='small'
           css={{bg: '$w', w: 804, h: 240, mt: 10}}
@@ -80,7 +112,19 @@ function WorkExperience() {
         />
         <Button
           onClick={() => {
-            setEdit(false)
+            updateWorkExprienceMutation({
+              variables: {
+                work: {
+                  ...editDetail,
+                  hideFromThisCompany: false,
+                },
+              },
+              onCompleted: () => {
+                setEdit(false)
+                setEditIndex(-1)
+                setEditDetail(empty)
+              },
+            })
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -89,17 +133,14 @@ function WorkExperience() {
     </EditWrap>
   )
 
-  const gzDom = (
-    <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32, mt: 30}}>
-      <Flex css={{fw: 600}}>深圳市华为科技有限公司</Flex>
-      <Flex css={{fw: 600, mt: 10}}>2010.01.10-2021.10.1 ｜UI设计</Flex>
+  const gzDom = (work: any) => (
+    <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32}}>
+      <Flex css={{fw: 600}}>{work.compName}</Flex>
+      <Flex css={{fw: 600, mt: 10}}>
+        {work.startAt}-{work.endAt} ｜{work.posName}
+      </Flex>
       <NormalText css={{ml: 0, mt: 20}}>工作内容：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>
-        1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
-        2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
-        3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
-        4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
-      </NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{work.workDetail}</NormalText>
     </Flex>
   )
 
@@ -109,9 +150,29 @@ function WorkExperience() {
       edit={edit}
       onEdit={() => {
         setEdit(true)
+        setEditIndex(-1)
+        setEditDetail(empty)
       }}
     >
-      {edit ? gzEditDom : gzDom}
+      {edit ? (
+        gzEditDom
+      ) : (
+        <>
+          {workExp.map((w, idx) => (
+            <EditCardItem
+              key={w.id}
+              css={{mt: idx === 0 ? 30 : 10}}
+              onEdit={() => {
+                setEdit(true)
+                setEditIndex(idx)
+                setEditDetail(w)
+              }}
+            >
+              {gzDom(w)}
+            </EditCardItem>
+          ))}
+        </>
+      )}
     </LeftMenuTitle>
   )
 }

@@ -119,6 +119,8 @@ export default function Login() {
 
   const [jobPosition, setJobPosition] = useState('')
 
+  const [fileUrl, setFileUrl] = useState('')
+
   const checkAll = () => {
     if (pwd && pwd2) {
       setNextDisabled(false)
@@ -218,7 +220,7 @@ export default function Login() {
         </InputWrp>
 
         <LittleTitle>基础信息</LittleTitle>
-        <AvatarUploader />
+        <AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />
 
         <InputWrp css={{mt: 36}}>
           <InputLabel>昵称：</InputLabel>

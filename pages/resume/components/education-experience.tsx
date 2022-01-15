@@ -5,24 +5,40 @@ import {Select} from '@/components/select'
 import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
+import {educationList} from './constant'
+import EditCardItem from './edit-card-item'
+import {useUpdateEduExprienceMutation} from '@/generated'
 
-function EducationExperience() {
+interface EProps {
+  eduExp?: any[]
+}
+
+const empty = {
+  schoolName: '',
+  education: '',
+  major: '',
+  startAt: '',
+  endAt: '',
+  detail: '',
+}
+
+function EducationExperience({eduExp = []}: EProps) {
   const [edit, setEdit] = useState(false)
-  const [content, setContent] = useState('')
+  const [editIndex, setEditIndex] = useState(-1)
+  const [editDetail, setEditDetail] = useState(empty)
 
-  const [name, setName] = useState('')
-  const [city, setCity] = useState('')
+  const [updateEduExprienceMutation] = useUpdateEduExprienceMutation()
 
   const jyEditDom = (
     <EditWrap css={{pr: 20}}>
-      <ResuTitle css={{fs: 18}}>编辑教育经历</ResuTitle>
+      <ResuTitle css={{fs: 18}}>{editIndex < 0 ? '新增' : '编辑'}教育经历</ResuTitle>
       <FormWrap>
         <InputFormItem css={{mt: 30, w: 430}} label='学校名称'>
           <TextField
-            value={name}
+            value={editDetail.schoolName}
             onChange={(e) => {
               const {value} = e.target
-              setName(value)
+              setEditDetail((d) => ({...d, schoolName: value}))
             }}
             size='small'
             css={{bg: '$w', w: 300, h: 42, mt: 10}}
@@ -30,14 +46,25 @@ function EducationExperience() {
           />
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='学历'>
-          <Select css={{w: 300, mt: 10}} value={city} onSelect={setCity} />
+          <Select
+            css={{w: 300, mt: 10}}
+            list={educationList}
+            value={
+              typeof editDetail.education === 'string'
+                ? educationList.find((ed) => ed.key === editDetail.education) || ''
+                : editDetail.education
+            }
+            onSelect={(value: any) => {
+              setEditDetail((d) => ({...d, education: value}))
+            }}
+          />
         </InputFormItem>
         <InputFormItem css={{mt: 30, w: 430}} label='专业'>
           <TextField
-            value={name}
+            value={editDetail.major}
             onChange={(e) => {
               const {value} = e.target
-              setName(value)
+              setEditDetail((d) => ({...d, major: value}))
             }}
             size='small'
             css={{bg: '$w', w: 300, h: 42, mt: 10}}
@@ -46,19 +73,37 @@ function EducationExperience() {
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='时间段'>
           <Flex css={{mt: 10}}>
-            <Select css={{w: 132, mr: 10}} value={city} onSelect={setCity} />
+            <TextField
+              css={{bg: '$w', w: 132, mr: 10}}
+              value={editDetail.startAt}
+              onChange={(e) => {
+                const {value} = e.target
+                setEditDetail((d) => ({...d, startAt: value}))
+              }}
+              size='small'
+              placeholder='请填写'
+            />
             至
-            <Select css={{w: 132, ml: 10}} value={city} onSelect={setCity} />
+            <TextField
+              css={{bg: '$w', w: 132, ml: 10}}
+              value={editDetail.endAt}
+              onChange={(e) => {
+                const {value} = e.target
+                setEditDetail((d) => ({...d, endAt: value}))
+              }}
+              size='small'
+              placeholder='请填写'
+            />
           </Flex>
         </InputFormItem>
       </FormWrap>
       <InputFormItem css={{mt: 30}} label='在校经历'>
         <TextField
           type='textarea'
-          value={name}
+          value={editDetail.detail}
           onChange={(e) => {
             const {value} = e.target
-            setName(value)
+            setEditDetail((d) => ({...d, detail: value}))
           }}
           size='small'
           css={{bg: '$w', w: 804, h: 240, mt: 10}}
@@ -69,6 +114,8 @@ function EducationExperience() {
         <Button
           onClick={() => {
             setEdit(false)
+            setEditIndex(-1)
+            setEditDetail(empty)
           }}
           css={{
             w: 80,
@@ -84,7 +131,19 @@ function EducationExperience() {
         />
         <Button
           onClick={() => {
-            setEdit(false)
+            updateEduExprienceMutation({
+              variables: {
+                info: {
+                  ...editDetail,
+                  exp_at_school: editDetail.detail,
+                },
+              },
+              onCompleted: () => {
+                setEdit(false)
+                setEditIndex(-1)
+                setEditDetail(empty)
+              },
+            })
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -93,17 +152,14 @@ function EducationExperience() {
     </EditWrap>
   )
 
-  const jyDom = (
-    <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32, mt: 30}}>
-      <Flex css={{fw: 600}}>深圳大学</Flex>
-      <Flex css={{fw: 600, mt: 10}}>视觉传达艺术设计 ｜本科</Flex>
+  const jyDom = (edu: any) => (
+    <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32}}>
+      <Flex css={{fw: 600}}>{edu.schoolName}</Flex>
+      <Flex css={{fw: 600, mt: 10}}>
+        {edu.major} ｜{edu.education}
+      </Flex>
       <NormalText css={{ml: 0, mt: 20}}>在校经历：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>
-        1.根据产品的定位和需求，负责移动端和PC端的UI设计规划及迭代 <br />
-        2.负责参与设计体验、流程的制定和规范，保障用户体验的一致性 <br />
-        3.确保高质量的视觉输出，有清晰的设计思维来推进项目进度 <br />
-        4.配合产品、研发、测试，完成产品迭代适配、验收、发布，并对产品用户体验负责。
-      </NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{edu.detail}</NormalText>
     </Flex>
   )
 
@@ -113,9 +169,29 @@ function EducationExperience() {
       edit={edit}
       onEdit={() => {
         setEdit(true)
+        setEditIndex(-1)
+        setEditDetail(empty)
       }}
     >
-      {edit ? jyEditDom : jyDom}
+      {edit ? (
+        jyEditDom
+      ) : (
+        <>
+          {eduExp.map((ed, idx) => (
+            <EditCardItem
+              css={{mt: 30}}
+              key={ed.id}
+              onEdit={() => {
+                setEdit(true)
+                setEditIndex(idx)
+                setEditDetail(ed)
+              }}
+            >
+              {jyDom(ed)}
+            </EditCardItem>
+          ))}{' '}
+        </>
+      )}
     </LeftMenuTitle>
   )
 }

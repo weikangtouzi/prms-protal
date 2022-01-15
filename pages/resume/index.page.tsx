@@ -106,9 +106,30 @@ export default function Resume() {
         <BasicInfo />
         <JobExpectations jobExp={resumeData?.CommonGetResume.jobExpectation} />
         <Advantage />
-        <WorkExperience />
-        <ProjectExperience />
-        <EducationExperience />
+        <WorkExperience workExp={resumeData?.CommonGetResume.workExperience || []} />
+        <ProjectExperience projExp={resumeData?.CommonGetResume.projectExperience || []} />
+        <EducationExperience
+          eduExp={[
+            {
+              id: 1,
+              schoolName: 'aaa',
+              education: 'JuniorCollege',
+              major: '拉萨单位',
+              detail: 'asdflwjeflasdfjwefasdf',
+              startAt: '2021/12/1',
+              endAt: '2021/12/20',
+            },
+            {
+              id: 2,
+              schoolName: 'aaa',
+              education: 'Primary',
+              major: '拉萨单位',
+              detail: 'asdflwjefasf阿隆索大风降温lasdfjwefasdf',
+              startAt: '2021/12/1',
+              endAt: '2021/12/20',
+            },
+          ]}
+        />
       </LeftWrap>
       <RightWrap>
         <RightPartWrap>

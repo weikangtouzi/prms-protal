@@ -109,7 +109,16 @@ export function AvatarUploader({css, fileUrl, setFileUrl}: IProps) {
         onChange={(e) => {
           const {files = []} = e.target
           if (files && files.length > 0) {
-            uploadFile({variables: {file: files[0], extraAttributes: {}}})
+            uploadFile({
+              variables: {
+                file: files[0],
+                // extraAttributes: {
+                //   customUploadPath: 'web-header',
+                //   customFileType: 'Photo',
+                //   customFileName: 'header-photo',
+                // },
+              },
+            })
             setUrl(URL.createObjectURL(files[0]))
           }
         }}

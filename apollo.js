@@ -15,10 +15,10 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   const authorization = !isServer && localStorage.getItem('chenZaoZhaoKey')
 
   operation.setContext(({headers = {}}) => ({
-    headers: {
+    headers: authorization ? {
       ...headers,
       authorization,
-    },
+    }: headers,
   }))
 
   return forward(operation)

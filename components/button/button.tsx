@@ -11,6 +11,8 @@ const ButtonStyled = styled('button', {
   color: '$w',
   bg: '$primary',
   border: '1px solid $primary',
+  cursor: 'pointer',
+  userSelect: 'none',
   variants: {
     disabled: {
       true: {opacity: 0.2},

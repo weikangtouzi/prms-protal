@@ -85,7 +85,6 @@ export function TextField({
   inputCss = {},
 }: IProps) {
   const [active, setActive] = useState(false)
-
   if (type === 'textarea') {
     return (
       <Container css={{h: 42, mt: 0, p: 20, w: 420, ...css}} active={active}>

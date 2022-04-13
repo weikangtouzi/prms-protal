@@ -1,7 +1,5 @@
 import {useState} from 'react'
 import {styled} from '@/stitches.config'
-import {ReZhaoWrap} from '../components/styled'
-import ReMenQiYeItem from '../components/re-menqiye-item'
 import Pagination from '@/components/pagination'
 
 const Main = styled('main', {
@@ -20,14 +18,6 @@ const TopDiv = styled('div', {
   p: '20px 10px 5px 20px',
 })
 
-const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
-const qyList = [
-  {id: 1, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网'], peopleNum: 1344},
-  {id: 2, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网'], peopleNum: 134},
-  {id: 3, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联'], peopleNum: 24},
-  {id: 4, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联数据服'], peopleNum: 99},
-  {id: 5, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联数据服'], peopleNum: 12345},
-]
 
 const TitleText = styled('div', {
   color: '#616A67',
@@ -163,11 +153,6 @@ export default function Company() {
           </TopRightWrap>
         </TopItemWrap>
       </TopDiv>
-      <ReZhaoWrap css={{mt: 16, mb: 0}}>
-        {qyList.map((rz) => (
-          <ReMenQiYeItem css={{mb: 16}} key={rz.id} item={rz} />
-        ))}
-      </ReZhaoWrap>
       <Pagination
         css={{justifyContent: 'center', mt: 30, mb: 80}}
         current={current}

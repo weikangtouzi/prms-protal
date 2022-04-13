@@ -21,7 +21,6 @@ import {
 
 import ZhiYeItem from './components/zhiye-item'
 import ReZhaoItem from './components/re-zhao-item'
-import ReMenQiYeItem from './components/re-menqiye-item'
 import ZhiChangItem from './components/zhichang-item'
 import ZhiChangLongItem from './components/zhichang-long-item'
 
@@ -182,14 +181,6 @@ const rzList = [
   },
 ]
 
-const qyList = [
-  {id: 1, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 1344},
-  {id: 2, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 134},
-  {id: 3, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 24},
-  {id: 4, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 99},
-  {id: 5, img: imgUrl, name: '公司名称', needs: ['A轮', '50-150人', '移动互联网，数据服'], peopleNum: 12345},
-]
-
 const zcList = [
   {
     id: 1,
@@ -326,19 +317,6 @@ export default function Home() {
         </ReZhaoWrap>
         <Button
           css={{mt: 30, w: 200, h: 46, ml: '50%', fs: 14, transform: 'translate(-50%,0)'}}
-          text='查看更多'
-          onClick={() => {
-            console.log('查看更多 ')
-          }}
-        />
-        <PartTitle text='热门企业' />
-        <ReZhaoWrap>
-          {qyList.map((rz) => (
-            <ReMenQiYeItem key={rz.id} item={rz} />
-          ))}
-        </ReZhaoWrap>
-        <Button
-          css={{mt: 10, w: 200, h: 46, ml: '50%', fs: 14, transform: 'translate(-50%,0)'}}
           text='查看更多'
           onClick={() => {
             console.log('查看更多 ')

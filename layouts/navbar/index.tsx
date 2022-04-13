@@ -220,12 +220,13 @@ export default function Navbar() {
   const [countyList] = useState([])
   const [zhenList] = useState([])
 
-  const [basicInfo, setBasicInfo] = useState(defaultBasicInfo)
+  const [basicInfo, setBasicInfo] = useState<{username: string; image_url: string} | undefined>(defaultBasicInfo)
 
-  const {data: userBasicData} = useGetBasicInfoQuery()
+  const {data: userBasicData} = useGetBasicInfoQuery();
 
   useEffect(() => {
     if (!userBasicData) {
+      setBasicInfo(undefined);
       return
     }
 
@@ -278,7 +279,7 @@ export default function Navbar() {
         <DialogTrigger asChild>
           <LinkButton active css={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
             <Icon name='icon-icon_dingwei' />
-            全国
+            {activeCode}
           </LinkButton>
         </DialogTrigger>
         <DialogContent
@@ -388,12 +389,18 @@ export default function Navbar() {
         <Image src='/cy-black.png' alt='notification' width={32} height={32} />
       </Notify>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        {basicInfo ? <DropdownMenuTrigger asChild>
           <Flex css={{alignItems: 'center', flexShrink: 0}}>
-            <Image className='use-image-round' src={basicInfo.image_url} alt='user' width={30} height={30} />
+            <Image className='use-image-round' src={basicInfo.image_url || '/qyshz.png'} alt='user' width={30} height={30} />
             <DLink>{basicInfo.username}</DLink>
           </Flex>
-        </DropdownMenuTrigger>
+        </DropdownMenuTrigger> : <a href='/login' target='_self'>
+          <Flex css={{alignItems: 'center', flexShrink: 0}}>
+            {/*<Image className='use-image-round' src={basicInfo.image_url} alt='user' width={30} height={30} />*/}
+            <DLink>未登录</DLink>
+          </Flex>
+        </a>}
+
 
         <DropdownMenuContent align='end' sideOffset={5}>
           {menus.map((m) => {

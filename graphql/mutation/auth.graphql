@@ -21,3 +21,13 @@ mutation EditBasicInfo($info: BasicData!) {
 mutation ResetPassword($password: String!, $confirmPassword: String!) {
   UserResetPassword(info: {password: $password, confirmPassword: $confirmPassword})
 }
+
+mutation VerifyPhoneCode($phoneNumber: String!, $verifyCode: String!, $operation: String!) {
+  UserVerifyCodeConsume(
+    info: {
+      phoneNumber: $phoneNumber
+      verifyCode: $verifyCode
+      operation: $operation
+    }
+  )
+}

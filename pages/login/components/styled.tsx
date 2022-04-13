@@ -49,6 +49,8 @@ export const Tab = styled('div', {
   h: 48,
   w: '50%',
   textAlign: 'center',
+  cursor: 'pointer',
+  userSelect: 'none',
   variants: {
     active: {
       true: {
@@ -64,7 +66,7 @@ export const Tab = styled('div', {
 })
 export const TabWrap = styled('div', {
   display: 'flex',
-  mt: 60,
+  mt: 20,
 })
 
 export const Triangle = styled('div', {

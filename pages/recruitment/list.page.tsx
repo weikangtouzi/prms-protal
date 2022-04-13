@@ -1,4 +1,4 @@
-import {useRouter} from 'next/router'
+// import {useRouter} from 'next/router'
 import {useState} from 'react'
 import {styled} from '@/stitches.config'
 import {Main, InputWrap, RealInput, SearchWorldWrap, SearchWorldText} from '../components/styled'
@@ -60,7 +60,7 @@ const list = [
   },
 ]
 export default function Recruitment() {
-  const router = useRouter()
+  // const router = useRouter()
   const [active, setActive] = useState(false)
   const [activeTab, setActiveTab] = useState(1)
   const [current, setCurrent] = useState(2)

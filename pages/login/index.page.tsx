@@ -1,5 +1,5 @@
 import type {ReactElement} from 'react'
-import {useState, useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {useRouter} from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -9,84 +9,87 @@ import {Button} from '@/components/button'
 import {AvatarUploader} from '@/components/avatar'
 import UploadZZ from './components/uploader'
 import {Select} from '@/components/select'
-import {useSignUpMutation, useLogInLazyQuery, useChooseIdentityMutation} from '../../generated'
 import {
-  Main,
-  LoginCard,
+  useChooseIdentityMutation,
+  useLogInLazyQuery, useSendSmsLazyQuery,
+  useSignUpMutation,
+  useVerifyPhoneCodeMutation
+} from '../../generated'
+import {
+  BackText,
+  BackTitle,
+  BWrap,
+  FormWrap,
+  Ht,
+  IdentityCard,
+  IdentityWrap,
+  InputLabel,
+  InputWrp,
   LeftPart,
+  LittleTitle,
+  LoginCard,
+  LWrap,
+  Main,
+  NextButtonWrp,
+  NextStepText,
+  QzyxText,
+  RedStr,
   RightPart,
   Tab,
   TabWrap,
-  Triangle,
-  TipRectangle,
-  FirstLine,
-  Ht,
-  BWrap,
   YZWrap,
-  LWrap,
-  SmTitle,
-  SmGreen,
-  ZcIcon,
   ZcCard,
   ZcLeft,
   ZcRight,
-  BackTitle,
-  BackText,
-  LittleTitle,
-  InputLabel,
-  RedStr,
-  InputWrp,
-  ZcText,
-  NextStepText,
-  IdentityWrap,
-  NextButtonWrp,
-  IdentityCard,
-  QzyxText,
-  FormWrap,
+  ZcText
 } from './components/styled'
 import InputFormItem from './components/input-form'
+import {useInterval} from 'ahooks'
+import validator from '@/utils/validator'
 
 const identityCards = [
   {
     url: '/qz-black.png',
     activeUrl: '/qz.png',
     text: '求职',
-    identity: 'PersonalUser',
+    identity: 'PersonalUser'
   },
   {
     url: '/qz-black',
     activeUrl: '/qz.png',
     text: '招聘',
-    identity: 'EnterpriseUser',
+    identity: 'EnterpriseUser'
   },
   {
     url: '/cy-black.png',
     activeUrl: '/qz.png',
     text: 'balalala',
-    identity: '',
+    identity: ''
   },
   {
     url: '/cy-black.png',
     activeUrl: '/cy.png',
     text: '创业',
-    identity: '',
+    identity: ''
   },
   {
     url: '/tz-black.png',
     activeUrl: '/tz.png',
     text: '投资',
-    identity: '',
+    identity: ''
   },
   {
     url: '/gw-black.png',
     activeUrl: '/gw.png',
     text: '顾问',
-    identity: 'Counselor',
-  },
+    identity: 'Counselor'
+  }
 ]
 
 export default function Login() {
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState('');
+
+  const isPhone = validator.phone(phone)
   // 密码登录
   const [yzm, setYZM] = useState('')
   const [account, setAccount] = useState('')
@@ -97,8 +100,6 @@ export default function Login() {
   const [loginFinish, setLoginFinish] = useState(false)
   // 验证码登录
   const [isYzm, setIsYzm] = useState(false)
-  // 扫码
-  const [isSm, setIsSm] = useState(false)
   // 注册
   const [isZc, setIsZc] = useState(false)
   // 忘记密码
@@ -106,15 +107,17 @@ export default function Login() {
   const [pwd, setPwd] = useState('')
   const [pwd2, setPwd2] = useState('')
   const [username, setUserName] = useState('')
+  const isUsername = validator.username(username);
   const [email, setEmail] = useState('')
   const [nextDisabled, setNextDisabled] = useState(true)
+  // -1 注册 验证手机号码
   // 0 注册 填个人信息
   // 1 注册 选择身份
   // 2 注册 填写求职意向
   // 3 注册 填写企业认证
   // 4 注册 填写企业认证补充
   // 5 注册 填写认证审核中
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(-1)
   const [identityNum, setIdentityNum] = useState(1)
 
   const [jobPosition, setJobPosition] = useState('')
@@ -139,7 +142,7 @@ export default function Login() {
     }
 
     const {
-      UserLogIn: {token},
+      UserLogIn: {token}
     } = loginData
 
     localStorage.setItem('chenZaoZhaoKey', token)
@@ -169,12 +172,34 @@ export default function Login() {
       username,
       email,
       password: pwd,
-      phoneNumber: pwd2,
-    },
+      phoneNumber: pwd2
+    }
   })
 
+  const [verifyPhoneCode] = useVerifyPhoneCodeMutation({
+    variables: {
+      phoneNumber: phone,
+      verifyCode: 'tested',
+      operation: 'UserRegister'
+    }
+  });
+
+  const [onSendSms] = useSendSmsLazyQuery({
+    variables: {
+      phoneNumber: phone
+    }
+  })
+
+  const [countdown, setCountdown] = useState<number>(0);
+
+  useInterval(() => {
+    if(countdown > 0){
+      setCountdown(pre => pre - 1);
+    }
+  },1000);
+
   let stepNode = (
-    <ZcCard>
+    <ZcCard css={{h: 600}}>
       <ZcLeft>
         <BackTitle
           onClick={() => {
@@ -220,7 +245,7 @@ export default function Login() {
         </InputWrp>
 
         <LittleTitle>基础信息</LittleTitle>
-        <AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />
+        {/*<AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />*/}
 
         <InputWrp css={{mt: 36}}>
           <InputLabel>昵称：</InputLabel>
@@ -232,6 +257,7 @@ export default function Login() {
               setUserName(value)
             }}
             placeholder='请输入常用名称'
+            err={!isUsername && '请输入长度在6到12之间的用户名'}
           />
         </InputWrp>
         <InputWrp css={{mt: 30}}>
@@ -261,16 +287,23 @@ export default function Login() {
               </NextButtonWrp>
             }
             onClick={() => {
-              console.log('next step')
               signUpMutation({
                 variables: {
                   username,
                   password: pwd,
                   email,
-                  phoneNumber: '1223333333',
-                },
+                  phoneNumber: phone
+                }
+              }).then((res) => {
+                // todo
+                const token = res.data?.UserRegister;
+                if(token) {
+                  localStorage.setItem('chenZaoZhaoKey', token);
+                  setStep(s => s + 1);
+                }
+              }).catch(() => {
+                // todo
               })
-              console.log('next step...finished')
               // setStep(1)
             }}
           />
@@ -278,6 +311,78 @@ export default function Login() {
       </ZcRight>
     </ZcCard>
   )
+  if(step === -1){
+    stepNode = (
+      <ZcCard css={{h: 367}}>
+        <ZcLeft>
+          <BackTitle css={{pt: 40, pl: 40}}>
+            <Image src='/zh.png' alt='ht' width={32} height={32} />
+            <BackText css={{ml: 20}}>验证手机号</BackText>
+          </BackTitle>
+          <FormWrap>
+            <TextField
+              value={phone}
+              onChange={(e) => {
+                const {value} = e.target
+                setPhone(value)
+              }}
+              err={!isPhone && '请输入正确的手机号码'}
+              icon={<Image src='/sj.png' alt='phone' width={20} height={24} />}
+              placeholder='请输入手机号'
+            />
+            <YZWrap>
+              <TextField
+                value={yzm}
+                onChange={(e) => {
+                  const {value} = e.target
+                  setYZM(value)
+                }}
+                icon={<Image src='/yzm.png' alt='phone' width={20} height={24} />}
+                placeholder='请输入验证码'
+              />
+              <Button
+                css={{w: 150, ml: 20}}
+                text={countdown > 0 ? countdown: '获取验证码'}
+                disabled={countdown > 0 || !isPhone}
+                onClick={() => {
+                  onSendSms({
+                    variables: {
+                      phoneNumber: phone
+                    }
+                  }).then((res) => {
+                    setCountdown(60);
+                    console.log('then', res.data?.StaticSendSms)
+                  }).catch((err) => {
+                    console.log('catch', err);
+                  })
+                }}
+              />
+            </YZWrap>
+          </FormWrap>
+        </ZcLeft>
+        <ZcRight>
+          <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+          <Button
+            text='确定'
+            disabled={!(!!yzm?.length && yzm.length === 6)}
+            onClick={() => {
+              verifyPhoneCode({
+                variables: {
+                  phoneNumber: phone,
+                  verifyCode: yzm,
+                  operation: 'UserRegister'
+                }
+              }).then(() => {
+                setStep(step + 1);
+              }).catch(() => {
+                alert('验证码错误！')
+              })
+            }}
+          />
+        </ZcRight>
+      </ZcCard>
+    )
+  }
 
   if (step === 1) {
     stepNode = (
@@ -311,8 +416,8 @@ export default function Login() {
               if (loginFinish) {
                 chooseIdentityMutation({
                   variables: {
-                    identity: identityCards[identityNum].identity,
-                  },
+                    identity: identityCards[identityNum].identity
+                  }
                 })
               } else {
                 // to 2/3
@@ -598,167 +703,133 @@ export default function Login() {
               欢迎使用趁早找
             </LeftPart>
             <RightPart>
-              <FirstLine>
-                {isSm ? (
-                  <Image
+              <BWrap>
+                <TabWrap>
+                  <Tab
+                    active={isYzm}
                     onClick={() => {
-                      setIsSm(false)
-                    }}
-                    src='/dndl.png'
-                    alt='Logo'
-                    width={52}
-                    height={52}
-                  />
-                ) : (
-                  <>
-                    <Image
-                      onClick={() => {
-                        setIsSm(true)
-                      }}
-                      src='/sm.png'
-                      alt='Logo'
-                      width={52}
-                      height={52}
-                    />
-                    <TipRectangle>
-                      <Triangle />
-                      扫码登录更安全
-                    </TipRectangle>
-                  </>
-                )}
-              </FirstLine>
-              {isSm ? (
-                <BWrap css={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                  <SmTitle>
-                    使用 <SmGreen>趁早找APP</SmGreen> 或 微信 扫码登录
-                  </SmTitle>
-                  <Image src='/sm.png' alt='Logo' width={250} height={250} />
-                  <ZcIcon
-                    onClick={() => {
-                      setIsZc(true)
+                      setIsYzm(true)
                     }}
                   >
-                    立即注册
-                  </ZcIcon>
-                  <LWrap css={{mt: 43, justifyContent: 'center'}}>
-                    进入即代表您已同意
-                    <Ht css={{ml: 14}}>
-                      <Link href='/'>《用户协议》</Link>
-                    </Ht>
-                    <Ht>
-                      <Link href='/'>《隐私政策》</Link>
-                    </Ht>
-                  </LWrap>
-                </BWrap>
-              ) : (
-                <BWrap>
-                  <TabWrap>
-                    <Tab
-                      active={isYzm}
-                      onClick={() => {
-                        setIsYzm(true)
+                    验证码登录
+                  </Tab>
+                  <Tab
+                    active={!isYzm}
+                    onClick={() => {
+                      setIsYzm(false)
+                    }}
+                  >
+                    密码登录
+                  </Tab>
+                </TabWrap>
+                {isYzm ? (
+                  <>
+                    <TextField
+                      value={phone}
+                      onChange={(e) => {
+                        const {value} = e.target
+                        setPhone(value)
                       }}
-                    >
-                      验证码登录
-                    </Tab>
-                    <Tab
-                      active={!isYzm}
-                      onClick={() => {
-                        setIsYzm(false)
-                      }}
-                    >
-                      密码登录
-                    </Tab>
-                  </TabWrap>
-                  {isYzm ? (
-                    <>
-                      <TextField
-                        value={phone}
-                        onChange={(e) => {
-                          const {value} = e.target
-                          setPhone(value)
-                        }}
-                        icon={<Image src='/sj.png' alt='phone' width={20} height={24} />}
-                        placeholder='请输入手机号'
-                        err='提示：输入的账号未注册，请下载趁早找ap'
-                      />
-                      <YZWrap>
-                        <TextField
-                          value={yzm}
-                          onChange={(e) => {
-                            const {value} = e.target
-                            setYZM(value)
-                          }}
-                          icon={<Image src='/yzm.png' alt='phone' width={20} height={24} />}
-                          placeholder='请输入验证码'
-                        />
-                        <Button
-                          css={{w: 150, ml: 20}}
-                          text='获取验证码'
-                          onClick={() => {
-                            console.log('dsldwe')
-                          }}
-                        />
-                      </YZWrap>
-                    </>
-                  ) : (
-                    <>
-                      <TextField
-                        value={account}
-                        onChange={(e) => {
-                          const {value} = e.target
-                          setAccount(value)
-                        }}
-                        icon={<Image src='/zh.png' alt='zh' width={20} height={24} />}
-                        placeholder='请输入账号'
-                        err={accountErr || (loginError ? loginError.message : '')}
-                      />
-                      <TextField
-                        type='password'
-                        value={password}
-                        onChange={(e) => {
-                          const {value} = e.target
-                          setPassword(value)
-                        }}
-                        icon={<Image src='/yzm.png' alt='mm' width={20} height={24} />}
-                        placeholder='请输入密码'
-                        err={passwordErr}
-                      />
-                    </>
-                  )}
-                  <YZWrap>
-                    <Button
-                      text='登录/注册'
-                      disabled={loginLoading}
-                      onClick={() => {
-                        setAccountErr('')
-                        setPasswordErr('')
-
-                        if (!account) {
-                          setAccountErr('请输入账号')
-                          return
-                        }
-                        if (!password) {
-                          setPasswordErr('请输入密码')
-                          return
-                        }
-
-                        localStorage.clear()
-                        onLogin({variables: {account, password}})
-                      }}
+                      icon={<Image src='/sj.png' alt='phone' width={20} height={24} />}
+                      placeholder='请输入手机号'
                     />
-                  </YZWrap>
-                  <LWrap>
-                    进入即代表您已同意
-                    <Ht css={{ml: 14}}>
-                      <Link href='/'>《用户协议》</Link>
-                    </Ht>
-                    <Ht>
-                      <Link href='/'>《隐私政策》</Link>
-                    </Ht>
-                  </LWrap>
-                </BWrap>
-              )}
+                    <YZWrap>
+                      <TextField
+                        value={yzm}
+                        onChange={(e) => {
+                          const {value} = e.target
+                          setYZM(value)
+                        }}
+                        icon={<Image src='/yzm.png' alt='phone' width={20} height={24} />}
+                        placeholder='请输入验证码'
+                      />
+                      <Button
+                        css={{w: 150, ml: 20}}
+                        disabled={countdown > 0}
+                        text={countdown > 0 ? countdown : '获取验证码'}
+                        onClick={() => {
+                          onSendSms({
+                            variables: {
+                              phoneNumber: phone
+                            }
+                          }).then(() => {
+                            setCountdown(60)
+                          })
+                        }}
+                      />
+                    </YZWrap>
+                  </>
+                ) : (
+                  <>
+                    <TextField
+                      value={account}
+                      onChange={(e) => {
+                        const {value} = e.target
+                        setAccount(value)
+                      }}
+                      icon={<Image src='/zh.png' alt='zh' width={20} height={24} />}
+                      placeholder='请输入邮箱'
+                      err={accountErr || (loginError ? loginError.message : '')}
+                    />
+                    <TextField
+                      type='password'
+                      value={password}
+                      onChange={(e) => {
+                        const {value} = e.target
+                        setPassword(value)
+                      }}
+                      icon={<Image src='/yzm.png' alt='mm' width={20} height={24} />}
+                      placeholder='请输入密码'
+                      err={passwordErr}
+                    />
+                  </>
+                )}
+                <YZWrap>
+                  <Button
+                    text='登录'
+                    disabled={loginLoading}
+                    onClick={() => {
+                      setAccountErr('')
+                      setPasswordErr('')
+
+                      if (!account) {
+                        setAccountErr('请输入账号')
+                        return
+                      }
+                      if (!password) {
+                        setPasswordErr('请输入密码')
+                        return
+                      }
+
+                      localStorage.clear()
+                      onLogin({variables: {account, password}})
+                    }}
+                  />
+                </YZWrap>
+                <YZWrap>
+                  <Button
+                    css={{
+                      bg: '$w',
+                      color: '$primary'
+                    }}
+                    text='注册'
+                    disabled={loginLoading}
+                    onClick={() => {
+                      // todo
+                      setIsZc(true);
+                    }}
+                  />
+                </YZWrap>
+                <LWrap>
+                  进入即代表您已同意
+                  <Ht css={{ml: 14}}>
+                    <Link href='/'>《用户协议》</Link>
+                  </Ht>
+                  <Ht>
+                    <Link href='/'>《隐私政策》</Link>
+                  </Ht>
+                </LWrap>
+              </BWrap>
             </RightPart>
           </LoginCard>
         )}

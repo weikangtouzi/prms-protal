@@ -13,7 +13,6 @@ const link = createUploadLink({
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   const authorization = !isServer && localStorage.getItem('chenZaoZhaoKey')
-
   operation.setContext(({headers = {}}) => ({
     headers: authorization ? {
       ...headers,

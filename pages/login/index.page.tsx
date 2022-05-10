@@ -1,24 +1,22 @@
 import type {ReactElement} from 'react'
 import {useEffect, useState} from 'react'
-import {useRouter} from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/layouts/main'
 import {TextField} from '@/components/textfield'
 import {Button} from '@/components/button'
-import {AvatarUploader} from '@/components/avatar'
 import UploadZZ from './components/uploader'
 import {Select} from '@/components/select'
 import {
   useChooseIdentityMutation,
-  useLogInLazyQuery, useSendSmsLazyQuery,
+  useLogInLazyQuery, useResetPasswordMutation, useSendSmsLazyQuery,
   useSignUpMutation,
   useVerifyPhoneCodeMutation
 } from '../../generated'
 import {
   BackText,
   BackTitle,
-  BWrap,
+  BWrap, ForgetTip,
   FormWrap,
   Ht,
   IdentityCard,
@@ -55,35 +53,11 @@ const identityCards = [
     identity: 'PersonalUser'
   },
   {
-    url: '/qz-black',
+    url: '/qz-black.png',
     activeUrl: '/qz.png',
     text: '招聘',
     identity: 'EnterpriseUser'
   },
-  {
-    url: '/cy-black.png',
-    activeUrl: '/qz.png',
-    text: 'balalala',
-    identity: ''
-  },
-  {
-    url: '/cy-black.png',
-    activeUrl: '/cy.png',
-    text: '创业',
-    identity: ''
-  },
-  {
-    url: '/tz-black.png',
-    activeUrl: '/tz.png',
-    text: '投资',
-    identity: ''
-  },
-  {
-    url: '/gw-black.png',
-    activeUrl: '/gw.png',
-    text: '顾问',
-    identity: 'Counselor'
-  }
 ]
 
 export default function Login() {
@@ -103,7 +77,7 @@ export default function Login() {
   // 注册
   const [isZc, setIsZc] = useState(false)
   // 忘记密码
-  const [isForget] = useState(false)
+  const [isForget, setIsForget] = useState(false)
   const [pwd, setPwd] = useState('')
   const [pwd2, setPwd2] = useState('')
   const [username, setUserName] = useState('')
@@ -122,16 +96,14 @@ export default function Login() {
 
   const [jobPosition, setJobPosition] = useState('')
 
-  const [fileUrl, setFileUrl] = useState('')
+  // const [fileUrl, setFileUrl] = useState('')
 
   const checkAll = () => {
     if (pwd && pwd2) {
       setNextDisabled(false)
     }
   }
-
-  const router = useRouter()
-
+  const [resetPasswordMutation] = useResetPasswordMutation()
   const [onLogin, {loading: loginLoading, data: loginData, error: loginError}] = useLogInLazyQuery()
 
   const [chooseIdentityMutation, {data: identityToken}] = useChooseIdentityMutation()
@@ -162,9 +134,6 @@ export default function Login() {
     const {UserChooseOrSwitchIdentity: token} = identityToken
 
     localStorage.setItem('chenZaoZhaoKey', token)
-
-    router.push('/')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identityToken])
 
   const [signUpMutation] = useSignUpMutation({
@@ -295,7 +264,6 @@ export default function Login() {
                   phoneNumber: phone
                 }
               }).then((res) => {
-                // todo
                 const token = res.data?.UserRegister;
                 if(token) {
                   localStorage.setItem('chenZaoZhaoKey', token);
@@ -349,9 +317,8 @@ export default function Login() {
                     variables: {
                       phoneNumber: phone
                     }
-                  }).then((res) => {
+                  }).then(() => {
                     setCountdown(60);
-                    console.log('then', res.data?.StaticSendSms)
                   }).catch((err) => {
                     console.log('catch', err);
                   })
@@ -418,6 +385,8 @@ export default function Login() {
                   variables: {
                     identity: identityCards[identityNum].identity
                   }
+                }).then(() => {
+                  setStep(2)
                 })
               } else {
                 // to 2/3
@@ -595,7 +564,7 @@ export default function Login() {
       <ZcLeft>
         <BackTitle
           onClick={() => {
-            setIsZc(false)
+            setIsForget(false)
           }}
         >
           <Image src='/ht.png' alt='ht' width={22.63} height={22.63} />
@@ -603,18 +572,18 @@ export default function Login() {
         </BackTitle>
         <InputWrp css={{h: 64, mt: 39}}>
           <InputLabel>
-            <RedStr>*</RedStr>账号：
+            <RedStr>*</RedStr>手机号：
           </InputLabel>
           <TextField
             css={{mt: 0, w: 420}}
             inputCss={{ml: 0, w: '100%'}}
-            value={pwd}
+            value={phone}
             onChange={(e) => {
               const {value} = e.target
-              setPwd(value)
+              setPhone(value)
               checkAll()
             }}
-            placeholder='请输入密码'
+            placeholder='请输入手机号'
           />
         </InputWrp>
         <InputWrp css={{h: 64, mt: 20}}>
@@ -642,10 +611,10 @@ export default function Login() {
             css={{mt: 0, w: 420}}
             inputCss={{ml: 0, w: '100%'}}
             type='password'
-            value={pwd}
+            value={pwd2}
             onChange={(e) => {
               const {value} = e.target
-              setPwd(value)
+              setPwd2(value)
               checkAll()
             }}
             placeholder='请输入密码'
@@ -658,19 +627,26 @@ export default function Login() {
           <TextField
             css={{mt: 0, w: 250}}
             inputCss={{ml: 0, w: '100%'}}
-            value={pwd}
+            value={yzm}
             onChange={(e) => {
               const {value} = e.target
-              setPwd(value)
+              setYZM(value)
               checkAll()
             }}
             placeholder='请输入密码'
           />
           <Button
             css={{w: 150, ml: 20, mt: 0}}
-            text='获取验证码'
+            disabled={countdown > 0}
+            text={countdown > 0 ? countdown : '获取验证码'}
             onClick={() => {
-              console.log('dsldwe')
+              onSendSms({
+                variables: {
+                  phoneNumber: phone
+                }
+              }).then(() => {
+                setCountdown(60)
+              })
             }}
           />
         </InputWrp>
@@ -678,7 +654,27 @@ export default function Login() {
           css={{w: 420, ml: 158}}
           text='确认'
           onClick={() => {
-            console.log('dsldwe')
+            verifyPhoneCode({
+              variables: {
+                phoneNumber: phone,
+                verifyCode: yzm,
+                operation: 'UserResetPassword'
+              }
+            }).then(() => {
+              resetPasswordMutation({
+                variables: {
+                  phoneNumber: phone,
+                  password: pwd,
+                  confirmPassword: pwd2,
+                }
+              }).then(() => {
+                setIsForget(false);
+              }).catch((e) => {
+                console.error('resetPasswordMutation',e);
+              })
+            }).catch((e) => {
+              console.log('verifyPhoneCode', e);
+            })
           }}
         />
       </ZcLeft>
@@ -705,14 +701,14 @@ export default function Login() {
             <RightPart>
               <BWrap>
                 <TabWrap>
-                  <Tab
-                    active={isYzm}
-                    onClick={() => {
-                      setIsYzm(true)
-                    }}
-                  >
-                    验证码登录
-                  </Tab>
+                  {/*<Tab*/}
+                  {/*  active={isYzm}*/}
+                  {/*  onClick={() => {*/}
+                  {/*    setIsYzm(true)*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  验证码登录*/}
+                  {/*</Tab>*/}
                   <Tab
                     active={!isYzm}
                     onClick={() => {
@@ -802,7 +798,11 @@ export default function Login() {
                       }
 
                       localStorage.clear()
-                      onLogin({variables: {account, password}})
+                      if(isYzm) {
+
+                      } else {
+                        onLogin({variables: {account, password}})
+                      }
                     }}
                   />
                 </YZWrap>
@@ -828,6 +828,7 @@ export default function Login() {
                   <Ht>
                     <Link href='/'>《隐私政策》</Link>
                   </Ht>
+                  <ForgetTip onClick={() => setIsForget(true)}>忘记密码？</ForgetTip>
                 </LWrap>
               </BWrap>
             </RightPart>

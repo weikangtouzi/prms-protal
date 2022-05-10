@@ -41,7 +41,7 @@ const InputLabel = styled('div', {
 
 export default function Me() {
   const [name, setName] = useState('')
-  const [zhiye, setZhiye] = useState('')
+  // const [zhiye, setZhiye] = useState('')
 
   const [fileUrl, setFileUrl] = useState('')
 

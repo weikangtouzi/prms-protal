@@ -125,22 +125,6 @@ export default function Security() {
       </DivWrap>
       <DashLine />
 
-      <DivWrap css={{ml: 142}}>
-        <LeftLabel>微信：</LeftLabel>
-        <MidContent>
-          <Image src={url} className='use-image-round' alt='ht' width={34} height={34} />
-          <MidContent css={{ml: 6}}>用户名</MidContent>
-        </MidContent>
-        <RightBtn
-          onClick={() => {
-            setZxOpen(true)
-          }}
-          css={{ml: 64}}
-        >
-          解除绑定
-        </RightBtn>
-      </DivWrap>
-
       <DivWrap css={{ml: 142, mt: 35}}>
         <LeftLabel>邮箱：</LeftLabel>
         {newEmail ? (
@@ -375,12 +359,12 @@ export default function Security() {
           }}
         />
       </CloseDialog>
-      <ConfirmDialog
-        open={zxOpen}
-        onOpenChange={setZxOpen}
-        title='确认要解除与微信的绑定吗？'
-        bodyText='确认后，将不能使用微信登录趁早找'
-      />
+      {/*<ConfirmDialog*/}
+      {/*  open={zxOpen}*/}
+      {/*  onOpenChange={setZxOpen}*/}
+      {/*  title='确认要解除与微信的绑定吗？'*/}
+      {/*  bodyText='确认后，将不能使用微信登录趁早找'*/}
+      {/*/>*/}
     </RightWrap>
   )
 }

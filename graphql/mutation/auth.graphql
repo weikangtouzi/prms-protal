@@ -18,8 +18,8 @@ mutation EditBasicInfo($info: BasicData!) {
   UserEditBasicInfo(info: $info)
 }
 
-mutation ResetPassword($password: String!, $confirmPassword: String!) {
-  UserResetPassword(info: {password: $password, confirmPassword: $confirmPassword})
+mutation ResetPassword($phoneNumber: String!, $password: String!, $confirmPassword: String!) {
+  UserResetPassword(info: {phoneNumber: $phoneNumber, password: $password, confirmPassword: $confirmPassword})
 }
 
 mutation VerifyPhoneCode($phoneNumber: String!, $verifyCode: String!, $operation: String!) {

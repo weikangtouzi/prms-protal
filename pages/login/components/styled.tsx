@@ -47,7 +47,7 @@ export const Tab = styled('div', {
   fw: 400,
   fs: 20,
   h: 48,
-  w: '50%',
+  w: '100%',
   textAlign: 'center',
   cursor: 'pointer',
   userSelect: 'none',
@@ -165,6 +165,8 @@ export const BackTitle = styled('div', {
   p: '25px 19px',
   display: 'flex',
   alignItems: 'center',
+  cursor: 'pointer',
+  userSelect: 'none'
 })
 
 export const BackText = styled('span', {
@@ -232,6 +234,8 @@ export const IdentityCard = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  cursor: 'pointer',
+  userSelect: 'none',
   variants: {
     active: {
       true: {
@@ -275,4 +279,14 @@ export const FormItemLabel = styled('div', {
 export const FormItemWrap = styled('div', {
   display: 'flex',
   flexDirection: 'column',
+})
+
+export const ForgetTip = styled('div', {
+  ml: 'auto',
+  mr: 0,
+  cursor: 'pointer',
+  userSelect: 'none',
+  '&:hover': {
+    textDecoration: 'underline'
+  }
 })

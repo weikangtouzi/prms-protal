@@ -22,6 +22,7 @@ const EmptyDiv = styled('label', {
   flexDirection: 'column',
   pt: 28,
   position: 'relative',
+  cursor: 'pointer',
 })
 
 const EmptyText = styled('span', {
@@ -35,6 +36,7 @@ const EmptyOutlineText = styled('label', {
   fw: 400,
   mt: 6,
   textDecoration: 'underline',
+  cursor: 'pointer',
   variants: {
     active: {
       true: {

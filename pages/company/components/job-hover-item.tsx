@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Image from 'next/image'
 import {CloseDialog} from '@/components/dialogs'
 import {Button} from '@/components/button'
@@ -29,11 +29,24 @@ const defaultJlList = [
 ]
 
 export default function JobHoverItem({active, item}: JHProps) {
-  const {subs, money, subscribed, jobTitle, details, location, img} = item
+  const {subs, money, subscribed, jobTitle, detail, location, img} = item
   const [open, setOpen] = useState(false)
   const [stage, setStage] = useState(0)
   const [list] = useState(defaultJlList)
   const [selectedId, setSelectedId] = useState(0)
+
+  const [jobDetailInfo, setJobDetailInfo] = useState()
+
+  useEffect(() => {
+  	if (!active) {
+  		return
+  	}
+  	HTAPI.UserGetJob({
+  		jobid: item.id
+  	}).then(response => {
+  		setJobDetailInfo(response)
+  	})
+  }, [active])
 
   const onClose = () => {
     setOpen(false)
@@ -59,7 +72,17 @@ export default function JobHoverItem({active, item}: JHProps) {
           <Button
             css={{mt: 20, w: 120, h: 42, ml: 40, fs: 16, mb: 40}}
             onClick={() => {
-              setStage(1)
+            	HTAPI.UserGetJob({
+            		jobid: item.id
+            	}).then(response => {
+            		HTAPI.CandidateSendResume({
+		            	'jobId': item.id,
+									'hrId': response.hr.id,
+									'compId': response.company.id
+		            }).then(response => {
+		            	setStage(2)
+		            })
+            	})
             }}
             text='确认投递'
           />
@@ -163,8 +186,8 @@ export default function JobHoverItem({active, item}: JHProps) {
           <TitleText css={{fs: 18, fw: 400, mt: 10}}>{subs}</TitleText>
         </Flex>
         <Flex css={{alignItems: 'center'}}>
-          <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
-          <TitleText css={{fs: 18, color: '$primary', ml: 10, mr: 20}}>收藏</TitleText>
+          <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} onClick={global.TODO_TOAST} />
+          <TitleText css={{fs: 18, color: '$primary', ml: 10, mr: 20}} onClick={global.TODO_TOAST}>收藏</TitleText>
           <Button
             onClick={() => {
               setOpen(true)
@@ -185,13 +208,13 @@ export default function JobHoverItem({active, item}: JHProps) {
           }}
         >
           <Flex>职位描述：</Flex>
-          <Flex css={{mt: 10, w: 545, whiteSpace: 'break-spaces', mb: 20}}>{details}</Flex>
+          <Flex css={{mt: 10, w: 545, whiteSpace: 'break-spaces', mb: 20}}>{jobDetailInfo?.job?.detail}</Flex>
         </Flex>
       </Flex>
 
       <Flex css={{justifyContent: 'space-between', bg: '$w', p: '20px 40px', alignItems: 'center'}}>
         <Flex css={{flexDirection: 'column', fs: 18, color: '#3C4441'}}>
-          工作地点 <Flex css={{fs: 14, mt: 10}}>{location}</Flex>
+          工作地点 <Flex css={{fs: 14, mt: 10}}>{jobDetailInfo?.job?.address_description?.slice(3)?.join('')}</Flex>
         </Flex>
         <Flex>
           <Flex
@@ -206,7 +229,7 @@ export default function JobHoverItem({active, item}: JHProps) {
           >
             APP扫码 <Flex css={{fs: 14, mt: 10}}>聊一聊</Flex>
           </Flex>
-          <Image alt='ewm' width={76} height={76} src={img} />
+          <img alt='ewm' width={76} height={76} src={img} />
         </Flex>
       </Flex>
     </JobItemHoverDiv>

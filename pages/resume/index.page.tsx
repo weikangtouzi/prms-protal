@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import {useRouter} from 'next/router'
 import Icon from '@/components/icon'
 import {CloseDialog, ConfirmDialog} from '@/components/dialogs'
 import {TextField} from '@/components/textfield'
@@ -19,7 +20,6 @@ import {
 } from './components/styled'
 import ResumeItem from './components/resume-item'
 import ResumeMenuItem from './components/resume-menu-item'
-import {useUploadFileMutation, useGetResumeQuery} from '@/generated'
 import JobExpectations from './components/job-expectations'
 import BasicInfo from './components/basic-info'
 import Advantage from './components/advantage'
@@ -47,89 +47,110 @@ const resumeMenu = [
     text: '个人信息',
     name: 'icon-icon_renshu',
     activeName: 'icon-icon_renshu-copy',
+    id: 'ProjectExperience',
   },
   {
     text: '求职意向',
     name: 'icon-icon_qiuzhioff',
     activeName: 'icon-icon_qiuzhioff-copy',
+    id: 'ProjectExperience',
   },
   {
     text: '个人优势',
     name: 'icon-icon_zaixianjianli',
     activeName: 'icon-icon_zaixianjianli-copy',
+    id: 'ProjectExperience',
   },
   {
     text: '工作经历',
     name: 'icon-icon_renshu',
     activeName: 'icon-icon_qiuzhion-copy',
+    id: 'ProjectExperience',
   },
   {
     text: '项目经历',
     name: 'icon-icon_touzioff',
     activeName: 'icon-icon_touzioff-copy',
+    id: 'ProjectExperience',
   },
   {
     text: '教育经历',
     name: 'icon-icon_renshu',
     activeName: 'icon-icon_renshu-copy',
+    id: 'ProjectExperience',
   },
 ]
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
-export default function Resume() {
-  const [resumeList] = useState([
-    {title: '附件简历0000001.doc', size: '52M', id: 1, img: imgUrl},
-    {title: '附件简历002.pdf', size: '5M', id: 2, img: imgUrl},
-  ])
+export default function Resume(props) {
+	const router = useRouter()
+	const [editAble, setEditAble] = useState(true)
+	useEffect(() => {
+		setEditAble(router?.query?.editAble == 'false' ? false : true)
+	}, [router.query])
 
-  // const [resumeData, setResumeData] = useState('')
+
+  const [resumeList] = useState([
+    // {title: '附件简历0000001.doc', size: '52M', id: 1, img: imgUrl},
+    // {title: '附件简历002.pdf', size: '5M', id: 2, img: imgUrl},
+  ])
 
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [modifyOpen, setModifyOpen] = useState(false)
   const [menuActive, setMenuActive] = useState(0)
-
-  const [uploadFile] = useUploadFileMutation()
-  const {data: resumeData} = useGetResumeQuery()
+  const [resumeData, setResumeData] = useState()
+  const onRefresh = () => {
+  	Promise.all([
+    	HTAPI.UserGetBasicInfo(),
+    	HTAPI.CandidateGetAllJobExpectations(),
+    	HTAPI.CandidateGetWorkExps(),
+    	HTAPI.CandidateGetOnlineResumeBasicInfo(null, { showError: false }),
+    	HTAPI.CandidateGetProjectExps(),
+    	HTAPI.CandidateGetEduExps()
+    ]).then(([
+    	userInfo, 
+    	expectJobs = [],
+    	{ data: workExperience = [] }, 
+    	baseInfo = {},
+    	{ data: projectExperience = [] },
+    	{ data: educationExperience = [] }
+    ]) => {
+    	setResumeData({
+    		userInfo,
+    		expectJobs,
+    		baseInfo,
+    		workExperience,
+    		projectExperience,
+    		educationExperience
+    	})
+    })
+  }
+  useEffect(() => {
+  	onRefresh()
+  }, [])
 
   return (
     <Main>
       <LeftWrap>
         <LeftTitleWrap>
           <ResuTitle>我的简历</ResuTitle>
-          <RightBtn>
-            <a href='/resume/preview' target='_blank' rel='noreferrer'>
-              预览简历
-            </a>
-          </RightBtn>
+          {
+          	editAble && (
+          		<RightBtn>
+		            <a href='/resume?editAble=false' target='_blank' rel='noreferrer'>
+		              预览简历
+		            </a>
+		          </RightBtn>
+          	)
+          }
         </LeftTitleWrap>
 
-        <BasicInfo />
-        <JobExpectations jobExp={resumeData?.CommonGetResume.jobExpectation} />
-        <Advantage />
-        <WorkExperience workExp={resumeData?.CommonGetResume.workExperience || []} />
-        <ProjectExperience projExp={resumeData?.CommonGetResume.projectExperience || []} />
-        <EducationExperience
-          eduExp={[
-            {
-              id: 1,
-              schoolName: 'aaa',
-              education: 'JuniorCollege',
-              major: '拉萨单位',
-              detail: 'asdflwjeflasdfjwefasdf',
-              startAt: '2021/12/1',
-              endAt: '2021/12/20',
-            },
-            {
-              id: 2,
-              schoolName: 'aaa',
-              education: 'Primary',
-              major: '拉萨单位',
-              detail: 'asdflwjefasf阿隆索大风降温lasdfjwefasdf',
-              startAt: '2021/12/1',
-              endAt: '2021/12/20',
-            },
-          ]}
-        />
+        <BasicInfo editAble={editAble} />
+        <JobExpectations editAble={editAble} jobExpList={resumeData?.expectJobs} onRefresh={onRefresh} />
+        <Advantage editAble={editAble} baseInfo={resumeData?.baseInfo} onRefresh={onRefresh} />
+        <WorkExperience editAble={editAble} workExp={resumeData?.workExperience || []} onRefresh={onRefresh} />
+        <ProjectExperience editAble={editAble} projExp={resumeData?.projectExperience || []} onRefresh={onRefresh} />
+        <EducationExperience editAble={editAble} eduExp={resumeData?.educationExperience} onRefresh={onRefresh} />
       </LeftWrap>
       <RightWrap>
         <RightPartWrap>
@@ -160,10 +181,13 @@ export default function Resume() {
           <RealInput
             id='uploadRealInputId'
             onChange={(e) => {
-              const {files = []} = e.target
-              if (files && files.length > 0) {
-                uploadFile({variables: {file: files[0], extraAttributes: {}}})
-              }
+            	global.TODO_TOAST()
+              // const {files = []} = e.target
+              // if (files && files.length > 0) {
+              // 	HTAPI.CommonSingleUpload(files[0]).then(response => {
+              // 		// response.data.CommonSingleUpload
+              // 	})
+              // }
             }}
             type='file'
             accept='.doc,.docx,.pdf'
@@ -171,7 +195,9 @@ export default function Resume() {
         </RightPartWrap>
         <RightPartWrap css={{display: 'flex', p: '23px 0 20px 0'}}>
           {jlIcon.map((j) => (
-            <Flex css={{flexDirectionCenter: 'column'}} key={j.text}>
+            <Flex css={{flexDirectionCenter: 'column'}} key={j.text} onClick={() => {
+            	global.TODO_TOAST()
+            }}>
               <Icon name={j.name} />
               <UploadText css={{w: 94, textAlign: 'center', mt: 18}}>{j.text}</UploadText>
             </Flex>
@@ -182,6 +208,7 @@ export default function Resume() {
             <ResumeMenuItem
               onClick={() => {
                 setMenuActive(idx)
+                document.getElementsByClassName('item-scroll-bind')[idx].scrollIntoView()
               }}
               item={rm}
               key={rm.text}

@@ -3,13 +3,10 @@ import {Button} from '@/components/button'
 import {TextField} from '@/components/textfield'
 import {EditWrap, NormalText, ResuTitle, Flex} from './styled'
 import LeftMenuTitle from './left-menu-title'
-import {useUpdateAdvantageMutation} from '@/generated'
 
-function Advantage() {
+function Advantage({ baseInfo, ...props }) {
   const [edit, setEdit] = useState(false)
   const [content, setContent] = useState('')
-
-  const [updateAdvantageMutation] = useUpdateAdvantageMutation()
 
   const grEditDom = (
     <EditWrap css={{pr: 20}}>
@@ -44,14 +41,13 @@ function Advantage() {
         />
         <Button
           onClick={() => {
-            updateAdvantageMutation({
-              variables: {
-                advantage: content,
-              },
-              onCompleted: () => {
-                setEdit(false)
-              },
-            })
+          	HTAPI.CandidateEditSkills({skills: [content]}).then(response => {
+          		props.onRefresh()
+          	})
+          	HTAPI.CandidateEditPersonalAdvantage({ advantage: content }).then(response => {
+				    	setEdit(false)
+				    	props.onRefresh()
+				    })
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -60,12 +56,13 @@ function Advantage() {
     </EditWrap>
   )
 
-  const grDom = <NormalText css={{mt: 30, lineHeight: '30px'}}>{content}</NormalText>
+  const grDom = <NormalText css={{mt: 30, lineHeight: '30px'}}>{baseInfo?.personal_advantage}</NormalText>
 
   return (
     <LeftMenuTitle
       title='个人优势'
       edit={edit}
+      disabled={!props.editAble}
       onEdit={() => {
         setEdit(true)
       }}

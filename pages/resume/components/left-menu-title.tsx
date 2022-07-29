@@ -21,6 +21,7 @@ export default function LeftMenuTitle({title, children, onEdit, edit = false, di
         alignItems: 'flex-start',
         backgroundColor: active || edit ? '#F5F6F8' : '$w',
       }}
+      className={'item-scroll-bind'}
       onMouseMove={() => {
         setActive(true)
       }}

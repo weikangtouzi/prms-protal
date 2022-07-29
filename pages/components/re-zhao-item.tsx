@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import {useRouter} from 'next/router'
 import Image from 'next/image'
 import {
   ReZhaoItemWrap,
@@ -9,9 +10,11 @@ import {
   ReZhaoBottomPart,
   ReZhaoBottomRightPart,
 } from './styled'
+import { reformComFinancing, reformCompanySize, reformEducationLevel, reformSalary } from '@/utils/utils'
 
 const ReZhaoItem = ({item}: any) => {
-  const {zy, price, needs = [], companyImg, companyName, companyNeeds = []} = item
+	const router = useRouter()
+  const {zy, price, needs = [`${item.min_experience}年及以上`, item?.address_description?.[4], reformEducationLevel(item.min_education)].filter(x => x), companyImg, companyName, companyNeeds = [reformComFinancing(item.comp_financing), reformCompanySize(item.comp_size)].filter(x => x)} = item
   const [active, setActive] = useState(false)
   return (
     <ReZhaoItemWrap
@@ -21,10 +24,13 @@ const ReZhaoItem = ({item}: any) => {
       onMouseLeave={() => {
         setActive(false)
       }}
+      onClick={() => {
+      	router.push(`/job/${item.id}`)
+      }}
     >
       <ReZhaoFirstLine>
-        <ReZhaoZhiYe active={active}>{zy}</ReZhaoZhiYe>
-        <ReZhaoPrice>{price}</ReZhaoPrice>
+        <ReZhaoZhiYe active={active}>{item.title}</ReZhaoZhiYe>
+        <ReZhaoPrice>{reformSalary([item.min_salary, item.max_salary])}</ReZhaoPrice>
       </ReZhaoFirstLine>
       <ReZhaoArrayText>
         {needs.map((n: string, idx: number) => (
@@ -35,9 +41,9 @@ const ReZhaoItem = ({item}: any) => {
         ))}
       </ReZhaoArrayText>
       <ReZhaoBottomPart>
-        <Image src={companyImg} alt='ht' width={48} height={48} />
+        <img src={item?.logo ?? ''} alt='ht' width={48} height={48} />
         <ReZhaoBottomRightPart>
-          <ReZhaoArrayText css={{fs: 16, color: '#3C4441', mb: 5}}>{companyName}</ReZhaoArrayText>
+          <ReZhaoArrayText css={{fs: 16, color: '#3C4441', mb: 5}}>{item.comp_name}</ReZhaoArrayText>
           <ReZhaoArrayText>
             {companyNeeds.map((n: string, idx: number) => (
               <span key={n}>

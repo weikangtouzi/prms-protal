@@ -31,6 +31,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   textAlign: 'center',
   ff: '$fr',
   '&:focus': {outline: 'none'},
+  zIndex: 11,
 })
 
 const StyledTitle = styled(DialogPrimitive.Title, {
@@ -111,7 +112,7 @@ export function ConfirmDialog({
               text='确定'
               onClick={() => {
                 console.log('queding')
-                onOpenChange(false)
+                onOpenChange(true)
               }}
             />
           </div>

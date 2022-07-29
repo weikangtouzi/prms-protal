@@ -200,3 +200,56 @@ export const FindJobItemWrap = styled('div', {
   position: 'relative',
   borderRadius: 2,
 })
+
+export const FindCompanyContainer = styled('div', {
+	width: 1184,
+	m: 'auto',
+	marginTop: '16px',
+
+	display: 'flex',
+	flexDirection: 'row',
+	flexWrap: 'wrap',
+})
+
+export const FindCompanyItemWrap = styled('div', {
+	bg: '$w',
+	borderRadius: 2,
+	width: 'calc((100% - 3 * 1%) / 4.0)',
+	marginBottom: '16px',
+	paddingTop: '30px',
+	paddingBottom: '30px',
+	display: 'flex',
+	flexDirection: 'column',
+	alignItems: 'center'
+})
+
+export const FindCompanyItemImage = styled('img', {
+	width: '70px',
+	height: '70px',
+	'object-fit': 'contain'
+})
+
+export const FindCompanyItemTitle = styled('div', {
+	marginTop: '20px',
+	color: '#3C4441',
+	fontSize: '18px'
+})
+
+export const FindCompanyItemDetail = styled('div', {
+	marginTop: '10px',
+	color: '#616A67',
+	fontSize: '14px'
+})
+
+export const FindCompanyItemButtonContainer = styled('div', {
+	border: '1px solid #00000010',
+	marginTop: '30px',
+	padding: '10px 40px',
+	color: '#000000',
+	fontSize: '18',
+})
+
+export const FindCompanyItemButtonTitleSelected = styled('span', {
+	color: '#00DA8A',
+})
+

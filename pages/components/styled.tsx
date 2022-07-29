@@ -59,6 +59,7 @@ export const SearchWorldText = styled('div', {
   mr: 15,
   fs: 14,
   ff: '$fr',
+  cursor: 'pointer'
 })
 
 export const BodyWrap = styled('div', {
@@ -79,21 +80,27 @@ export const FirstLeftWrap = styled('div', {
   p: '15px 0 15px',
   boxShadow: ' 0px 4px 10px 0px rgba(0, 0, 0, 0.1)',
   position: 'absolute',
-  marginRight: 700,
+  marginRight: 700
 })
+
+const FirstRightStyle = { width: 684, height: 362 }
 
 export const FirstRightWrap = styled('div', {
   ml: 500,
-  w: 684,
-  h: 364,
-  bg: 'yellow',
+  ...FirstRightStyle,
+  bg: 'white',
+})
+
+export const FirstRight = styled('img', {
+	...FirstRightStyle,
+  objectFit: 'cover'
 })
 
 export const ZhiYeItems = styled('div', {
   position: 'relative',
   h: 42,
   display: 'flex',
-  alignItems: 'center',
+  // alignItems: 'center',
   justifyContent: 'space-between',
   p: '0 20px',
   bg: '$w',
@@ -105,8 +112,17 @@ export const ZhiYeItems = styled('div', {
 })
 
 export const ZhiYeItemsWrapLeft = styled('div', {
+	flex: 1,
   display: 'flex',
   alignItems: 'center',
+  overflow: 'hidden'
+})
+
+export const ZhiYeItemsLeftListContainer = styled('div', {
+	display: 'flex', 
+	flexDirection: 'row', 
+	flex: 1, 
+	overflow: 'hidden'
 })
 
 export const ZhiYeItemsRight = styled('div', {
@@ -117,7 +133,6 @@ export const ZhiYeItemsRight = styled('div', {
   bg: '$w',
   borderRadius: 2,
   boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)',
-  zIndex: 9,
 })
 
 export const FoldBtn = styled('div', {
@@ -131,6 +146,7 @@ export const FoldBtn = styled('div', {
 export const ItemsHead = styled('div', {
   fs: 18,
   fw: 600,
+  whiteSpace: 'nowrap',
   variants: {
     active: {
       true: {

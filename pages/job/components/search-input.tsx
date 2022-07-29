@@ -37,11 +37,13 @@ const defaultList = [
 ]
 
 interface SProps {
+	keyword: string,
+	setKeyword: (_: string) => void,
   onClickSearch?: any
   list?: any[]
 }
 
-export default function SearchInput({onClickSearch, list = defaultList}: SProps) {
+export default function SearchInput({keyword, setKeyword, onClickSearch, list = defaultList}: SProps) {
   const [active, setActive] = useState(false)
   const [openHy, setOpenHy] = useState(false)
   const [zwValue, setZwValue] = useState('')
@@ -71,7 +73,9 @@ export default function SearchInput({onClickSearch, list = defaultList}: SProps)
   useOutsideAlerter(wrapperRef)
 
   return (
-    <InputWrap onClick={onClickSearch}>
+    <InputWrap onClick={() => {
+    	onClickSearch(keyword)
+    }}>
       <RealInput
         css={{w: 660}}
         onFocus={() => {
@@ -81,9 +85,11 @@ export default function SearchInput({onClickSearch, list = defaultList}: SProps)
           setActive(false)
         }}
         active={active}
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
         placeholder='搜索职位、公司'
       />
-      <InputFilterBtn active={active}>
+      {/*<InputFilterBtn active={active}>
         |
         <Select
           placeholder='职位类型'
@@ -120,7 +126,7 @@ export default function SearchInput({onClickSearch, list = defaultList}: SProps)
             ))}
           </HangyeWrap>
         ) : null}
-      </InputFilterBtn>
+      </InputFilterBtn>*/}
       <Button css={{w: 120, h: 54, mt: 0, borderRadius: 0}} text='搜索' />
     </InputWrap>
   )

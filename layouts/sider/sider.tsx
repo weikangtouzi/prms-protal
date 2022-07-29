@@ -26,17 +26,19 @@ const routes = [
     sub: [
       {title: '基本信息', url: '/me'},
       {title: '账号安全', url: '/me/security'},
-      {title: '操作记录', url: '/me/logs'},
+      {title: '操作记录', 
+      	// url: '/me/logs'
+    	},
     ],
   },
   {
     title: '求职管理',
-    url: '/submission',
+    // url: '/submission',
     sub: [{title: '投递记录', url: '/submission'}],
   },
   {
     title: '我的收藏',
-    url: '/collections',
+    // url: '/collections',
     sub: [
       {title: '收藏的职位', url: '/collections'},
       {title: '收藏的企业', url: '/collections/company'},
@@ -44,7 +46,7 @@ const routes = [
   },
   {
     title: '资产管理',
-    url: '/assets',
+    // url: '/assets',
     sub: [
       {title: '我的钱包', url: '/assets'},
       {title: '银行卡', url: '/assets/cards'},
@@ -52,7 +54,7 @@ const routes = [
   },
   {
     title: '系统通知',
-    url: '/settings',
+    // url: '/settings',
     sub: [{title: '消息中心', url: '/settings'}],
   },
 ]
@@ -114,6 +116,10 @@ function FatherItem({title, active = false, sub = []}: {title: string; active: b
         ? sub.map((c) => (
             <ChildItem
               onClick={() => {
+              	if (!c.url || !active) {
+              		global.TODO_TOAST()
+              		return
+              	}
                 router.push(c.url)
               }}
               key={c.title}

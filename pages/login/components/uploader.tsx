@@ -1,7 +1,6 @@
 import {useState} from 'react'
 import Image from 'next/image'
 import {styled} from '@/stitches.config'
-import {useUploadFileMutation} from '@/generated'
 
 const WrapDiv = styled('div', {
   flexDirectionCenter: 'column',
@@ -10,7 +9,8 @@ const WrapDiv = styled('div', {
 })
 
 interface IProps {
-  css?: any
+  css?: any,
+  setFileUrl: (_: string) => void,
 }
 
 const EmptyDiv = styled('label', {
@@ -57,8 +57,7 @@ const RealInput = styled('input', {
   display: 'none',
 })
 
-export default function UploadZZ({css}: IProps) {
-  const [uploadFile] = useUploadFileMutation()
+export default function UploadZZ({css, setFileUrl}: IProps) {
   const [url, setUrl] = useState('')
   return (
     <WrapDiv css={css}>
@@ -97,7 +96,11 @@ export default function UploadZZ({css}: IProps) {
         onChange={(e) => {
           const {files = []} = e.target
           if (files && files.length > 0) {
-            uploadFile({variables: {file: files[0], extraAttributes: {}}})
+          	HTAPI.CommonSingleUpload(files[0]).then(response => {
+          		const url = response.data.CommonSingleUpload
+          		setUrl(url)
+          		setFileUrl(url)
+          	})
             setUrl(URL.createObjectURL(files[0]))
           }
         }}

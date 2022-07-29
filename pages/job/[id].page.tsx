@@ -1,8 +1,8 @@
 import Image from 'next/image'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
+import {useRouter} from 'next/router'
 import Icon from '@/components/icon'
 import {Button} from '@/components/button'
-import {useUploadFileMutation} from '@/generated'
 import {
   Main,
   CompanyHead,
@@ -13,6 +13,8 @@ import {
   OutlinedText,
   RealInput,
 } from '../company/components/styled'
+
+import { reformComFinancing, reformCompanySize, reformEducationLevel, reformSalary, stringForFullTime, createMapImageUrl } from '@/utils/utils'
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
 
@@ -47,10 +49,26 @@ const defaultJlList = [
 ]
 
 export default function JobDetail() {
+	const router = useRouter()
+	useEffect(() => {
+		if (!router?.query?.id) {
+			return
+		}
+    HTAPI.UserGetJob({
+  		jobid: parseInt(router.query.id)
+  	}).then(response => {
+  		setJobDetailInfo(response)
+  	})
+  }, [router.query])
+
+
+	const [jobDetailInfo, setJobDetailInfo] = useState()
+
   const {name, money, time, detail, fl, subscribed} = info
   const [list] = useState(defaultJlList)
   const [selectedId, setSelectedId] = useState(0)
-  const [uploadFile] = useUploadFileMutation()
+
+	const mapImageUrl = createMapImageUrl(jobDetailInfo?.job?.address_coordinate)
 
   return (
     <Main>
@@ -59,14 +77,20 @@ export default function JobDetail() {
           <Flex css={{justifyContent: 'space-between', w: 817}}>
             <Flex css={{flexDirection: 'column', ml: 10, w: 822}}>
               <Flex>
-                <TitleText>{name}</TitleText>
-                <TitleText css={{color: '#FF6500'}}>{money}</TitleText>
+                <TitleText>{jobDetailInfo?.job?.title}</TitleText>
+                <TitleText css={{marginLeft: 20, color: '#FF6500'}}>{reformSalary(jobDetailInfo?.job?.salaryExpected)}</TitleText>
               </Flex>
               <TitleText css={{fs: 18, fw: 400, ff: '$fr', mt: 20, mb: 20, lineHeight: '25px', color: '#3C4441'}}>
-                {detail}
+                {
+                [
+                	jobDetailInfo?.job?.address_description?.[4],
+                	`${jobDetailInfo?.job?.experience}年经验`,
+                	reformEducationLevel(jobDetailInfo?.job?.education),
+                	stringForFullTime(jobDetailInfo?.job?.full_time_job)
+                ].join(' | ')}
               </TitleText>
               <Flex>
-                {fl.map((f) => (
+                {jobDetailInfo?.job?.tags?.map((f) => (
                   <Flex
                     key={f}
                     css={{
@@ -85,15 +109,23 @@ export default function JobDetail() {
               </Flex>
             </Flex>
             <Flex css={{flexDirection: 'column', alignItems: 'flex-end'}}>
-              <TitleText css={{fs: 18, fw: 400, mt: 9}}>{time}</TitleText>
+              <TitleText css={{fs: 18, fw: 400, mt: 9}}></TitleText>
               <Flex css={{mt: 20, alignItems: 'center'}}>
-                <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} />
-                <TitleText css={{fs: 18, color: '$primary', ml: 10, mr: 20}}>收藏</TitleText>
-                <Button text='投简历' onClick={() => {}} css={{w: 120, h: 54, mt: 0}} />
+                <Icon name={subscribed ? 'icon-ico_shoucangoff' : 'icon-ico_shoucangon'} onClick={global.TODO_TOAST} />
+                <TitleText css={{fs: 18, color: '$primary', ml: 10, mr: 20}} onClick={global.TODO_TOAST}>收藏</TitleText>
+                <Button text='投简历' onClick={() => {
+                	HTAPI.CandidateSendResume({
+			            	'jobId': jobDetailInfo.job.id,
+										'hrId': jobDetailInfo.hr.id,
+										'compId': jobDetailInfo.company.id
+			            }).then(response => {
+			            	Toast.show('投递成功')
+			            })
+                }} css={{w: 120, h: 54, mt: 0}} />
               </Flex>
             </Flex>
           </Flex>
-          <Flex css={{flexDirection: 'column', ml: 86}}>
+          {/*<Flex css={{flexDirection: 'column', ml: 86}}>
             {list.map((li) => (
               <Flex
                 key={li.id}
@@ -146,13 +178,15 @@ export default function JobDetail() {
               onChange={(e) => {
                 const {files = []} = e.target
                 if (files && files.length > 0) {
-                  uploadFile({variables: {file: files[0], extraAttributes: {}}})
+                	HTAPI.CommonSingleUpload(files[0]).then(response => {
+                		// response.data.CommonSingleUpload
+                	})
                 }
               }}
               type='file'
               accept='.doc,.docx,.pdf'
             />
-          </Flex>
+          </Flex>*/}
         </Flex>
       </CompanyHead>
       <CompanyBodyWrap css={{pb: 80}}>
@@ -171,29 +205,29 @@ export default function JobDetail() {
                 mb: 30,
               }}
             >
-              {longText}
+              {jobDetailInfo?.job?.detail}
             </TitleText>
             <TitleText css={{fs: 18, mb: 21}}>工作地址：</TitleText>
             <TitleText css={{fs: 16, fw: 400, mb: 21, display: 'flex', alignItems: 'center'}}>
-              <Icon name='icon-icon_dingwei' /> 深圳市南山区粤海街道软件基地
+              <Icon name='icon-icon_dingwei' /> {jobDetailInfo?.job?.address_description?.slice(3)?.join('')}
             </TitleText>
-            <Image alt='name' width={804} height={200} src={imgUrl} />
+            <img alt='name' width={804} height={200} src={mapImageUrl} />
           </Flex>
           <Flex css={{mt: 16, bg: '$w', p: '40px 40px 30px 40px', flexDirection: 'column'}}>
             <TitleText css={{fs: 18, mb: 10, color: '#3C4441'}}>职位发布者：</TitleText>
             <Flex css={{alignItems: 'flex-start', justifyContent: 'flex-start', mt: 20}}>
-              <Image alt='name' className='use-image-round' width={48} height={48} src={imgUrl} />
+              <img alt='name' className='use-image-round' width={48} height={48} src={jobDetailInfo?.hr?.logo} />
               <Flex css={{flexDirection: 'column', ml: 15}}>
-                <Flex css={{fs: 16, color: '#3C4441'}}>陈女士 · HR</Flex>
+                <Flex css={{fs: 16, color: '#3C4441'}}>{jobDetailInfo?.hr?.name} · {jobDetailInfo?.hr?.pos}</Flex>
                 <Flex css={{fs: 14, color: '#616A67', mt: 6}}>刚刚活跃</Flex>
               </Flex>
             </Flex>
           </Flex>
         </LeftWrap>
         <Flex css={{w: 284, ml: 16, mt: 16, flexDirection: 'column', h: 662, justifyContent: 'space-between'}}>
+          {/*<Image alt='name' width={284} height={210} src={imgUrl} />
           <Image alt='name' width={284} height={210} src={imgUrl} />
-          <Image alt='name' width={284} height={210} src={imgUrl} />
-          <Image alt='name' width={284} height={210} src={imgUrl} />
+          <Image alt='name' width={284} height={210} src={imgUrl} />*/}
         </Flex>
       </CompanyBodyWrap>
     </Main>

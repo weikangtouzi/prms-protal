@@ -5,9 +5,8 @@ import {Select} from '@/components/select'
 import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
-import {educationList} from './constant'
 import EditCardItem from './edit-card-item'
-import {useUpdateEduExprienceMutation} from '@/generated'
+import { reformEducationLevel } from '@/utils/utils'
 
 interface EProps {
   eduExp?: any[]
@@ -19,15 +18,13 @@ const empty = {
   major: '',
   startAt: '',
   endAt: '',
-  detail: '',
+  exp_at_school: '',
 }
 
-function EducationExperience({eduExp = []}: EProps) {
+function EducationExperience({eduExp = [], ...props}: EProps) {
   const [edit, setEdit] = useState(false)
   const [editIndex, setEditIndex] = useState(-1)
   const [editDetail, setEditDetail] = useState(empty)
-
-  const [updateEduExprienceMutation] = useUpdateEduExprienceMutation()
 
   const jyEditDom = (
     <EditWrap css={{pr: 20}}>
@@ -48,14 +45,10 @@ function EducationExperience({eduExp = []}: EProps) {
         <InputFormItem css={{mt: 30}} label='学历'>
           <Select
             css={{w: 300, mt: 10}}
-            list={educationList}
-            value={
-              typeof editDetail.education === 'string'
-                ? educationList.find((ed) => ed.key === editDetail.education) || ''
-                : editDetail.education
-            }
+            list={reformEducationLevel(-1)}
+            value={{ value: reformEducationLevel(editDetail.education) }}
             onSelect={(value: any) => {
-              setEditDetail((d) => ({...d, education: value}))
+              setEditDetail((d) => ({...d, education: value.key}))
             }}
           />
         </InputFormItem>
@@ -100,10 +93,10 @@ function EducationExperience({eduExp = []}: EProps) {
       <InputFormItem css={{mt: 30}} label='在校经历'>
         <TextField
           type='textarea'
-          value={editDetail.detail}
+          value={editDetail.exp_at_school}
           onChange={(e) => {
             const {value} = e.target
-            setEditDetail((d) => ({...d, detail: value}))
+            setEditDetail((d) => ({...d, exp_at_school: value}))
           }}
           size='small'
           css={{bg: '$w', w: 804, h: 240, mt: 10}}
@@ -131,19 +124,20 @@ function EducationExperience({eduExp = []}: EProps) {
         />
         <Button
           onClick={() => {
-            updateEduExprienceMutation({
-              variables: {
-                info: {
-                  ...editDetail,
-                  exp_at_school: editDetail.detail,
-                },
-              },
-              onCompleted: () => {
-                setEdit(false)
-                setEditIndex(-1)
-                setEditDetail(empty)
-              },
-            })
+          	HTAPI.CandidateEditEduExp({
+          		info: {
+                ...editDetail,
+                startAt: undefined,
+                endAt: undefined,
+                time: `${editDetail.startAt}-${editDetail.endAt}`,
+                isFullTime: editDetail?.isFullTime ?? true
+              }
+          	}).then(response => {
+          		setEdit(false)
+              setEditIndex(-1)
+              setEditDetail(empty)
+              props.onRefresh()
+          	})
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -154,12 +148,12 @@ function EducationExperience({eduExp = []}: EProps) {
 
   const jyDom = (edu: any) => (
     <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32}}>
-      <Flex css={{fw: 600}}>{edu.schoolName}</Flex>
+      <Flex css={{fw: 600}}>{edu.school_name}</Flex>
       <Flex css={{fw: 600, mt: 10}}>
-        {edu.major} ｜{edu.education}
+        {edu.major} ｜{reformEducationLevel(edu.education)}
       </Flex>
       <NormalText css={{ml: 0, mt: 20}}>在校经历：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{edu.detail}</NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{edu.exp_at_school}</NormalText>
     </Flex>
   )
 
@@ -172,6 +166,7 @@ function EducationExperience({eduExp = []}: EProps) {
         setEditIndex(-1)
         setEditDetail(empty)
       }}
+      disabled={!props.editAble}
     >
       {edit ? (
         jyEditDom
@@ -181,10 +176,19 @@ function EducationExperience({eduExp = []}: EProps) {
             <EditCardItem
               css={{mt: 30}}
               key={ed.id}
+              disabled={!props.editAble}
               onEdit={() => {
                 setEdit(true)
                 setEditIndex(idx)
-                setEditDetail(ed)
+                setEditDetail({
+                	id: ed.id,
+                	schoolName: ed.school_name,
+								  education: ed.education,
+								  major: ed.major,
+								  startAt: ed?.time?.split('-')?.[0],
+								  endAt: ed?.time?.split('-')?.[1],
+								  exp_at_school: ed.exp_at_school,
+                })
               }}
             >
               {jyDom(ed)}

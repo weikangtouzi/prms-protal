@@ -1,6 +1,10 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
+import {useRouter} from 'next/router'
 import {styled} from '@/stitches.config'
 import Pagination from '@/components/pagination'
+import { FindCompanyContainer } from './components/styled'
+import FindCompanyItem from './components/find-company-item'
+import SearchInput from '@/pages/job/components/search-input'
 
 const Main = styled('main', {
   minWidth: 1184,
@@ -82,12 +86,48 @@ const hy = [
 ]
 
 export default function Company() {
-  const [current, setCurrent] = useState(2)
+  const router = useRouter()
+  const [current, setCurrent] = useState(1)
+  const [total, setTotal] = useState(0)
+
+  const [keyword, setKeyword] = useState('')
+
   const [lActive, setLActive] = useState(0)
+  const [companyList, setComponentList] = useState([])
+
+  const pageSize = 20
+  const reloadItemList = (pageIndex) => {
+  	HTAPI.UserSearchEnterprise({
+      keyword: keyword,
+      page: pageIndex - 1,
+      pageSize: pageSize,
+	  }).then(response => {
+	  	const count = response?.count ?? 0
+	  	const itemList = response?.data ?? []
+	  	setTotal(Math.ceil(count / pageSize))
+	  	setComponentList(itemList)
+	  })
+  }
+  
+  useEffect(() => {
+  	setKeyword(router?.query?.keyword ?? '')
+  }, [router.query])
+  useEffect(() => {
+  	if (current == 1) {
+  		reloadItemList(1)
+  	} else {
+  		setCurrent(1)
+  	}
+  }, [keyword])
+
+  useEffect(() => {
+  	reloadItemList(current)
+  }, [current])
 
   return (
     <Main>
-      <TopDiv>
+    	<SearchInput keyword={keyword} setKeyword={setKeyword} onClickSearch={(keyword) => setKeyword(keyword)} />
+      {/*<TopDiv>
         <TopItemWrap>
           <TitleText>公司地点：</TitleText>
           <TopRightWrap>
@@ -152,12 +192,21 @@ export default function Company() {
             ))}
           </TopRightWrap>
         </TopItemWrap>
-      </TopDiv>
+      </TopDiv>*/}
+      <FindCompanyContainer>
+      {
+      	companyList.map((item, index) => {
+      		return (
+      			<FindCompanyItem key={index} item={item} index={index} />
+      		)
+      	})
+      }
+      </FindCompanyContainer>
       <Pagination
         css={{justifyContent: 'center', mt: 30, mb: 80}}
         current={current}
         setCurrent={setCurrent}
-        total={4}
+        total={total}
       />
     </Main>
   )

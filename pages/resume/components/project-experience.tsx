@@ -5,7 +5,7 @@ import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
 import EditCardItem from './edit-card-item'
-import {useUpdateProjectExprienceMutation} from '@/generated'
+import moment from 'moment'
 
 interface PProps {
   projExp?: any[]
@@ -20,11 +20,10 @@ const empty = {
   performance: '',
 }
 
-function ProjectExperience({projExp = []}: PProps) {
+function ProjectExperience({projExp = [], ...props}: PProps) {
   const [edit, setEdit] = useState(false)
   const [editIndex, setEditIndex] = useState(-1)
   const [editDetail, setEditDetail] = useState(empty)
-  const [updateProjectExpirience] = useUpdateProjectExprienceMutation()
 
   const xmEditDom = (
     <EditWrap css={{pr: 20}}>
@@ -128,16 +127,14 @@ function ProjectExperience({projExp = []}: PProps) {
         />
         <Button
           onClick={() => {
-            updateProjectExpirience({
-              variables: {
-                info: editDetail,
-              },
-              onCompleted: () => {
-                setEdit(false)
-                setEditIndex(-1)
-                setEditDetail(empty)
-              },
-            })
+          	HTAPI.CandidateEditProExp({
+          		info: editDetail
+          	}).then(response => {
+          		setEdit(false)
+              setEditIndex(-1)
+              setEditDetail(empty)
+              props.onRefresh()
+          	})
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -148,14 +145,14 @@ function ProjectExperience({projExp = []}: PProps) {
 
   const xmDom = (proj: any) => (
     <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32}}>
-      <Flex css={{fw: 600, fs: 18}}>{proj.projectName}</Flex>
+      <Flex css={{fw: 600, fs: 18}}>{proj.project_name}</Flex>
       <Flex css={{fw: 600, mt: 10}}>
-        {proj.startAt}-{proj.endAt} ｜{proj.role}
+        {moment(proj.start_at).format('YYYY-MM-DD')}-{moment(proj.end_at).format('YYYY-MM-DD')} ｜{proj.role}
       </Flex>
       <NormalText css={{ml: 0, mt: 20}}>项目描述：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{proj.description}</NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{proj.project_description}</NormalText>
       <NormalText css={{ml: 0, mt: 30}}>项目业绩：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{proj.performance}</NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{proj.project_performance}</NormalText>
     </Flex>
   )
 
@@ -163,6 +160,7 @@ function ProjectExperience({projExp = []}: PProps) {
     <LeftMenuTitle
       title='项目经历'
       edit={edit}
+      disabled={!props.editAble}
       onEdit={() => {
         setEdit(true)
         setEditIndex(-1)
@@ -177,10 +175,19 @@ function ProjectExperience({projExp = []}: PProps) {
             <EditCardItem
               css={{mt: 30}}
               key={p.id}
+              disabled={!props.editAble}
               onEdit={() => {
                 setEdit(true)
                 setEditIndex(idx)
-                setEditDetail(p)
+                setEditDetail({
+                	id: p.id,
+                	projectName: p.project_name,
+								  role: p.role,
+								  startAt: p.start_at,
+								  endAt: p.end_at,
+								  description: p.project_description,
+								  performance: p.project_performance,
+                })
               }}
             >
               {xmDom(p)}

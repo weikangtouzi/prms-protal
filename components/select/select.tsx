@@ -3,7 +3,7 @@ import {styled} from '@/stitches.config'
 import Icon from '../icon'
 
 const Container = styled('div', {
-  h: 42,
+  h: 52,
   w: 220,
   borderRadius: '2px',
   fs: 18,

@@ -139,13 +139,13 @@ export const ZcIcon = styled('div', {
 })
 
 export const ZcCard = styled(LoginCard, {
-  w: 830,
+  w: 1000,
   h: 722,
 })
 
 export const ZcLeft = styled('div', {
   borderRadius: '10px',
-  w: 639,
+  w: 900,
   h: '100%',
   boxShadow: '0px 6px 30px 0px rgba(73, 73, 73, 0.2)',
   bg: '$w',

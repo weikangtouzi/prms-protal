@@ -6,8 +6,7 @@ import {Select} from '@/components/select'
 import {TextField} from '@/components/textfield'
 import InputFormItem from '../../login/components/input-form'
 import CitySelect from './city-select'
-import {useGetBasicInfoQuery, useEditBasicInfoMutation} from '@/generated'
-import {educationList} from './constant'
+import { reformDistanceYears, reformEducationLevel } from '@/utils/utils'
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
 
@@ -23,29 +22,20 @@ const defaultBasicInfo = {
   email: '',
 }
 
-function BasicInfo() {
+function BasicInfo({ editAble }) {
   const [editInfo, setEditInfo] = useState(false)
   const [city, setCity] = useState('')
   const [education, setEducation] = useState<any>('')
   const [basicInfo, setBasicInfo] = useState<any>(defaultBasicInfo)
   const [newBasicInfo, setNewBasicInfo] = useState<any>(defaultBasicInfo)
 
-  const {data: userBasicData} = useGetBasicInfoQuery()
-  const [editBasicInfoMutation] = useEditBasicInfoMutation()
-
   useEffect(() => {
-    if (!userBasicData) {
-      return
-    }
-
-    const {UserGetBasicInfo: userBasicInfoData} = userBasicData
-    setBasicInfo(userBasicInfoData)
-    setNewBasicInfo(userBasicInfoData)
-
-    const edu = educationList.find((ed: any) => ed.key === userBasicInfoData.education) || ''
-
-    setEducation(edu)
-  }, [userBasicData])
+  	HTAPI.UserGetBasicInfo().then((userBasicInfoData) => {
+  		setBasicInfo(userBasicInfoData)
+	    setNewBasicInfo(userBasicInfoData)
+	    setEducation({ value: reformEducationLevel(userBasicInfoData.education) })
+		})
+  }, [])
 
   const meInfoDom = (
     <EditWrap css={{pl: 20}}>
@@ -110,7 +100,7 @@ function BasicInfo() {
           </Flex>
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='您的学历：'>
-          <Select css={{w: 300, mt: 10}} value={education} list={educationList} onSelect={setEducation} />
+          <Select css={{w: 300, mt: 10}} value={education} list={reformEducationLevel(-1)} onSelect={setEducation} />
         </InputFormItem>
         <InputFormItem css={{mt: 30, w: 430}} label='首次参加工作时间：'>
           <TextField
@@ -128,8 +118,7 @@ function BasicInfo() {
           <Button
             onClick={() => {
               setNewBasicInfo(basicInfo)
-              const edu = educationList.find((ed: any) => ed.key === basicInfo.education) || ''
-              setEducation(edu)
+              setEducation({ value: reformEducationLevel(basicInfo.education) })
               setEditInfo(false)
             }}
             css={{
@@ -146,22 +135,18 @@ function BasicInfo() {
           />
           <Button
             onClick={() => {
-              editBasicInfoMutation({
-                variables: {
-                  info: {
-                    username: newBasicInfo.username,
-                    gender: newBasicInfo.gender,
-                    birthday: newBasicInfo.birth_date,
-                    education: education.key,
-                    currentCity: newBasicInfo.current_city,
-                    firstTimeWorking: newBasicInfo.first_time_working,
-                  },
-                },
-                onCompleted: () => {
-                  setEditInfo(false)
-                  setBasicInfo({...newBasicInfo, education})
-                },
-              })
+            	HTAPI.UserEditBasicInfo({ info: {
+                username: newBasicInfo.username,
+                gender: newBasicInfo.gender,
+                birthday: newBasicInfo.birth_date,
+                education: education.key,
+                currentCity: newBasicInfo.current_city,
+                firstTimeWorking: newBasicInfo.first_time_working,
+              } }).then(response => {
+              	Toast.show('修改成功')
+					    	setEditInfo(false)
+                setBasicInfo({...newBasicInfo, education})
+					    })
             }}
             css={{w: 80, h: 42, ml: 20, fs: 16, mt: 56}}
             text='完成'
@@ -176,28 +161,33 @@ function BasicInfo() {
       {editInfo ? (
         meInfoDom
       ) : (
-        <Flex css={{justifyContent: 'space-between', alignItems: 'flex-start', mt: 39, p: '0 20px'}}>
+        <Flex className={'item-scroll-bind'} css={{justifyContent: 'space-between', alignItems: 'flex-start', mt: 39, p: '0 20px'}}>
           <Flex css={{alignItems: 'flex-start'}}>
-            <Image alt='header' className='use-image-round' src={imgUrl} width={64} height={64} />
+            <img alt='header' className='use-image-round' src={basicInfo?.image_url} width={64} height={64} />
             <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 20}}>
               <UploadText css={{fs: 24, mt: 0, fw: 600, color: '#3C4441'}}>{basicInfo?.username}</UploadText>
               <UploadText css={{mt: 9, ff: '$fr', color: '#3C4441'}}>
-                {basicInfo?.first_time_working}｜{education?.value}｜{basicInfo?.birth_date}
+                {reformDistanceYears(basicInfo?.first_time_working)}年｜{education?.value}｜{reformDistanceYears(basicInfo?.birth_date)}岁
               </UploadText>
               <UploadText css={{mt: 9, ff: '$fr', color: '#3C4441'}}>
-                {basicInfo.first_time_working}｜{basicInfo?.phone_number}
+                {basicInfo.first_time_working}｜{basicInfo?.phone_number ?? basicInfo.email}
               </UploadText>
             </Flex>
           </Flex>
 
-          <RightBtn
-            onClick={() => {
-              setEditInfo(true)
-            }}
-            css={{fs: 16}}
-          >
-            编辑
-          </RightBtn>
+          {
+          	editAble && (
+          		<RightBtn
+		            onClick={() => {
+		              setEditInfo(true)
+		            }}
+		            css={{fs: 16}}
+		          >
+		            编辑
+		          </RightBtn>
+          	)
+          }
+
         </Flex>
       )}
     </>

@@ -14,6 +14,8 @@ import JudgeStar from './components/judge-star'
 import TabItem from './components/tab-item'
 import CommentItem from './components/comment-item'
 
+import { reformComFinancing, reformCompanySize, stringForEnterpriseNature, reformEducationLevel, reformSalary, stringForFullTime, createMapImageUrl } from '@/utils/utils'
+
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
 
 const longText =
@@ -171,27 +173,68 @@ export default function Company() {
   const [activeSubTab, setActiveSubTab] = useState(1)
   const [city, setCity] = useState('')
 
+  const [companyDetailInfo, setCompanyDetailInfo] = useState()
+
   useEffect(() => {
-    const {tab} = router.query
+    const { id, tab } = router.query
+    if (!id) {
+			return
+		}
+    const entId = parseInt(id)
+    Promise.all([
+    	HTAPI.UserGetEnterpriseDetail_EntInfo({ entId }),
+    	HTAPI.UserGetEnterpriseDetail_WorkerList({ entId }),
+    	// HTAPI.UserGetJobListByEntId({ entId })
+    ]).then(([companyDetailResponse, companyHrResponse, companyJobResponse]) => {
+    	companyDetailResponse.hrList = companyHrResponse
+    	companyDetailResponse.jobList = companyJobResponse
+    	setCompanyDetailInfo(companyDetailResponse)
+    })
     if (tab === 'zhaopin') {
       setActiveTab(2)
     }
   }, [router.query])
+
+  const mapImageUrl = createMapImageUrl(companyDetailInfo?.enterprise_coordinates)
+  const infoList = [
+  	{
+	    text: companyDetailInfo?.industry_involved?.join('|'),
+	    icon: 'icon-icon_fenlei',
+	  },
+	  {
+	    text: stringForEnterpriseNature(companyDetailInfo?.business_nature),
+	    icon: 'icon-icon_shangshigongsi',
+	  },
+	  {
+	    text: reformCompanySize(companyDetailInfo?.enterprise_size),
+	    icon: 'icon-icon_renshu',
+	  },
+	  {
+	    text: companyDetailInfo?.homepage ?? '',
+	    icon: 'icon-icon_wangzhan',
+	  },
+  ]
 
   return (
     <Main>
       <CompanyHead>
         <Flex css={{justifyContent: 'space-between'}}>
           <Flex>
-            <Image className='image-4-radius' alt='name' width={70} height={70} src={imgUrl} />
+            <img className='image-4-radius' alt='name' width={70} height={70} src={companyDetailInfo?.enterprise_logo} />
             <Flex css={{flexDirection: 'column', ml: 10}}>
-              <TitleText>深圳市公司名称</TitleText>
+              <TitleText>{companyDetailInfo?.enterprise_name}</TitleText>
               <TitleText css={{fs: 18, fw: 400, ff: '$fr', mt: 6, lineHeight: '25px'}}>
-                A轮｜50-150人｜移动互联网
+                {
+                	[
+                		reformComFinancing(companyDetailInfo?.enterprise_financing),
+                		reformCompanySize(companyDetailInfo?.enterprise_size),
+                		stringForEnterpriseNature(companyDetailInfo?.business_nature)
+                	].join('｜')
+                }
               </TitleText>
             </Flex>
           </Flex>
-          <Flex>
+          {/*<Flex>
             <Flex css={{flexDirection: 'column', alignItems: 'center'}}>
               <TitleText css={{fs: 26}}>56789</TitleText>
               <TitleText css={{fs: 16, fw: 400, ff: '$fr', mt: 10}}>在线职位</TitleText>
@@ -200,7 +243,7 @@ export default function Company() {
               <TitleText css={{fs: 26}}>56789</TitleText>
               <TitleText css={{fs: 16, fw: 400, ff: '$fr', mt: 10}}>在线职位</TitleText>
             </Flex>
-          </Flex>
+          </Flex>*/}
         </Flex>
       </CompanyHead>
       <CompanyBodyWrap>
@@ -213,13 +256,13 @@ export default function Company() {
               title='公司简介'
               active={activeTab === 1}
             ></TabItem>
-            <TabItem
+            {/*<TabItem
               onClick={() => {
                 setActiveTab(2)
               }}
               title='招聘职位（56789）'
               active={activeTab === 2}
-            ></TabItem>
+            ></TabItem>*/}
           </TabWrap>
           {activeTab === 1 ? (
             <>
@@ -237,15 +280,15 @@ export default function Company() {
                     mb: 30,
                   }}
                 >
-                  {longText}
+                  {companyDetailInfo?.extra_attribute}
                 </TitleText>
                 <TitleText css={{fs: 18, mb: 21}}>工作地址：</TitleText>
                 <TitleText css={{fs: 16, fw: 400, mb: 21, display: 'flex', alignItems: 'center'}}>
-                  <Icon name='icon-icon_dingwei' /> 深圳市南山区粤海街道软件基地
+                  <Icon name='icon-icon_dingwei' /> {companyDetailInfo?.enterprise_loc_detail.join('')}
                 </TitleText>
-                <Image alt='name' width={804} height={200} src={imgUrl} />
+                <img alt='name' width={804} height={200} src={mapImageUrl} />
               </Flex>
-              <Flex css={{p: 40, mt: 16, bg: '$w', flexDirection: 'column'}}>
+              {/*<Flex css={{p: 40, mt: 16, bg: '$w', flexDirection: 'column'}}>
                 <TitleText css={{fs: 18, mb: 10}}>面试评价：</TitleText>
                 <JudgeStar label='综合评分：' starNum={4.0} size='large' />
                 <Flex css={{justifyContent: 'space-between'}}>
@@ -256,7 +299,7 @@ export default function Company() {
                 {commentList.map((c) => (
                   <CommentItem item={c} key={c.id} />
                 ))}
-              </Flex>
+              </Flex>*/}
             </>
           ) : (
             <>
@@ -302,7 +345,7 @@ export default function Company() {
                 </Flex>
               </Flex>
               <Flex css={{flexDirection: 'column'}}>
-                {jobList.map((j) => (
+                {companyDetailInfo?.jobList?.map((j) => (
                   <JobItem key={j.id} item={j}></JobItem>
                 ))}
               </Flex>
@@ -327,7 +370,7 @@ export default function Company() {
           </Flex>
           <TitleText css={{fs: 24}}>公司福利</TitleText>
           <Flex css={{flexWrap: 'wrap', pb: 20, borderBottom: '1px dashed rgba(0, 0, 0, 0.1)', mb: 19}}>
-            {fl.map((f) => (
+            {companyDetailInfo?.enterprise_welfare?.map((f) => (
               <Flex
                 css={{
                   borderRight: 4,
@@ -358,12 +401,12 @@ export default function Company() {
           </Flex>
           <TitleText css={{fs: 24}}>招聘官</TitleText>
           <Flex css={{flexDirection: 'column'}}>
-            {hrList.map((hr) => (
+            {companyDetailInfo?.hrList?.map((hr) => (
               <Flex key={hr.id} css={{mt: 21, alignItems: 'flex-start'}}>
-                <Image alt='hr' src={hr.img} width={48} height={48} />
+                <img alt='hr' src={hr.logo} width={48} height={48} />
                 <Flex css={{flexDirection: 'column', ml: 10}}>
                   <TitleText css={{fs: 16, fw: 400, ff: '$fr'}}>{hr.name}</TitleText>
-                  <TitleText css={{fs: 16, fw: 400, ff: '$fr', mt: 2}}>{hr.content}</TitleText>
+                  <TitleText css={{fs: 16, fw: 400, ff: '$fr', mt: 2}}>{hr.pos}</TitleText>
                 </Flex>
               </Flex>
             ))}
@@ -379,6 +422,7 @@ export default function Company() {
               justifyContent: 'center',
               mt: 20,
             }}
+            onClick={global.TODO_TOAST}
           >
             查看更多招聘职位 &gt;
           </Flex>
@@ -386,7 +430,7 @@ export default function Company() {
       </CompanyBodyWrap>
       {activeTab === 1 ? (
         <>
-          <Flex css={{mr: 300, justifyContent: 'center'}}>
+          {/*<Flex css={{mr: 300, justifyContent: 'center'}}>
             <Button text='查看更多' onClick={() => {}} css={{w: 200, h: 46, mt: 30}} />
           </Flex>
           <Pagination
@@ -394,7 +438,7 @@ export default function Company() {
             current={current}
             setCurrent={setCurrent}
             total={4}
-          />
+          />*/}
         </>
       ) : null}
     </Main>

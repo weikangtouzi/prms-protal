@@ -5,7 +5,6 @@ import {styled} from '@/stitches.config'
 import {AvatarUploader} from '@/components/avatar'
 import {TextField} from '@/components/textfield'
 import {Button} from '@/components/button'
-import {useEditBasicInfoMutation, useGetBasicInfoQuery} from '@/generated'
 
 const RightWrap = styled('div', {
   w: 884,
@@ -45,22 +44,16 @@ export default function Me() {
 
   const [fileUrl, setFileUrl] = useState('')
 
-  const [editBasicInfoMutation] = useEditBasicInfoMutation()
-
-  const {data: userBasicData} = useGetBasicInfoQuery()
+  const onRefresh = () => {
+  	HTAPI.UserGetBasicInfo().then(({username, image_url}) => {
+		  setFileUrl(image_url)
+    	setName(username)
+		})
+  }
 
   useEffect(() => {
-    if (!userBasicData) {
-      return
-    }
-
-    const {
-      UserGetBasicInfo: {username, image_url},
-    } = userBasicData
-
-    setFileUrl(image_url)
-    setName(username)
-  }, [userBasicData])
+    onRefresh()
+  }, [])
 
   return (
     <RightWrap>
@@ -97,14 +90,15 @@ export default function Me() {
         text='提交'
         css={{w: 120, h: 46}}
         onClick={() => {
-          editBasicInfoMutation({
-            variables: {
-              info: {
-                username: name,
-                logo: fileUrl,
-              },
-            },
-          })
+        	HTAPI.UserEditBasicInfo({
+        		info: {
+              username: name,
+              logo: fileUrl,
+            }
+        	}).then(response => {
+        		Toast.show('修改成功')
+        		onRefresh()
+        	})
         }}
       />
     </RightWrap>

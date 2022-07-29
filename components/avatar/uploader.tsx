@@ -1,7 +1,6 @@
 import {useState, useEffect} from 'react'
 import Image from 'next/image'
 import {styled} from '@/stitches.config'
-import {useUploadFileMutation} from '@/generated'
 
 const WrapDiv = styled('div', {
   flexDirectionCenter: 'column',
@@ -55,23 +54,11 @@ const SecondLine = styled('div', {
 })
 
 export function AvatarUploader({css, fileUrl, setFileUrl}: IProps) {
-  const [uploadFile, {data: uploadUrl}] = useUploadFileMutation()
   const [url, setUrl] = useState(fileUrl)
 
   useEffect(() => {
     setUrl(fileUrl)
   }, [fileUrl])
-
-  useEffect(() => {
-    if (!uploadUrl) {
-      return
-    }
-
-    const {CommonSingleUpload} = uploadUrl
-    setFileUrl(CommonSingleUpload)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadUrl])
 
   return (
     <WrapDiv css={css}>
@@ -111,16 +98,10 @@ export function AvatarUploader({css, fileUrl, setFileUrl}: IProps) {
         onChange={(e) => {
           const {files = []} = e.target
           if (files && files.length > 0) {
-            uploadFile({
-              variables: {
-                file: files[0],
-                // extraAttributes: {
-                //   customUploadPath: 'web-header',
-                //   customFileType: 'Photo',
-                //   customFileName: 'header-photo',
-                // },
-              },
-            })
+          	HTAPI.CommonSingleUpload(files[0]).then(response => {
+          		setUrl(response.data.CommonSingleUpload)
+          		setFileUrl(response.data.CommonSingleUpload)
+          	})
             setUrl(URL.createObjectURL(files[0]))
           }
         }}

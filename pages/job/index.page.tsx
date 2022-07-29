@@ -1,4 +1,5 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
+import {useRouter} from 'next/router'
 import Image from 'next/image'
 import {Main, Flex} from '../components/styled'
 import {HotCity} from './components/styled'
@@ -90,47 +91,99 @@ const jobList = [
 ]
 
 const gzjyList = [
-  {
-    key: 'nolimit',
-    value: '不限',
-  },
-  {
-    key: '1',
-    value: '在校/应届',
-  },
-  {
-    key: '2',
-    value: '3年及以下',
-  },
-  {
-    key: '3',
-    value: '3-5年',
-  },
-  {
-    key: '4',
-    value: '5-10年',
-  },
-  {
-    key: '5',
-    value: '10年以上',
-  },
+	{ value: '在校/应届', key: 0 },
+	{ value: '3年及以下', key: 1 },
+	{ value: '3-5年', key: 3 },
+	{ value: '5-10年', key: 5 },
+	{ value: '10年以上', key: 10 },
+	{ value: '经验不限', key: null },
+]
+
+const xlList = [
+	{ value: '大专', key: 'JuniorCollege' },
+  { value: '本科', key: 'RegularCollege' },
+  { value: '硕士', key: 'Postgraduate' },
+  { value: '博士', key: 'Doctor' },
+  { value: '不要求', key: null },
+]
+
+const xzList = [
+	{ value: '不限', key: null },
+  { value: '5k以下', key: [0, 5000] },
+  { value: '5-8k', key: [5000, 8000] },
+  { value: '8-10k', key: [8000, 10000] },
+  { value: '10-15k', key: [10000, 15000] },
+  { value: '15-20k', key: [15000, 20000] },
+  { value: '20-25k', key: [20000, 25000] },
+  { value: '25-30k', key: [25000, 30000] },
+  { value: '30k以上', key: [30000, 0] }
+]
+
+const gmList = [
+	{ value: '少于15人', key: 'LessThanFifteen' },
+  { value: '15-50人', key: 'FifteenToFifty' },
+  { value: '50-100人', key: 'FiftyToOneHundredFifty' },
+  { value: '100-500人', key: 'OneHundredFiftyToFiveHundreds' },
+  { value: '500-2000人', key: 'FiveHundredsToTwoThousands' },
+  { value: '2000人以上', key: 'MoreThanTwoThousands' },
 ]
 
 const hotcitys = ['全国', '重庆', '上海', '北京']
 const ls = ['我的', '益田假日', '深圳湾', '深圳湾2', '深圳湾3', '深圳湾4', '深圳湾5']
 
-export default function Job() {
-  const [current, setCurrent] = useState(2)
+export default function Job(props) {
+	const router = useRouter()
+  const [current, setCurrent] = useState(1)
+  const [total, setTotal] = useState(0)
 
+  const [keyword, setKeyword] = useState('')
+  const [category, setCategory] = useState('')
   const [gzjy, setGzjy] = useState('')
   const [xl, setXl] = useState('')
   const [xz, setXz] = useState('')
   const [gm, setGm] = useState('')
   const [gzxz, setGzxz] = useState('')
+  const [jobList, setJobList] = useState([])
+
+  const pageSize = 20
+  const reloadItemList = (pageIndex) => {
+  	HTAPI.CandidateSearchJob({
+	    filter: {
+	        page: pageIndex - 1,
+	        pageSize: pageSize,
+	        category: category ? [category] : undefined,
+	        experience: gzjy?.key,
+	        education: xl?.key,
+	        salaryExpected: xz?.key,
+	        enterpriseSize: gm?.key
+	    },
+	    keyword: keyword
+	  }).then(response => {
+	  	const count = response?.count ?? 0
+	  	const itemList = response?.data ?? []
+	  	setTotal(Math.ceil(count / pageSize))
+	  	setJobList(itemList)
+	  })
+  }
+  useEffect(() => {
+  	setKeyword(router?.query?.keyword)
+  	setCategory(router?.query?.category)
+  }, [router.query])
+  useEffect(() => {
+  	if (current == 1) {
+  		reloadItemList(1)
+  	} else {
+  		setCurrent(1)
+  	}
+  }, [keyword, category, gzjy, xl, xz, gm])
+
+  useEffect(() => {
+  	reloadItemList(current)
+  }, [current])
 
   return (
     <Main>
-      <SearchInput onClickSearch={() => {}} />
+      <SearchInput keyword={keyword} setKeyword={setKeyword} onClickSearch={(keyword) => setKeyword(keyword)} />
       <Flex
         css={{
           bg: 'rgba(242,244,246,1)',
@@ -141,7 +194,7 @@ export default function Job() {
           alignItems: 'center',
         }}
       >
-        <Flex css={{w: 1184, p: '20px 20px 20px 16px', bg: '$w', flexDirection: 'column', mb: 20}}>
+        {/*<Flex css={{w: 1184, p: '20px 20px 20px 16px', bg: '$w', flexDirection: 'column', mb: 20}}>
           <Flex>
             <LocationItem text='广东' />
             <LocationItem text='深圳' />
@@ -162,7 +215,7 @@ export default function Job() {
               </HotCity>
             ))}
           </Flex>
-        </Flex>
+        </Flex>*/}
         <Flex
           css={{
             w: 1184,
@@ -190,7 +243,7 @@ export default function Job() {
               placeholder='学历要求'
               value={xl}
               onSelect={setXl}
-              list={gzjyList}
+              list={xlList}
               valueCloseable
               iconName='icon-icon_xialaxuanxiang2'
             />
@@ -200,7 +253,7 @@ export default function Job() {
               placeholder='薪资要求'
               value={xz}
               onSelect={setXz}
-              list={gzjyList}
+              list={xzList}
               valueCloseable
               iconName='icon-icon_xialaxuanxiang2'
             />
@@ -210,11 +263,11 @@ export default function Job() {
               placeholder='公司规模'
               value={gm}
               onSelect={setGm}
-              list={gzjyList}
+              list={gmList}
               valueCloseable
               iconName='icon-icon_xialaxuanxiang2'
             />
-            <Select
+            {/*<Select
               css={{bg: 'transparent', border: 'none', w: 'auto', fs: 16, p: 0, h: 22, mr: 60}}
               placeholderCss={{fs: 16, ff: '$fr', color: '#616A67'}}
               placeholder='工作性质'
@@ -223,9 +276,14 @@ export default function Job() {
               list={gzjyList}
               valueCloseable
               iconName='icon-icon_xialaxuanxiang2'
-            />
+            />*/}
           </Flex>
-          <Flex onClick={() => {}} css={{fs: 16, ff: '$fr', color: 'rgba(0,0,0,0.3)', userSelect: 'none'}}>
+          <Flex onClick={() => {
+          	setGzjy(null)
+          	setXl(null)
+          	setXz(null)
+          	setGm(null)
+          }} css={{fs: 16, ff: '$fr', color: 'rgba(0,0,0,0.3)', userSelect: 'none'}}>
             清空筛选条件
           </Flex>
         </Flex>
@@ -238,7 +296,7 @@ export default function Job() {
               css={{justifyContent: 'center', mt: 30, mb: 80}}
               current={current}
               setCurrent={setCurrent}
-              total={4}
+              total={total}
             />
           </Flex>
           <Flex css={{w: 284, ml: 16, mt: 16, flexDirection: 'column', h: 662, justifyContent: 'space-between'}}>

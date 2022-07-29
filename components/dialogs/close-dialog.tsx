@@ -5,6 +5,7 @@ import Icon from '../icon'
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
   bg: 'rgba(0,0,0,0.6)',
   position: 'fixed',
+  zIndex: 10,
   inset: 0,
 })
 
@@ -30,6 +31,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   textAlign: 'center',
   ff: '$fr',
   '&:focus': {outline: 'none'},
+  zIndex: 11,
 })
 
 const StyledTitle = styled(DialogPrimitive.Title, {

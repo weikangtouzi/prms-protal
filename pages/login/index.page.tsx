@@ -1,5 +1,6 @@
 import type {ReactElement} from 'react'
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef} from 'react'
+import {useRouter} from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/layouts/main'
@@ -7,12 +8,6 @@ import {TextField} from '@/components/textfield'
 import {Button} from '@/components/button'
 import UploadZZ from './components/uploader'
 import {Select} from '@/components/select'
-import {
-  useChooseIdentityMutation,
-  useLogInLazyQuery, useResetPasswordMutation, useSendSmsLazyQuery,
-  useSignUpMutation,
-  useVerifyPhoneCodeMutation
-} from '../../generated'
 import {
   BackText,
   BackTitle,
@@ -44,23 +39,29 @@ import {
 import InputFormItem from './components/input-form'
 import {useInterval} from 'ahooks'
 import validator from '@/utils/validator'
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
+import { reloadEnterpriseLocation } from '@/utils/utils'
+import JobExpectationItemEdit from '@/pages/resume/components/job-expectations-edit'
 
 const identityCards = [
   {
     url: '/qz-black.png',
     activeUrl: '/qz.png',
     text: '求职',
-    identity: 'PersonalUser'
+    identity: 'PersonalUser',
+    role: 'PersonalUser',
   },
   {
     url: '/qz-black.png',
     activeUrl: '/qz.png',
     text: '招聘',
-    identity: 'EnterpriseUser'
+    identity: 'EnterpriseUser',
+    role: 'HR',
   },
 ]
 
 export default function Login() {
+	const router = useRouter()
   const [phone, setPhone] = useState('');
 
   const isPhone = validator.phone(phone)
@@ -71,13 +72,8 @@ export default function Login() {
   const [accountErr, setAccountErr] = useState('')
   const [passwordErr, setPasswordErr] = useState('')
 
-  const [loginFinish, setLoginFinish] = useState(false)
   // 验证码登录
   const [isYzm, setIsYzm] = useState(false)
-  // 注册
-  const [isZc, setIsZc] = useState(false)
-  // 忘记密码
-  const [isForget, setIsForget] = useState(false)
   const [pwd, setPwd] = useState('')
   const [pwd2, setPwd2] = useState('')
   const [username, setUserName] = useState('')
@@ -91,73 +87,18 @@ export default function Login() {
   // 3 注册 填写企业认证
   // 4 注册 填写企业认证补充
   // 5 注册 填写认证审核中
-  const [step, setStep] = useState(-1)
-  const [identityNum, setIdentityNum] = useState(1)
+  const [step, setStep] = useState(0)
+  const [identityNum, setIdentityNum] = useState(0)
 
-  const [jobPosition, setJobPosition] = useState('')
-
-  // const [fileUrl, setFileUrl] = useState('')
+  
+  const [charterUrl, setCharterUrl] = useState('')
+  const editRef = useRef()
 
   const checkAll = () => {
     if (pwd && pwd2) {
       setNextDisabled(false)
     }
   }
-  const [resetPasswordMutation] = useResetPasswordMutation()
-  const [onLogin, {loading: loginLoading, data: loginData, error: loginError}] = useLogInLazyQuery()
-
-  const [chooseIdentityMutation, {data: identityToken}] = useChooseIdentityMutation()
-
-  useEffect(() => {
-    if (!loginData) {
-      return
-    }
-
-    const {
-      UserLogIn: {token}
-    } = loginData
-
-    localStorage.setItem('chenZaoZhaoKey', token)
-
-    setLoginFinish(true)
-    setStep(1)
-
-    // router.push('/')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loginData])
-
-  useEffect(() => {
-    if (!identityToken) {
-      return
-    }
-
-    const {UserChooseOrSwitchIdentity: token} = identityToken
-
-    localStorage.setItem('chenZaoZhaoKey', token)
-  }, [identityToken])
-
-  const [signUpMutation] = useSignUpMutation({
-    variables: {
-      username,
-      email,
-      password: pwd,
-      phoneNumber: pwd2
-    }
-  })
-
-  const [verifyPhoneCode] = useVerifyPhoneCodeMutation({
-    variables: {
-      phoneNumber: phone,
-      verifyCode: 'tested',
-      operation: 'UserRegister'
-    }
-  });
-
-  const [onSendSms] = useSendSmsLazyQuery({
-    variables: {
-      phoneNumber: phone
-    }
-  })
 
   const [countdown, setCountdown] = useState<number>(0);
 
@@ -167,119 +108,89 @@ export default function Login() {
     }
   },1000);
 
-  let stepNode = (
-    <ZcCard css={{h: 600}}>
-      <ZcLeft>
-        <BackTitle
-          onClick={() => {
-            setIsZc(false)
-          }}
-        >
-          <Image src='/ht.png' alt='ht' width={22.63} height={22.63} />
-          <BackText>返回</BackText>
-        </BackTitle>
-        <LittleTitle>设置密码</LittleTitle>
-        <InputWrp>
-          <InputLabel>
-            <RedStr>*</RedStr>设置密码：
-          </InputLabel>
-          <TextField
-            size='small'
-            type='password'
-            value={pwd}
-            onChange={(e) => {
-              const {value} = e.target
-              setPwd(value)
-              checkAll()
-            }}
-            placeholder='请输入密码'
-          />
-        </InputWrp>
+  let stepNode = null
 
-        <InputWrp css={{mt: 30, mb: 60}}>
-          <InputLabel>
-            <RedStr>*</RedStr>确认密码：
-          </InputLabel>
-          <TextField
-            size='small'
-            type='password'
-            value={pwd2}
-            onChange={(e) => {
-              const {value} = e.target
-              setPwd2(value)
-              checkAll()
-            }}
-            placeholder='请第二次输入密码'
-          />
-        </InputWrp>
+  let stepAction = null
 
-        <LittleTitle>基础信息</LittleTitle>
-        {/*<AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />*/}
 
-        <InputWrp css={{mt: 36}}>
-          <InputLabel>昵称：</InputLabel>
-          <TextField
-            size='small'
-            value={username}
-            onChange={(e) => {
-              const {value} = e.target
-              setUserName(value)
-            }}
-            placeholder='请输入常用名称'
-            err={!isUsername && '请输入长度在6到12之间的用户名'}
-          />
-        </InputWrp>
-        <InputWrp css={{mt: 30}}>
-          <InputLabel>绑定邮箱：</InputLabel>
-          <TextField
-            size='small'
-            value={email}
-            onChange={(e) => {
-              const {value} = e.target
-              setEmail(value)
-            }}
-            placeholder='请输入邮箱'
-          />
-        </InputWrp>
-      </ZcLeft>
-      <ZcRight>
-        <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
-        <div>
-          <ZcText>注册账号</ZcText>
-          <Button
-            css={{mt: 60}}
-            disabled={nextDisabled}
-            text={
-              <NextButtonWrp>
-                <NextStepText>下一步</NextStepText>
-                <Image src='/xyb.png' alt='Logo' width={30} height={20} />
-              </NextButtonWrp>
-            }
-            onClick={() => {
-              signUpMutation({
-                variables: {
-                  username,
-                  password: pwd,
-                  email,
-                  phoneNumber: phone
-                }
-              }).then((res) => {
-                const token = res.data?.UserRegister;
-                if(token) {
-                  localStorage.setItem('chenZaoZhaoKey', token);
-                  setStep(s => s + 1);
-                }
-              }).catch(() => {
-                // todo
-              })
-              // setStep(1)
-            }}
-          />
-        </div>
-      </ZcRight>
-    </ZcCard>
-  )
-  if(step === -1){
+  const loginDidTouch = () => {
+		setAccountErr('')
+    setPasswordErr('')
+
+    if (!account) {
+      setAccountErr('请输入账号')
+      return
+    }
+    if (!password) {
+      setPasswordErr('请输入密码')
+      return
+    }
+
+    localStorage.clear()
+    if(isYzm) {
+
+    } else {
+    	HTAPI.UserLogIn({
+    		info: {
+    			account, 
+    			password
+    		}
+    	}).then(response => {
+    		HTAuthManager.updateKeyValueList({ userToken: response?.token })
+				setStep(1)
+    	})
+    }
+	}
+
+	const switchIdentityDidTouch = () => {
+		const selectedIdentity = identityCards[identityNum]
+		HTAPI.UserChooseOrSwitchIdentity({
+  		targetIdentity: selectedIdentity.identity,
+			role: selectedIdentity.role
+  	}).then(response => {
+  		HTAuthManager.updateKeyValueList({ userToken: response, userRole: selectedIdentity.identity })
+  		switch(selectedIdentity.identity) {
+  			case 'PersonalUser': {
+  				HTAPI.CandidateGetAllJobExpectations().then((response) => {
+						if ((response?.length ?? 0) <= 0) {
+							setStep(2)
+							return
+						}
+						router.push('/')
+					})
+  				break
+  			}
+  			case 'EnterpriseUser': {
+  				reloadEnterpriseLocation()
+  				break
+  			}
+  		}
+  	}).catch(e => {
+  		switch(selectedIdentity.identity) {
+  			case 'EnterpriseUser': {
+  				HTAPI.ENTCheckEnterpriseIdentification().then(response => {
+		    		if (response.status == 'Waiting') {
+		    			setStep(5)
+		    		} else {
+		    			setStep(3)
+		    		}
+		    	})
+  				break
+  			}
+  		}
+  	})
+	}
+
+	if (process.browser) {
+		document.onkeydown = function(event) {
+	    if(event.keyCode != 13) {
+	    	return
+	    }
+	    stepAction && stepAction()
+		}
+	}
+
+  if(step === -1) {
     stepNode = (
       <ZcCard css={{h: 367}}>
         <ZcLeft>
@@ -313,15 +224,11 @@ export default function Login() {
                 text={countdown > 0 ? countdown: '获取验证码'}
                 disabled={countdown > 0 || !isPhone}
                 onClick={() => {
-                  onSendSms({
-                    variables: {
-                      phoneNumber: phone
-                    }
-                  }).then(() => {
-                    setCountdown(60);
-                  }).catch((err) => {
-                    console.log('catch', err);
-                  })
+                	HTAPI.StaticSendSms({
+							    	phoneNumber: phone
+							    }, { showLoading: true }).then(response => {
+							    	setCountdown(60)
+							    })
                 }}
               />
             </YZWrap>
@@ -333,17 +240,15 @@ export default function Login() {
             text='确定'
             disabled={!(!!yzm?.length && yzm.length === 6)}
             onClick={() => {
-              verifyPhoneCode({
-                variables: {
-                  phoneNumber: phone,
-                  verifyCode: yzm,
-                  operation: 'UserRegister'
-                }
-              }).then(() => {
-                setStep(step + 1);
-              }).catch(() => {
-                alert('验证码错误！')
-              })
+            	HTAPI.UserVerifyCodeConsume({
+            		info: {
+            			phoneNumber: phone,
+	                verifyCode: yzm,
+	                operation: 'UserRegister'
+            		}
+            	}).then(() => {
+            		setStep(-2)
+            	})
             }}
           />
         </ZcRight>
@@ -351,7 +256,367 @@ export default function Login() {
     )
   }
 
+  if (step == -2) {
+  	stepNode = (
+  		<ZcCard css={{h: 600}}>
+	      <ZcLeft>
+	        <BackTitle
+	          onClick={() => {
+	            setStep(-1)
+	          }}
+	        >
+	          <Image src='/ht.png' alt='ht' width={22.63} height={22.63} />
+	          <BackText>返回</BackText>
+	        </BackTitle>
+	        <LittleTitle>设置密码</LittleTitle>
+	        <InputWrp>
+	          <InputLabel>
+	            <RedStr>*</RedStr>设置密码：
+	          </InputLabel>
+	          <TextField
+	            size='small'
+	            type='password'
+	            value={pwd}
+	            onChange={(e) => {
+	              const {value} = e.target
+	              setPwd(value)
+	              checkAll()
+	            }}
+	            placeholder='请输入密码'
+	          />
+	        </InputWrp>
+
+	        <InputWrp css={{mt: 30, mb: 60}}>
+	          <InputLabel>
+	            <RedStr>*</RedStr>确认密码：
+	          </InputLabel>
+	          <TextField
+	            size='small'
+	            type='password'
+	            value={pwd2}
+	            onChange={(e) => {
+	              const {value} = e.target
+	              setPwd2(value)
+	              checkAll()
+	            }}
+	            placeholder='请第二次输入密码'
+	          />
+	        </InputWrp>
+
+	        <LittleTitle>基础信息</LittleTitle>
+	        {/*<AvatarUploader fileUrl={fileUrl} setFileUrl={setFileUrl} />*/}
+
+	        <InputWrp css={{mt: 36}}>
+	          <InputLabel>昵称：</InputLabel>
+	          <TextField
+	            size='small'
+	            value={username}
+	            onChange={(e) => {
+	              const {value} = e.target
+	              setUserName(value)
+	            }}
+	            placeholder='请输入常用名称'
+	            err={!isUsername && '请输入长度在6到12之间的用户名'}
+	          />
+	        </InputWrp>
+	        <InputWrp css={{mt: 30}}>
+	          <InputLabel>绑定邮箱：</InputLabel>
+	          <TextField
+	            size='small'
+	            value={email}
+	            onChange={(e) => {
+	              const {value} = e.target
+	              setEmail(value)
+	            }}
+	            placeholder='请输入邮箱'
+	          />
+	        </InputWrp>
+	      </ZcLeft>
+	      <ZcRight>
+	        <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+	        <div>
+	          <ZcText>注册账号</ZcText>
+	          <Button
+	            css={{mt: 60}}
+	            disabled={nextDisabled}
+	            text={
+	              <NextButtonWrp>
+	                <NextStepText>下一步</NextStepText>
+	                <Image src='/xyb.png' alt='Logo' width={30} height={20} />
+	              </NextButtonWrp>
+	            }
+	            onClick={() => {
+	            	HTAPI.UserRegister({
+	            		info: {
+	            			username,
+		                password: pwd,
+		                confirmPassword: pwd2,
+		                email,
+		                phoneNumber: phone
+	            		}
+	            	}).then((res) => {
+	                HTAuthManager.updateKeyValueList({ userToken: res })
+	                setStep(1)
+	              })
+	              // setStep(1)
+	            }}
+	          />
+	        </div>
+	      </ZcRight>
+	    </ZcCard>
+  	)
+  }
+
+  if (step == -10) {
+  	stepNode = (
+  		<ZcCard css={{h: 593}}>
+		    <ZcLeft>
+		      <BackTitle
+		        onClick={() => {
+		          setStep(0)
+		        }}
+		      >
+		        <Image src='/ht.png' alt='ht' width={22.63} height={22.63} />
+		        <BackText>返回</BackText>
+		      </BackTitle>
+		      <InputWrp css={{h: 64, mt: 39}}>
+		        <InputLabel>
+		          <RedStr>*</RedStr>手机号：
+		        </InputLabel>
+		        <TextField
+		          css={{mt: 0, w: 420}}
+		          inputCss={{ml: 0, w: '100%'}}
+		          value={phone}
+		          onChange={(e) => {
+		            const {value} = e.target
+		            setPhone(value)
+		            checkAll()
+		          }}
+		          placeholder='请输入手机号'
+		        />
+		      </InputWrp>
+		      <InputWrp css={{h: 64, mt: 20}}>
+		        <InputLabel>
+		          <RedStr>*</RedStr>新密码：
+		        </InputLabel>
+		        <TextField
+		          css={{mt: 0, w: 420}}
+		          inputCss={{ml: 0, w: '100%'}}
+		          type='password'
+		          value={pwd}
+		          onChange={(e) => {
+		            const {value} = e.target
+		            setPwd(value)
+		            checkAll()
+		          }}
+		          placeholder='请输入密码'
+		        />
+		      </InputWrp>
+		      <InputWrp css={{h: 64, mt: 20}}>
+		        <InputLabel>
+		          <RedStr>*</RedStr>确认密码：
+		        </InputLabel>
+		        <TextField
+		          css={{mt: 0, w: 420}}
+		          inputCss={{ml: 0, w: '100%'}}
+		          type='password'
+		          value={pwd2}
+		          onChange={(e) => {
+		            const {value} = e.target
+		            setPwd2(value)
+		            checkAll()
+		          }}
+		          placeholder='请输入密码'
+		        />
+		      </InputWrp>
+		      <InputWrp css={{h: 64, mt: 20}}>
+		        <InputLabel>
+		          <RedStr>*</RedStr>验证码：
+		        </InputLabel>
+		        <TextField
+		          css={{mt: 0, w: 250}}
+		          inputCss={{ml: 0, w: '100%'}}
+		          value={yzm}
+		          onChange={(e) => {
+		            const {value} = e.target
+		            setYZM(value)
+		            checkAll()
+		          }}
+		          placeholder='请输入密码'
+		        />
+		        <Button
+		          css={{w: 150, ml: 20, mt: 0}}
+		          disabled={countdown > 0}
+		          text={countdown > 0 ? countdown : '获取验证码'}
+		          onClick={() => {
+		          	HTAPI.StaticSendSms({
+						    	phoneNumber: phone
+						    }, { showLoading: true }).then(response => {
+						    	setCountdown(60)
+						    })
+		          }}
+		        />
+		      </InputWrp>
+		      <Button
+		        css={{w: 420, ml: 158}}
+		        text='确认'
+		        onClick={() => {
+		        	HTAPI.UserVerifyCodeConsume({
+		        		info: {
+		        			phoneNumber: phone,
+		              verifyCode: yzm,
+		              operation: 'UserResetPassword'
+		        		}
+		        	}).then(() => {
+		        		HTAPI.UserResetPassword({
+		          		info: {
+		          			phoneNumber: phone,
+				            password: pwd,
+				            confirmPassword: pwd2,
+		          		}
+		          	}).then(response => {
+		          		setStep(0)
+		          	})
+		        	})
+		        }}
+		      />
+		    </ZcLeft>
+		    <ZcRight>
+		      <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+		      <ZcText>忘记密码</ZcText>
+		    </ZcRight>
+		  </ZcCard>
+  	)
+  }
+
+  if (step == 0) {
+  	stepAction = loginDidTouch
+  	stepNode = (
+  		<LoginCard>
+	      <LeftPart>
+	        <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+	        欢迎使用趁早找
+	      </LeftPart>
+	      <RightPart>
+	        <BWrap>
+	          <TabWrap>
+	            {/*<Tab*/}
+	            {/*  active={isYzm}*/}
+	            {/*  onClick={() => {*/}
+	            {/*    setIsYzm(true)*/}
+	            {/*  }}*/}
+	            {/*>*/}
+	            {/*  验证码登录*/}
+	            {/*</Tab>*/}
+	            <Tab
+	              active={!isYzm}
+	              onClick={() => {
+	                setIsYzm(false)
+	              }}
+	            >
+	              密码登录
+	            </Tab>
+	          </TabWrap>
+	          {isYzm ? (
+	            <>
+	              <TextField
+	                value={phone}
+	                onChange={(e) => {
+	                  const {value} = e.target
+	                  setPhone(value)
+	                }}
+	                icon={<Image src='/sj.png' alt='phone' width={20} height={24} />}
+	                placeholder='请输入手机号'
+	              />
+	              <YZWrap>
+	                <TextField
+	                  value={yzm}
+	                  onChange={(e) => {
+	                    const {value} = e.target
+	                    setYZM(value)
+	                  }}
+	                  icon={<Image src='/yzm.png' alt='phone' width={20} height={24} />}
+	                  placeholder='请输入验证码'
+	                />
+	                <Button
+	                  css={{w: 150, ml: 20}}
+	                  disabled={countdown > 0}
+	                  text={countdown > 0 ? countdown : '获取验证码'}
+	                  onClick={() => {
+	                  	HTAPI.StaticSendSms({
+									    	phoneNumber: phone
+									    }, { showLoading: true }).then(response => {
+									    	setCountdown(60)
+									    })
+	                  }}
+	                />
+	              </YZWrap>
+	            </>
+	          ) : (
+	            <>
+	              <TextField
+	                value={account}
+	                onChange={(e) => {
+	                  const {value} = e.target
+	                  setAccount(value)
+	                }}
+	                icon={<Image src='/zh.png' alt='zh' width={20} height={24} />}
+	                placeholder='请输入邮箱'
+	                err={accountErr}
+	              />
+	              <TextField
+	                type='password'
+	                value={password}
+	                onChange={(e) => {
+	                  const {value} = e.target
+	                  setPassword(value)
+	                }}
+	                icon={<Image src='/yzm.png' alt='mm' width={20} height={24} />}
+	                placeholder='请输入密码'
+	                err={passwordErr}
+	              />
+	            </>
+	          )}
+	          <YZWrap>
+	            <Button
+	              text='登录'
+	              disabled={false}
+	              onClick={stepAction}
+	            />
+	          </YZWrap>
+	          <YZWrap>
+	            <Button
+	              css={{
+	                bg: '$w',
+	                color: '$primary'
+	              }}
+	              text='注册'
+	              disabled={false}
+	              onClick={() => {
+	                // todo
+	                setStep(-1)
+	              }}
+	            />
+	          </YZWrap>
+	          <LWrap>
+	            进入即代表您已同意
+	            <Ht css={{ml: 14}}>
+	              <Link href='/about/agreement'>《用户协议》</Link>
+	            </Ht>
+	            <Ht>
+	              <Link href='/about/privacy'>《隐私政策》</Link>
+	            </Ht>
+	            <ForgetTip onClick={() => setStep(-10)}>忘记密码？</ForgetTip>
+	          </LWrap>
+	        </BWrap>
+	      </RightPart>
+	    </LoginCard>
+  	)
+
+  }
+
   if (step === 1) {
+  	stepAction = switchIdentityDidTouch
     stepNode = (
       <ZcCard css={{h: 593}}>
         <ZcLeft>
@@ -379,20 +644,7 @@ export default function Login() {
           <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
           <Button
             text='确定'
-            onClick={() => {
-              if (loginFinish) {
-                chooseIdentityMutation({
-                  variables: {
-                    identity: identityCards[identityNum].identity
-                  }
-                }).then(() => {
-                  setStep(2)
-                })
-              } else {
-                // to 2/3
-                setStep(2)
-              }
-            }}
+            onClick={stepAction}
           />
         </ZcRight>
       </ZcCard>
@@ -407,40 +659,17 @@ export default function Login() {
             <BackText css={{ml: 20}}>欢迎注册趁早找！</BackText>
           </BackTitle>
           <QzyxText>求职意向</QzyxText>
-          <FormWrap>
-            <InputFormItem css={{w: 260}} label='期望岗位'>
-              <Select css={{w: 220, mt: 10}} value={jobPosition} onSelect={setJobPosition} />
-            </InputFormItem>
-
-            <InputFormItem css={{w: 220}} label='期望行业'>
-              <Select css={{w: 220, mt: 10}} value={jobPosition} onSelect={setJobPosition} />
-            </InputFormItem>
-
-            <InputFormItem css={{mt: 30, w: 260}} label='期望城市'>
-              <Select css={{w: 220, mt: 10}} value={jobPosition} onSelect={setJobPosition} />
-            </InputFormItem>
-
-            <InputFormItem css={{mt: 30, w: 220}} label='工作性质'>
-              <Select css={{w: 220, mt: 10}} value={jobPosition} onSelect={setJobPosition} />
-            </InputFormItem>
-
-            <InputFormItem css={{mt: 30, w: 480}} label='期望薪资'>
-              <YZWrap css={{alignItems: 'center', mt: 10}}>
-                <Select css={{w: 220, mr: 12}} value={jobPosition} onSelect={setJobPosition} />
-                至
-                <Select css={{w: 220, ml: 12}} value={jobPosition} onSelect={setJobPosition} />
-              </YZWrap>
-            </InputFormItem>
-          </FormWrap>
+          <JobExpectationItemEdit ref={editRef} css={{ marginLeft: 20, marginTop: -30, bg: 'transparent' }} />
         </ZcLeft>
         <ZcRight>
           <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
           <Button
-            disabled={true}
+            disabled={false}
             text='确定'
             onClick={() => {
-              // to 2/3
-              setStep(4)
+            	editRef.current.onSubmit((response) => {
+            		switchIdentityDidTouch()
+            	})
             }}
           />
         </ZcRight>
@@ -448,6 +677,30 @@ export default function Login() {
     )
   }
   if (step === 3) {
+    stepNode = (
+      <ZcCard css={{h: 593}}>
+        <ZcLeft>
+          <BackTitle css={{pt: 30, pl: 30}}>
+            <Image className='use-image-round' src='/zh.png' alt='ht' width={34} height={34} />
+            <BackText css={{ml: 20}}>欢迎注册趁早找！</BackText>
+          </BackTitle>
+          <QzyxText>企业认证补充</QzyxText>
+          <QzyxText css={{fs: 16, color: '#616A67', fw: 400, mt: 40, mb: 10}}>营业执照：</QzyxText>
+          <UploadZZ setFileUrl={setCharterUrl} />
+        </ZcLeft>
+        <ZcRight>
+          <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+          <Button
+            text='确定'
+            onClick={() => {
+              setStep(4)
+            }}
+          />
+        </ZcRight>
+      </ZcCard>
+    )
+  }
+  if (step === 4) {
     stepNode = (
       <ZcCard css={{h: 593}}>
         <ZcLeft>
@@ -470,7 +723,7 @@ export default function Login() {
               />
             </InputFormItem>
 
-            <InputFormItem css={{w: 480, mt: 30}} label='企业地区'>
+            {/*<InputFormItem css={{w: 480, mt: 30}} label='企业地区'>
               <YZWrap css={{alignItems: 'center', mt: 10}}>
                 <Select css={{w: 220}} placeholder='请选择省份' value={jobPosition} onSelect={setJobPosition} />
                 <Select css={{w: 220, ml: 40}} placeholder='请选择城市' value={jobPosition} onSelect={setJobPosition} />
@@ -492,7 +745,7 @@ export default function Login() {
                 css={{bg: '$w', w: 220, h: 42, mt: 10}}
                 placeholder='请填写'
               />
-            </InputFormItem>
+            </InputFormItem>*/}
           </FormWrap>
         </ZcLeft>
         <ZcRight>
@@ -500,38 +753,21 @@ export default function Login() {
           <Button
             text='确定'
             onClick={() => {
-              // to 2/3
-              setStep(3)
+            	HTAPI.UserEnterpriseIdentify({
+            		info: {
+            			enterpriseName: jobPosition,
+            			charter: charterUrl
+            		}
+            	}).then(response => {
+            		setStep(5)
+            	})
             }}
           />
         </ZcRight>
       </ZcCard>
     )
   }
-  if (step === 4) {
-    stepNode = (
-      <ZcCard css={{h: 593}}>
-        <ZcLeft>
-          <BackTitle css={{pt: 30, pl: 30}}>
-            <Image className='use-image-round' src='/zh.png' alt='ht' width={34} height={34} />
-            <BackText css={{ml: 20}}>欢迎注册趁早找！</BackText>
-          </BackTitle>
-          <QzyxText>企业认证补充</QzyxText>
-          <QzyxText css={{fs: 16, color: '#616A67', fw: 400, mt: 40, mb: 10}}>营业执照：</QzyxText>
-          <UploadZZ />
-        </ZcLeft>
-        <ZcRight>
-          <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
-          <Button
-            text='确定'
-            onClick={() => {
-              setStep(3)
-            }}
-          />
-        </ZcRight>
-      </ZcCard>
-    )
-  }
+  
   if (step === 5) {
     stepNode = (
       <ZcCard css={{h: 593}}>
@@ -551,7 +787,9 @@ export default function Login() {
           <Button
             text='知道了'
             onClick={() => {
+            	HTAuthManager.clearLoginInfo()
               // to 2/3
+              router.push('/')
             }}
           />
         </ZcRight>
@@ -559,281 +797,10 @@ export default function Login() {
     )
   }
 
-  const forgetNode = (
-    <ZcCard css={{h: 593}}>
-      <ZcLeft>
-        <BackTitle
-          onClick={() => {
-            setIsForget(false)
-          }}
-        >
-          <Image src='/ht.png' alt='ht' width={22.63} height={22.63} />
-          <BackText>返回</BackText>
-        </BackTitle>
-        <InputWrp css={{h: 64, mt: 39}}>
-          <InputLabel>
-            <RedStr>*</RedStr>手机号：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 420}}
-            inputCss={{ml: 0, w: '100%'}}
-            value={phone}
-            onChange={(e) => {
-              const {value} = e.target
-              setPhone(value)
-              checkAll()
-            }}
-            placeholder='请输入手机号'
-          />
-        </InputWrp>
-        <InputWrp css={{h: 64, mt: 20}}>
-          <InputLabel>
-            <RedStr>*</RedStr>新密码：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 420}}
-            inputCss={{ml: 0, w: '100%'}}
-            type='password'
-            value={pwd}
-            onChange={(e) => {
-              const {value} = e.target
-              setPwd(value)
-              checkAll()
-            }}
-            placeholder='请输入密码'
-          />
-        </InputWrp>
-        <InputWrp css={{h: 64, mt: 20}}>
-          <InputLabel>
-            <RedStr>*</RedStr>确认密码：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 420}}
-            inputCss={{ml: 0, w: '100%'}}
-            type='password'
-            value={pwd2}
-            onChange={(e) => {
-              const {value} = e.target
-              setPwd2(value)
-              checkAll()
-            }}
-            placeholder='请输入密码'
-          />
-        </InputWrp>
-        <InputWrp css={{h: 64, mt: 20}}>
-          <InputLabel>
-            <RedStr>*</RedStr>验证码：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 250}}
-            inputCss={{ml: 0, w: '100%'}}
-            value={yzm}
-            onChange={(e) => {
-              const {value} = e.target
-              setYZM(value)
-              checkAll()
-            }}
-            placeholder='请输入密码'
-          />
-          <Button
-            css={{w: 150, ml: 20, mt: 0}}
-            disabled={countdown > 0}
-            text={countdown > 0 ? countdown : '获取验证码'}
-            onClick={() => {
-              onSendSms({
-                variables: {
-                  phoneNumber: phone
-                }
-              }).then(() => {
-                setCountdown(60)
-              })
-            }}
-          />
-        </InputWrp>
-        <Button
-          css={{w: 420, ml: 158}}
-          text='确认'
-          onClick={() => {
-            verifyPhoneCode({
-              variables: {
-                phoneNumber: phone,
-                verifyCode: yzm,
-                operation: 'UserResetPassword'
-              }
-            }).then(() => {
-              resetPasswordMutation({
-                variables: {
-                  phoneNumber: phone,
-                  password: pwd,
-                  confirmPassword: pwd2,
-                }
-              }).then(() => {
-                setIsForget(false);
-              }).catch((e) => {
-                console.error('resetPasswordMutation',e);
-              })
-            }).catch((e) => {
-              console.log('verifyPhoneCode', e);
-            })
-          }}
-        />
-      </ZcLeft>
-      <ZcRight>
-        <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
-        <ZcText>忘记密码</ZcText>
-      </ZcRight>
-    </ZcCard>
-  )
-
   return (
     <>
       <Main>
-        {isZc || loginFinish ? (
-          stepNode
-        ) : isForget ? (
-          forgetNode
-        ) : (
-          <LoginCard>
-            <LeftPart>
-              <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
-              欢迎使用趁早找
-            </LeftPart>
-            <RightPart>
-              <BWrap>
-                <TabWrap>
-                  {/*<Tab*/}
-                  {/*  active={isYzm}*/}
-                  {/*  onClick={() => {*/}
-                  {/*    setIsYzm(true)*/}
-                  {/*  }}*/}
-                  {/*>*/}
-                  {/*  验证码登录*/}
-                  {/*</Tab>*/}
-                  <Tab
-                    active={!isYzm}
-                    onClick={() => {
-                      setIsYzm(false)
-                    }}
-                  >
-                    密码登录
-                  </Tab>
-                </TabWrap>
-                {isYzm ? (
-                  <>
-                    <TextField
-                      value={phone}
-                      onChange={(e) => {
-                        const {value} = e.target
-                        setPhone(value)
-                      }}
-                      icon={<Image src='/sj.png' alt='phone' width={20} height={24} />}
-                      placeholder='请输入手机号'
-                    />
-                    <YZWrap>
-                      <TextField
-                        value={yzm}
-                        onChange={(e) => {
-                          const {value} = e.target
-                          setYZM(value)
-                        }}
-                        icon={<Image src='/yzm.png' alt='phone' width={20} height={24} />}
-                        placeholder='请输入验证码'
-                      />
-                      <Button
-                        css={{w: 150, ml: 20}}
-                        disabled={countdown > 0}
-                        text={countdown > 0 ? countdown : '获取验证码'}
-                        onClick={() => {
-                          onSendSms({
-                            variables: {
-                              phoneNumber: phone
-                            }
-                          }).then(() => {
-                            setCountdown(60)
-                          })
-                        }}
-                      />
-                    </YZWrap>
-                  </>
-                ) : (
-                  <>
-                    <TextField
-                      value={account}
-                      onChange={(e) => {
-                        const {value} = e.target
-                        setAccount(value)
-                      }}
-                      icon={<Image src='/zh.png' alt='zh' width={20} height={24} />}
-                      placeholder='请输入邮箱'
-                      err={accountErr || (loginError ? loginError.message : '')}
-                    />
-                    <TextField
-                      type='password'
-                      value={password}
-                      onChange={(e) => {
-                        const {value} = e.target
-                        setPassword(value)
-                      }}
-                      icon={<Image src='/yzm.png' alt='mm' width={20} height={24} />}
-                      placeholder='请输入密码'
-                      err={passwordErr}
-                    />
-                  </>
-                )}
-                <YZWrap>
-                  <Button
-                    text='登录'
-                    disabled={loginLoading}
-                    onClick={() => {
-                      setAccountErr('')
-                      setPasswordErr('')
-
-                      if (!account) {
-                        setAccountErr('请输入账号')
-                        return
-                      }
-                      if (!password) {
-                        setPasswordErr('请输入密码')
-                        return
-                      }
-
-                      localStorage.clear()
-                      if(isYzm) {
-
-                      } else {
-                        onLogin({variables: {account, password}})
-                      }
-                    }}
-                  />
-                </YZWrap>
-                <YZWrap>
-                  <Button
-                    css={{
-                      bg: '$w',
-                      color: '$primary'
-                    }}
-                    text='注册'
-                    disabled={loginLoading}
-                    onClick={() => {
-                      // todo
-                      setIsZc(true);
-                    }}
-                  />
-                </YZWrap>
-                <LWrap>
-                  进入即代表您已同意
-                  <Ht css={{ml: 14}}>
-                    <Link href='/'>《用户协议》</Link>
-                  </Ht>
-                  <Ht>
-                    <Link href='/'>《隐私政策》</Link>
-                  </Ht>
-                  <ForgetTip onClick={() => setIsForget(true)}>忘记密码？</ForgetTip>
-                </LWrap>
-              </BWrap>
-            </RightPart>
-          </LoginCard>
-        )}
+        { stepNode }
       </Main>
     </>
   )

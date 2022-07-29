@@ -8,7 +8,7 @@ interface LProps {
   css?: any
 }
 
-export default function EditCardItem({onDelete, onEdit, children, css = {}}: LProps) {
+export default function EditCardItem({onDelete, onEdit, children, css = {}, disabled=false}: LProps) {
   const [active, setActive] = useState(false)
 
   return (
@@ -30,7 +30,7 @@ export default function EditCardItem({onDelete, onEdit, children, css = {}}: LPr
       }}
     >
       {children}
-      {active ? (
+      {(!disabled && active) ? (
         <Flex>
           {onEdit ? (
             <RightBtn onClick={onEdit} css={{fs: 16, mr: 10}}>

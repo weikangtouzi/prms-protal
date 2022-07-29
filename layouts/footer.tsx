@@ -70,7 +70,7 @@ export default function Footer() {
         <TopLeftWrap>
           <Image src='/logo-black.png' alt='ht' width={94.62} height={30.62} />
           <TextWrap>深圳市趁早找信息科技有限公司</TextWrap>
-          <BottomBtn>下载趁早找APP</BottomBtn>
+          <BottomBtn onClick={global.TODO_TOAST}>下载趁早找APP</BottomBtn>
         </TopLeftWrap>
         <TopRightWrap>
           <FirstLine>
@@ -107,7 +107,7 @@ export default function Footer() {
           </FirstLine>
           <FirstLine>
             <FirstLineText css={{fs: 14}}>
-              <a href='/recruitment' target='_blank' rel='noreferrer'>
+              <a onClick={global.TODO_TOAST} target='_blank' rel='noreferrer'>
                 招聘会
               </a>
             </FirstLineText>
@@ -121,7 +121,7 @@ export default function Footer() {
       </TopWrap>
       <BottomWrap>
         <a target='_blank' rel='noopener noreferrer'>
-          Copyright © 2021趁早找公司名称. All Rights Reserved
+          Copyright © {new Date().getFullYear()}趁早找（北京）信息科技股份有限公司. All Rights Reserved
         </a>
       </BottomWrap>
     </FooterWrap>

@@ -4,8 +4,8 @@ import {TextField} from '@/components/textfield'
 import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
-import {useUpdateWorkExprienceMutation} from '@/generated'
 import EditCardItem from './edit-card-item'
+import moment from 'moment'
 
 interface WProps {
   workExp?: any[]
@@ -20,11 +20,10 @@ const empty = {
   workDetail: '',
 }
 
-function WorkExperience({workExp = []}: WProps) {
+function WorkExperience({workExp = [], ...props}: WProps) {
   const [edit, setEdit] = useState(false)
   const [editIndex, setEditIndex] = useState(-1)
   const [editDetail, setEditDetail] = useState(empty)
-  const [updateWorkExprienceMutation] = useUpdateWorkExprienceMutation()
 
   const gzEditDom = (
     <EditWrap css={{pr: 20}}>
@@ -112,19 +111,19 @@ function WorkExperience({workExp = []}: WProps) {
         />
         <Button
           onClick={() => {
-            updateWorkExprienceMutation({
-              variables: {
-                work: {
-                  ...editDetail,
-                  hideFromThisCompany: false,
-                },
-              },
-              onCompleted: () => {
-                setEdit(false)
-                setEditIndex(-1)
-                setEditDetail(empty)
-              },
-            })
+          	HTAPI.CandidateEditWorkExprience({
+          		info: {
+          			...editDetail,
+          			department: ((editDetail?.department?.length ?? 0) > 0) ? editDetail.department : editDetail?.posName,
+                hideFromThisCompany: false,
+          		}
+          	}).then(response => {
+          		Toast.show('修改成功')
+          		setEdit(false)
+              setEditIndex(-1)
+              setEditDetail(empty)
+              props.onRefresh()
+          	})
           }}
           css={{w: 80, h: 42, ml: 20, fs: 16, mt: 20}}
           text='完成'
@@ -135,12 +134,12 @@ function WorkExperience({workExp = []}: WProps) {
 
   const gzDom = (work: any) => (
     <Flex css={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', ml: 32}}>
-      <Flex css={{fw: 600}}>{work.compName}</Flex>
+      <Flex css={{fw: 600}}>{work.comp_name}</Flex>
       <Flex css={{fw: 600, mt: 10}}>
-        {work.startAt}-{work.endAt} ｜{work.posName}
+        {moment(new Date(work.start_at)).format('YYYY-MM-DD')}-{moment(work.end_at).format('YYYY-MM-DD')} ｜{work.pos_name}
       </Flex>
       <NormalText css={{ml: 0, mt: 20}}>工作内容：</NormalText>
-      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{work.workDetail}</NormalText>
+      <NormalText css={{ml: 0, mt: 10, color: '#8C9693', lineHeight: '30px'}}>{work.working_detail}</NormalText>
     </Flex>
   )
 
@@ -153,6 +152,7 @@ function WorkExperience({workExp = []}: WProps) {
         setEditIndex(-1)
         setEditDetail(empty)
       }}
+      disabled={!props.editAble}
     >
       {edit ? (
         gzEditDom
@@ -162,10 +162,19 @@ function WorkExperience({workExp = []}: WProps) {
             <EditCardItem
               key={w.id}
               css={{mt: idx === 0 ? 30 : 10}}
+              disabled={!props.editAble}
               onEdit={() => {
                 setEdit(true)
                 setEditIndex(idx)
-                setEditDetail(w)
+                setEditDetail({
+                	id: w.id,
+                	compName: w.comp_name,
+								  posName: w.pos_name,
+								  department: w.department,
+								  startAt: w.start_at,
+								  endAt: w.end_at,
+								  workDetail: w.working_detail,
+                })
               }}
             >
               {gzDom(w)}

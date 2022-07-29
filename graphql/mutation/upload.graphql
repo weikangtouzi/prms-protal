@@ -1,3 +1,0 @@
-mutation UploadFile($file: Upload!, $extraAttributes: UploadExtraAttributes) {
-  CommonSingleUpload(file: $file, extraAttributes: $extraAttributes)
-}

@@ -1,13 +1,16 @@
 import {useState} from 'react'
-import {ZhiYeItems, ZhiYeItemsWrapLeft, ItemsHead, ItemRightText, ZhiYeItemsRight, Flex, BottomLine} from './styled'
+import {useRouter} from 'next/router'
+import {ZhiYeItems, ZhiYeItemsWrapLeft, ZhiYeItemsLeftListContainer, ItemsHead, ItemRightText, ZhiYeItemsRight, Flex, BottomLine} from './styled'
 import Icon from '@/components/icon'
 
-const ZhiYeItem = ({item}: any) => {
-  const {title, rightText = [], details = []} = item
+const ZhiYeItem = ({item, isFold}: any) => {
+	const router = useRouter()
+  const {title, sublist = []} = item
   const [over, setOver] = useState(false)
 
   return (
     <ZhiYeItems
+    	css={{ zIndex: (!isFold || over) ? 1 : 0 }}
       onMouseOver={() => {
         setOver(true)
       }}
@@ -17,30 +20,34 @@ const ZhiYeItem = ({item}: any) => {
     >
       <ZhiYeItemsWrapLeft>
         <ItemsHead active={over}>{title}&nbsp;&nbsp;|&nbsp;&nbsp;</ItemsHead>
-        {rightText.map((r: string) => (
-          <ItemRightText active={over} key={r}>
-            {r}
-          </ItemRightText>
-        ))}
+        <ZhiYeItemsLeftListContainer>
+	        {sublist.map((r: string, index: number) => (
+	          <ItemRightText active={over} key={index}>
+	            {r.title}
+	          </ItemRightText>
+	        ))}
+        </ZhiYeItemsLeftListContainer>
+        {over ? <Icon name='icon-icon_xialaxuanxiang-copy' /> : <Icon name='icon-icon_xialaxuanxiang' />}
       </ZhiYeItemsWrapLeft>
-      {over ? <Icon name='icon-icon_xialaxuanxiang-copy' /> : <Icon name='icon-icon_xialaxuanxiang' />}
       {over ? (
         <ZhiYeItemsRight>
           <ItemsHead>{title}</ItemsHead>
-          {details.map((d: any, index: number) => (
-            <Flex css={{mt: 15}} key={d.left}>
+          {item.sublist.map((d: any, index: number) => (
+            <Flex css={{mt: 15}} key={index}>
               <ItemRightText css={{ml: 0, w: 94}} active={false}>
-                {d.left}
+                {d.title}
               </ItemRightText>
               <Flex css={{flexDirection: 'column'}}>
                 <Flex css={{flexWrap: 'wrap'}}>
-                  {d.children.map((c: string) => (
-                    <ItemRightText active={false} css={{color: '#3C4441', mb: 20}} key={c}>
-                      {c}
+                  {d.sublist.map((c: string, index: number) => (
+                    <ItemRightText active={false} css={{color: '#3C4441', mb: 20, cursor: 'pointer'}} key={index} onClick={() => {
+                    	router.push(`/job?category=${c.title}`)
+                    }}>
+                      {c.title}
                     </ItemRightText>
                   ))}
                 </Flex>
-                {index === details.length - 1 ? null : <BottomLine />}
+                {index === item.sublist.length - 1 ? null : <BottomLine />}
               </Flex>
             </Flex>
           ))}

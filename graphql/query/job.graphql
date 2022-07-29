@@ -1,3 +1,0 @@
-query GetHotJobs($category: String!) {
-  StaticGetHotJobs(category: $category)
-}

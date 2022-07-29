@@ -6,7 +6,7 @@ import {styled} from '@/stitches.config'
 import {Button} from '@/components/button'
 import {TextField} from '@/components/textfield'
 import {CloseDialog, ConfirmDialog} from '@/components/dialogs'
-import {useResetPasswordMutation, useGetBasicInfoQuery} from '@/generated'
+import {useInterval} from 'ahooks'
 
 const RightWrap = styled('div', {
   w: 884,
@@ -80,11 +80,8 @@ const defaultBasicInfo = {
   email: '',
 }
 export default function Security() {
-  const [newEmail, setNewEmail] = useState(false)
   const [pwdOpen, setPwdOpen] = useState(false)
-  const [phoneOpen, setPhoneOpen] = useState(false)
   const [zxOpen, setZxOpen] = useState(false)
-  const [email, setEmail] = useState('')
 
   const [password, setPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -93,22 +90,55 @@ export default function Security() {
 
   const [basicInfo, setBasicInfo] = useState(defaultBasicInfo)
 
-  const [newPhone, setNewPhone] = useState('')
-
-  const [resetPasswordMutation, {data}] = useResetPasswordMutation()
-  const {data: userBasicData} = useGetBasicInfoQuery()
+  const [newNameType, setNewNameType] = useState('')
+  const [newName, setNewName] = useState('')
+  const [newCode, setNewCode] = useState('')
 
   useEffect(() => {
-    if (!userBasicData) {
-      return
+    HTAPI.UserGetBasicInfo().then(({ email, phone_number }) => {
+		  setBasicInfo({phoneNumber: phone_number, email: email || ''})
+		})
+  }, [newNameType])
+
+  const [countdown, setCountdown] = useState<number>(0)
+  useInterval(() => {
+    if(countdown > 0){
+      setCountdown(pre => pre - 1);
     }
+  },1000)
 
-    const {
-      UserGetBasicInfo: {email, phone_number},
-    } = userBasicData
+  const sendCodeResponse = () => {
+  	Toast.show('发送成功!')
+    setCountdown(60)
+  }
 
-    setBasicInfo({phoneNumber: phone_number, email: email || ''})
-  }, [userBasicData])
+  const onSubmitResponse = () => {
+  	Toast.show('修改成功!')
+		setNewNameType('')
+		setNewName('')
+		setNewCode('')
+  }
+
+  const newNameTypeValue = [
+  	{ value: 'phone', title: '手机号', sendCode: () => {
+  		HTAPI.StaticSendSms({ phoneNumber: newName }).then(sendCodeResponse)
+  	}, onSubmit: () => {
+  		HTAPI.UserVerifyCodeConsume({
+    		info: {
+    			phoneNumber: newName,
+    			verifyCode: newCode,
+    			operation: 'UserChangePhoneNumber',
+    		}
+    	}).then(response => {
+    		HTAPI.UserChangePhoneNumber({ newNum: newName }).then(onSubmitResponse)
+    	})
+  	} },
+  	{ value: 'email', title: '邮箱', sendCode: () => {
+  		HTAPI.StaticSendEmail({ email: newName }).then(sendCodeResponse)
+  	}, onSubmit: () => {
+  		HTAPI.UserEditEmail({ email: newName, code: newCode }).then(onSubmitResponse)
+  	} },
+  ].find(item => item.value == newNameType)
 
   return (
     <RightWrap>
@@ -117,7 +147,7 @@ export default function Security() {
         <MidContent>{basicInfo.phoneNumber}</MidContent>
         <RightBtn
           onClick={() => {
-            setPhoneOpen(true)
+            setNewNameType('phone')
           }}
         >
           修改手机号码
@@ -127,67 +157,30 @@ export default function Security() {
 
       <DivWrap css={{ml: 142, mt: 35}}>
         <LeftLabel>邮箱：</LeftLabel>
-        {newEmail ? (
-          <>
-            <TextField
-              size='small'
-              value={email}
-              onChange={(e) => {
-                const {value} = e.target
-                setEmail(value)
-              }}
-              placeholder='输入新邮箱'
-              css={{w: 300}}
-            />
-            <Button
-              css={{w: 80, h: 42, mt: 0, ml: 20, fs: 16}}
-              text='保存'
-              onClick={() => {
-                setNewEmail(false)
-              }}
-            />
-            <Button
-              css={{
-                w: 80,
-                h: 42,
-                mt: 0,
-                ml: 20,
-                fs: 16,
-                bg: '$w',
-                color: '#616A67',
-                border: '1px solid #616A67',
-              }}
-              text='取消'
-              onClick={() => {
-                setNewEmail(false)
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <MidContent>{basicInfo.email}</MidContent>
-            <RightBtn
-              onClick={() => {
-                setNewEmail(true)
-              }}
-            >
-              修改邮箱
-            </RightBtn>
-          </>
-        )}
+        <>
+          <MidContent>{basicInfo.email}</MidContent>
+          <RightBtn
+            onClick={() => {
+              setNewNameType('email')
+            }}
+          >
+            修改邮箱
+          </RightBtn>
+        </>
       </DivWrap>
 
-      <DivWrap css={{ml: 110}}>
+      {/*<DivWrap css={{ml: 110}}>
         <LeftLabel>实名认证：</LeftLabel>
         <MidContent>**陈</MidContent>
         <MidContent css={{ml: 30}}>3*****************3</MidContent>
-      </DivWrap>
+      </DivWrap>*/}
 
       <DivWrap css={{ml: 110}}>
         <LeftLabel>密码设置：</LeftLabel>
         <RightBtn
           onClick={() => {
-            setPwdOpen(true)
+          	global.TODO_TOAST()
+            // setPwdOpen(true)
           }}
           css={{ml: 10}}
         >
@@ -261,13 +254,15 @@ export default function Security() {
               setPwdErr('两次密码输入不相同')
               return
             }
-
-            resetPasswordMutation({
-              variables: {
-                password,
-                confirmPassword,
-              },
-            })
+           //  HTAPI.UserResetPassword({
+          	// 	info: {
+          	// 		phoneNumber: phone,
+		         //    password,
+		         //    confirmPassword,
+          	// 	}
+          	// }).then(response => {
+          		
+          	// })
             // setPwdOpen(false)
           }}
         />
@@ -275,60 +270,27 @@ export default function Security() {
 
       <CloseDialog
         onClose={() => {
-          setPhoneOpen(false)
+          setNewNameType('')
         }}
-        title='新手机号'
-        open={phoneOpen}
-        onOpenChange={setPhoneOpen}
+        title={`新${newNameTypeValue?.title}`}
+        open={(newNameType?.length ?? 0) > 0}
+        onOpenChange={() => setNewNameType('')}
       >
         <InputWrp css={{h: 64, mt: 40}}>
           <InputLabel>
-            <RedStr>*</RedStr>手机号码：
+            <RedStr>*</RedStr>{newNameTypeValue?.title}：
           </InputLabel>
           <TextField
             css={{mt: 0, w: 420}}
             inputCss={{ml: 0, w: '100%'}}
-            value={password}
+            value={newName}
             onChange={(e) => {
               const {value} = e.target
-              setPassword(value)
+              setNewName(value)
             }}
-            placeholder='输入手机号码'
+            placeholder={`输入${newNameTypeValue?.title}`}
           />
         </InputWrp>
-        <InputWrp css={{h: 64, mt: 20}}>
-          <InputLabel>
-            <RedStr>*</RedStr>密码：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 420}}
-            inputCss={{ml: 0, w: '100%'}}
-            type='password'
-            value={password}
-            onChange={(e) => {
-              const {value} = e.target
-              setPassword(value)
-            }}
-            placeholder='请输入密码'
-          />
-        </InputWrp>
-        <InputWrp css={{h: 64, mt: 20}}>
-          <InputLabel>
-            <RedStr>*</RedStr>确认密码：
-          </InputLabel>
-          <TextField
-            css={{mt: 0, w: 420}}
-            inputCss={{ml: 0, w: '100%'}}
-            type='password'
-            value={password}
-            onChange={(e) => {
-              const {value} = e.target
-              setPassword(value)
-            }}
-            placeholder='确认密码'
-          />
-        </InputWrp>
-
         <InputWrp css={{h: 64, mt: 20}}>
           <InputLabel>
             <RedStr>*</RedStr>验证码：
@@ -336,26 +298,28 @@ export default function Security() {
           <TextField
             css={{mt: 0, w: 250}}
             inputCss={{ml: 0, w: '100%'}}
-            value={password}
+            value={newCode}
             onChange={(e) => {
               const {value} = e.target
-              setPassword(value)
+              setNewCode(value)
             }}
             placeholder='请输入验证码'
           />
           <Button
             css={{w: 150, ml: 20, mt: 0}}
-            text='获取验证码'
+            text={countdown > 0 ? countdown: '获取验证码'}
+            disabled={countdown > 0 || (newName?.length ?? 0) <= 0}
             onClick={() => {
-              console.log('dsldwe')
+              newNameTypeValue?.sendCode()
             }}
           />
         </InputWrp>
         <Button
           css={{w: 420, ml: 97}}
           text='确认'
+          disabled={(newName?.length ?? 0) <= 0 || (newCode?.length ?? 0) <= 0}
           onClick={() => {
-            setPhoneOpen(false)
+          	newNameTypeValue?.onSubmit()
           }}
         />
       </CloseDialog>

@@ -3,11 +3,12 @@ import {styled} from '@/stitches.config'
 
 const Container = styled('div', {
   position: 'relative',
-  p: '20px 26px',
+  p: '0px 26px',
   borderRadius: '2px',
   display: 'flex',
   mt: 40,
   h: 64,
+  alignItems: 'center',
   variants: {
     active: {
       true: {

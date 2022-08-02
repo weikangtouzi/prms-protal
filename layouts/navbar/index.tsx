@@ -40,7 +40,6 @@ const LinkButton = styled('div', {
   h: 25,
   fs: 18,
   fw: 600,
-  flexShrink: 0,
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
@@ -65,34 +64,34 @@ const NavWrap = styled('div', {
   alignItems: 'center',
   justifyContent: 'center',
   bg: '$w',
+  minWidth: 1184,
   zIndex: 1,
+  paddingLeft: 85,
+  paddingRight: 85,
 })
 
 const DLink = styled(LinkButton, {
   opacity: 1,
   p: 0,
-  marginLeft: '5px',
-  width: 'auto',
+  marginLeft: 20,
+  whiteSpace: 'nowrap',
+  // width: 'auto',
 })
 
 const Notify = styled('div', {
-  ml: 294,
   mr: 6,
   display: 'flex',
   alignItems: 'center',
-  flexShrink: 0,
 })
 
 const LogoDiv = styled(Notify, {
   ml: 0,
   mr: 25,
-  flexShrink: 0,
   cursor: 'pointer'
 })
 
 const Flex = styled('div', {display: 'flex'})
 const WrapDiv = styled('div', {
-  float: 'right',
   cursor: 'pointer',
 })
 const TitledText = styled('div', {
@@ -449,17 +448,17 @@ export default function Navbar() {
           </LinkButton>
         </div>
       ))}
-      <Notify>
+      <Notify css={{ flex: 1 }}>
         {/*<Image src='/cy-black.png' alt='notification' width={32} height={32} />*/}
       </Notify>
       <DropdownMenu>
         {basicInfo ? <DropdownMenuTrigger asChild>
-          <Flex css={{alignItems: 'center', flexShrink: 0}}>
+          <Flex css={{alignItems: 'center' }}>
             <img className='use-image-round' src={basicInfo?.image_url || '/qyshz.png'} alt='user' width={30} height={30} />
             <DLink>{basicInfo.username}</DLink>
           </Flex>
         </DropdownMenuTrigger> : <a href='/login' target='_self'>
-          <Flex css={{alignItems: 'center', flexShrink: 0}}>
+          <Flex css={{alignItems: 'center' }}>
             {/*<Image className='use-image-round' src={basicInfo.image_url} alt='user' width={30} height={30} />*/}
             <DLink>未登录</DLink>
           </Flex>

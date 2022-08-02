@@ -2,6 +2,7 @@ import {styled} from '@/stitches.config'
 
 export const Main = styled('main', {
   height: '100vh',
+  minWidth: 1184,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',

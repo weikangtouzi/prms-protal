@@ -69,8 +69,8 @@ export const BodyWrap = styled('div', {
 
 export const FirstWrap = styled('div', {
   mt: 20,
-  display: 'flex',
-  justifyContent: 'center',
+  w: 1184,
+  m: 'auto',
   position: 'relative',
 })
 

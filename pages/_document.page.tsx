@@ -8,6 +8,7 @@ export default class Document extends NextDocument {
       <Html lang='en'>
         <Head>
           <style id='stitches' dangerouslySetInnerHTML={{__html: getCssText()}} />
+         	<meta anem='viewport' content={'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'} />
         </Head>
         <body>
           <Main />

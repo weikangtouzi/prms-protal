@@ -182,6 +182,35 @@ mutation UserEnterpriseIdentify($info: EnterpriseCharterSencorRequest!) {
 }
 `,
 
+/* 
+
+ENTInsertEnterpriseBasicInfo
+
+{
+	info: {
+		enterpriseName String!
+		abbreviation String!
+		enterpriseLocation [String]!
+		enterprisecCoordinate [Float]!
+		enterpriseNature enum EnterpriseNature {    ForeignVentures,    ForeignFundedEnterprises,     PrivateEnterprise,     StateOwnedEnterprises,     Extra  }
+		enterpriseIndustry [String]!
+		enterpriseFinancing enum EnterpriseFinancing {    NotYet,    AngelFinancing,    A,    B,    C,    D,    Listed,    NoNeed  }
+		enterpriseSize enum EnterpriseSize {    LessThanFifteen,     FifteenToFifty,     FiftyToOneHundredFifty,     OneHundredFiftyToFiveHundreds,     FiveHundredsToTwoThousands,     MoreThanTwoThousands  }
+		enterpriseProfile String!
+		logo String
+		establishedDate String
+		homepage String
+		tel String
+	}
+}
+
+*/ 
+`
+mutation ENTInsertEnterpriseBasicInfo($info: EnterpriseBasicInfo!) {
+	ENTInsertEnterpriseBasicInfo(info: $info) 
+}
+`,
+
 // 招聘方编辑自己的公司信息
 ` 
 mutation ENTEditEnterpriseBasicInfo($info: EditEnterpriseBasicInfo!) {

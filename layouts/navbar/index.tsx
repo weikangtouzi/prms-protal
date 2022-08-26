@@ -206,11 +206,6 @@ const menus = [
   },
 ]
 
-const defaultBasicInfo = {
-  username: '',
-  image_url: '/qyshz.png',
-}
-
 const defaultTitle = ['省份/直辖市', '城市/区']
 const defaultProvince = []
 const citys = []
@@ -454,7 +449,7 @@ export default function Navbar() {
       <DropdownMenu>
         {basicInfo ? <DropdownMenuTrigger asChild>
           <Flex css={{alignItems: 'center' }}>
-            <img className='use-image-round' src={basicInfo?.image_url || '/qyshz.png'} alt='user' width={30} height={30} />
+            <img className='use-image-round' src={basicInfo?.image_url || '/mine_avatar.png'} alt='user' width={30} height={30} />
             <DLink>{basicInfo.username}</DLink>
           </Flex>
         </DropdownMenuTrigger> : <a href='/login' target='_self'>

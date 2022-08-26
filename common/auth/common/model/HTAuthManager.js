@@ -15,7 +15,7 @@ export default class HTAuthManager {
 
 
 
-	static kHTAuthKeyValueStorageKey = 'kHTAuthKeyValueStorageKey'
+	static kHTAuthKeyValueStorageKey = 'kHTChenZaoZhaoAuthKeyValueStorageKey'
 
 	static keyValueList = {}
 
@@ -29,7 +29,11 @@ export default class HTAuthManager {
 		let reloadValueList = { ...lastValueList, ...updateValueList }
 		this.keyValueList = reloadValueList
 		if (process.browser) {
-			localStorage.setItem(this.kHTAuthKeyValueStorageKey, JSON.stringify(reloadValueList))
+			// localStorage.setItem(this.kHTAuthKeyValueStorageKey, JSON.stringify(reloadValueList))
+			const exp = new Date()
+	  		exp.setTime(exp.getTime() + 30 * 24 * 60 * 60 * 1000)
+			document.cookie = `${this.kHTAuthKeyValueStorageKey}=${escape(JSON.stringify(reloadValueList))};domain=chenzaozhao.com;path=/;expires=${exp.toUTCString()}`
+			document.cookie = `${this.kHTAuthKeyValueStorageKey}=${escape(JSON.stringify(reloadValueList))};path=/;expires=${exp.toUTCString()}`
 		}
 		if (lastValueList.userToken != reloadValueList.userToken) {
 			// DeviceEventEmitter.emit(this.kHTUserTokenDidChangeNotice)
@@ -49,10 +53,11 @@ export default class HTAuthManager {
 			return {}
 		}
 		let value = null
-		if (process.browser) {
-			value = localStorage.getItem(this.kHTAuthKeyValueStorageKey) ?? {}
-		}
 		try {
+			if (process.browser) {
+				// value = localStorage.getItem(this.kHTAuthKeyValueStorageKey) ?? {}
+				value = unescape(document.cookie.match(new RegExp(`(^| )${this.kHTAuthKeyValueStorageKey}=([^;]*)(;|$)`))[2])
+			}
 			value = JSON.parse(value)
 		} catch(e) {}
 		this.keyValueList = value
@@ -60,7 +65,7 @@ export default class HTAuthManager {
 	}
 
 	static clearLoginInfo = () => {
-		this.updateKeyValueList({ userToken: '', userRole: '' })
+		this.updateKeyValueList({ userToken: '', enterpriseToken: '', userRole: '' })
 	}
 
 }

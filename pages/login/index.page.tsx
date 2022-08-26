@@ -56,7 +56,7 @@ const identityCards = [
     activeUrl: '/qz.png',
     text: '招聘',
     identity: 'EnterpriseUser',
-    role: 'HR',
+    role: 'Admin',
   },
 ]
 
@@ -90,9 +90,12 @@ export default function Login() {
   const [step, setStep] = useState(0)
   const [identityNum, setIdentityNum] = useState(0)
 
-  
+  const [jobPosition, setJobPosition] = useState('')
   const [charterUrl, setCharterUrl] = useState('')
   const editRef = useRef()
+
+  const [companyName, setCompanyName] = useState('')
+  const [companyProfile, setCompanyProfile] = useState('')
 
   const checkAll = () => {
     if (pwd && pwd2) {
@@ -147,10 +150,17 @@ export default function Login() {
 		HTAPI.UserChooseOrSwitchIdentity({
   		targetIdentity: selectedIdentity.identity,
 			role: selectedIdentity.role
-  	}).then(response => {
-  		HTAuthManager.updateKeyValueList({ userToken: response, userRole: selectedIdentity.identity })
+  	}, { showError: false }).then(response => {
+  		const tokenKey = selectedIdentity.identity == 'EnterpriseUser' ? 'enterpriseToken' : 'userToken'
+  		HTAuthManager.updateKeyValueList({ [tokenKey]: response, userRole: selectedIdentity.identity })
   		switch(selectedIdentity.identity) {
   			case 'PersonalUser': {
+  				HTAPI.UserChooseOrSwitchIdentity({
+		    		targetIdentity: 'EnterpriseUser',
+						role: 'Admin'
+		    	}, { showError: false }).then(response => {
+		    		HTAuthManager.updateKeyValueList({ enterpriseToken: response })
+		    	})
   				HTAPI.CandidateGetAllJobExpectations().then((response) => {
 						if ((response?.length ?? 0) <= 0) {
 							setStep(2)
@@ -161,16 +171,28 @@ export default function Login() {
   				break
   			}
   			case 'EnterpriseUser': {
+  				HTAPI.UserChooseOrSwitchIdentity({
+		    		targetIdentity: 'PersonalUser',
+						role: 'PersonalUser'
+		    	}, { showError: false }).then(response => {
+		    		HTAuthManager.updateKeyValueList({ userToken: response })
+		    	})
   				reloadEnterpriseLocation()
   				break
   			}
   		}
   	}).catch(e => {
   		switch(selectedIdentity.identity) {
+  			case 'PersonalUser': {
+  				Toast.show(e)
+  				break
+  			}
   			case 'EnterpriseUser': {
   				HTAPI.ENTCheckEnterpriseIdentification().then(response => {
 		    		if (response.status == 'Waiting') {
 		    			setStep(5)
+		    		} else if (response.status == 'Passed') {
+		    			setStep(6)
 		    		} else {
 		    			setStep(3)
 		    		}
@@ -789,7 +811,71 @@ export default function Login() {
             onClick={() => {
             	HTAuthManager.clearLoginInfo()
               // to 2/3
-              router.push('/')
+              // router.push('/')
+              setStep(0)
+            }}
+          />
+        </ZcRight>
+      </ZcCard>
+    )
+  }
+
+  if (step === 6) {
+    stepNode = (
+      <ZcCard css={{h: 593}}>
+        <ZcLeft>
+          <BackTitle css={{pt: 30, pl: 30}}>
+            <Image className='use-image-round' src='/zh.png' alt='ht' width={34} height={34} />
+            <BackText css={{ml: 20}}>欢迎注册趁早找！</BackText>
+          </BackTitle>
+          <QzyxText>企业认证信息补充</QzyxText>
+          <FormWrap>
+            <InputFormItem css={{w: 480, mt: 10}} label='企业名称'>
+              <TextField
+                value={companyName}
+                onChange={(e) => {
+                  const {value} = e.target
+                  setCompanyName(value)
+                }}
+                size='small'
+                css={{bg: '$w', w: 480, h: 42}}
+                placeholder='请填写'
+              />
+            </InputFormItem>
+            <InputFormItem css={{w: 480, mt: 10}} label='企业介绍'>
+              <TextField
+                value={companyProfile}
+                onChange={(e) => {
+                  const {value} = e.target
+                  setCompanyProfile(value)
+                }}
+                size='small'
+                css={{bg: '$w', w: 480, h: 42}}
+                placeholder='请填写'
+              />
+            </InputFormItem>
+          </FormWrap>
+        </ZcLeft>
+        <ZcRight>
+          <Image src='/logo.png' alt='Logo' width={94.62} height={30.62} />
+          <Button
+            text='确定'
+            onClick={() => {
+            	HTAPI.ENTInsertEnterpriseBasicInfo({
+            		info: {
+            			enterpriseName: companyName,
+									abbreviation: companyName,
+									enterpriseLocation: [],
+									enterprisecCoordinate: [0, 0],
+									enterpriseIndustry: [],
+									enterpriseProfile: companyProfile,
+									enterpriseNature: 'Extra',
+									enterpriseFinancing: 'NotYet',
+									enterpriseSize: 'LessThanFifteen',
+            		}
+            	}).then(response => {
+            		switchIdentityDidTouch()
+            	})
             }}
           />
         </ZcRight>

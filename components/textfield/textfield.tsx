@@ -19,7 +19,7 @@ const Container = styled('div', {
       },
     },
   },
-  zIndex: 2,
+  // zIndex: 2,
 })
 
 const Input = styled('input', {

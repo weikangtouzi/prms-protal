@@ -215,6 +215,8 @@ export default function Company() {
 	  },
   ]
 
+  const imageList = JSON.parse(companyDetailInfo?.extra_attribute ?? '{ "pictures": [] }')?.pictures ?? []
+
   return (
     <Main>
       <CompanyHead>
@@ -280,11 +282,11 @@ export default function Company() {
                     mb: 30,
                   }}
                 >
-                  {companyDetailInfo?.extra_attribute}
+                  {companyDetailInfo?.enterprise_profile}
                 </TitleText>
                 <TitleText css={{fs: 18, mb: 21}}>工作地址：</TitleText>
                 <TitleText css={{fs: 16, fw: 400, mb: 21, display: 'flex', alignItems: 'center'}}>
-                  <Icon name='icon-icon_dingwei' /> {companyDetailInfo?.enterprise_loc_detail.join('')}
+                  <Icon name='icon-icon_dingwei' /> {companyDetailInfo?.enterprise_loc_detail.slice(3).join('')}
                 </TitleText>
                 <img alt='name' width={804} height={200} src={mapImageUrl} />
               </Flex>
@@ -390,14 +392,19 @@ export default function Company() {
           <TitleText css={{fs: 24}}>公司相册</TitleText>
 
           <Flex css={{pt: 20, pb: 20, borderBottom: '1px dashed rgba(0, 0, 0, 0.1)', mb: 19}}>
-            <Splide options={{type: 'loop', pagination: false}}>
-              <SplideSlide>
-                <Image alt='sss' src={imgUrl} width={244} height={140} />
-              </SplideSlide>
-              <SplideSlide>
-                <Image alt='sss' src={imgUrl} width={244} height={140} />
-              </SplideSlide>
-            </Splide>
+          	{
+          		imageList.length > 0 && (
+          			<Splide options={{type: 'loop', pagination: false}}>
+		            	{
+		            		imageList?.map((item, index) => (
+		            			<SplideSlide key={index}>
+				                <Image alt='sss' src={item} width={244} height={140} />
+				              </SplideSlide>
+		            		))
+		            	}
+		            </Splide>
+          		)
+          	}
           </Flex>
           <TitleText css={{fs: 24}}>招聘官</TitleText>
           <Flex css={{flexDirection: 'column'}}>

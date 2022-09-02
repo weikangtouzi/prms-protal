@@ -8,6 +8,10 @@ import InputFormItem from '../../login/components/input-form'
 import EditCardItem from './edit-card-item'
 import { reformEducationLevel } from '@/utils/utils'
 
+import { DatePicker } from 'antd'
+import moment from 'moment'
+import 'antd/es/date-picker/style/index.css'
+
 interface EProps {
   eduExp?: any[]
 }
@@ -66,27 +70,14 @@ function EducationExperience({eduExp = [], ...props}: EProps) {
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='时间段'>
           <Flex css={{mt: 10}}>
-            <TextField
-              css={{bg: '$w', w: 132, mr: 10}}
-              value={editDetail.startAt}
-              onChange={(e) => {
-                const {value} = e.target
-                setEditDetail((d) => ({...d, startAt: value}))
-              }}
-              size='small'
-              placeholder='请填写'
-            />
-            至
-            <TextField
-              css={{bg: '$w', w: 132, ml: 10}}
-              value={editDetail.endAt}
-              onChange={(e) => {
-                const {value} = e.target
-                setEditDetail((d) => ({...d, endAt: value}))
-              }}
-              size='small'
-              placeholder='请填写'
-            />
+          	<DatePicker.RangePicker 
+          		style={{ width: 177 * 2, height: 42, marginRight: 15 }}
+          		picker={'year'}
+          		value={[editDetail?.startAt ? moment(editDetail?.startAt) : null, editDetail?.endAt ? moment(editDetail?.endAt) : null]}
+          		onChange={(dateList, dateStringList) => {
+          			setEditDetail((d) => ({...d, startAt: dateStringList?.[0], endAt: dateStringList?.[1]}))
+          		}}
+          	/>
           </Flex>
         </InputFormItem>
       </FormWrap>

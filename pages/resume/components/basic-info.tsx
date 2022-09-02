@@ -7,6 +7,9 @@ import {TextField} from '@/components/textfield'
 import InputFormItem from '../../login/components/input-form'
 import CitySelect from './city-select'
 import { reformDistanceYears, reformEducationLevel } from '@/utils/utils'
+import { DatePicker } from 'antd'
+import moment from 'moment'
+import 'antd/es/date-picker/style/index.css'
 
 const imgUrl = 'https://modao.cc/uploads4/images/2960/29604935/v2_pksqvn.png'
 
@@ -75,16 +78,13 @@ function BasicInfo({ editAble }) {
           </Flex>
         </InputFormItem>
         <InputFormItem css={{mt: 30, w: 430}} label='出生日期：'>
-          <TextField
-            value={newBasicInfo?.birth_date}
-            onChange={(e) => {
-              const {value} = e.target
-              setNewBasicInfo((n: any) => ({...n, birth_date: value}))
-            }}
-            size='small'
-            css={{bg: '$w', w: 300, h: 42, mt: 10}}
-            placeholder='请填写'
-          />
+        	<DatePicker 
+        		value={ newBasicInfo?.birth_date ? moment(newBasicInfo?.birth_date) : null} 
+        		onChange={(date, dateString) => {
+        			setNewBasicInfo((n: any) => ({...n, birth_date: dateString }))
+        		}}
+        		style={{ width: 300, height: 42, marginTop: 10}} 
+        	/>
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='所在城市：'>
           <CitySelect css={{w: 300, mt: 10}} value={city} onSelect={setCity} />
@@ -103,16 +103,13 @@ function BasicInfo({ editAble }) {
           <Select css={{w: 300, mt: 10}} value={education} list={reformEducationLevel(-1)} onSelect={setEducation} />
         </InputFormItem>
         <InputFormItem css={{mt: 30, w: 430}} label='首次参加工作时间：'>
-          <TextField
-            value={newBasicInfo?.first_time_working}
-            onChange={(e) => {
-              const {value} = e.target
-              setNewBasicInfo((n: any) => ({...n, first_time_working: value}))
-            }}
-            size='small'
-            css={{bg: '$w', w: 300, h: 42, mt: 10}}
-            placeholder='请填写'
-          />
+        	<DatePicker 
+        		value={ newBasicInfo?.first_time_working ? moment(newBasicInfo?.first_time_working) : null} 
+        		onChange={(date, dateString) => {
+        			setNewBasicInfo((n: any) => ({...n, first_time_working: dateString }))
+        		}}
+        		style={{ width: 300, height: 42, marginTop: 10}} 
+        	/>
         </InputFormItem>
         <Flex>
           <Button

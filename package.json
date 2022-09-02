@@ -14,6 +14,7 @@
     "@splidejs/react-splide": "0.6.17",
     "@stitches/react": "1.2.6",
     "ahooks": "^3.3.0",
+    "antd": "^4.22.8",
     "formdata-node": "^4.3.3",
     "moment": "^2.29.4",
     "next": "12.0.8-canary.13",

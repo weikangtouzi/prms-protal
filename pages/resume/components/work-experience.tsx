@@ -5,7 +5,9 @@ import {EditWrap, NormalText, ResuTitle, Flex, FormWrap} from './styled'
 import LeftMenuTitle from './left-menu-title'
 import InputFormItem from '../../login/components/input-form'
 import EditCardItem from './edit-card-item'
+import { DatePicker } from 'antd'
 import moment from 'moment'
+import 'antd/es/date-picker/style/index.css'
 
 interface WProps {
   workExp?: any[]
@@ -55,27 +57,13 @@ function WorkExperience({workExp = [], ...props}: WProps) {
         </InputFormItem>
         <InputFormItem css={{mt: 30}} label='在职时间'>
           <Flex css={{mt: 10}}>
-            <TextField
-              css={{bg: '$w', w: 177, mr: 15}}
-              value={editDetail.startAt}
-              onChange={(e) => {
-                const {value} = e.target
-                setEditDetail((d) => ({...d, startAt: value}))
-              }}
-              size='small'
-              placeholder='请填写'
-            />
-            至
-            <TextField
-              css={{bg: '$w', w: 177, ml: 15}}
-              value={editDetail.endAt}
-              onChange={(e) => {
-                const {value} = e.target
-                setEditDetail((d) => ({...d, endAt: value}))
-              }}
-              size='small'
-              placeholder='请填写'
-            />
+          	<DatePicker.RangePicker 
+          		style={{ width: 177 * 2, height: 42, marginRight: 15 }}
+          		value={[editDetail?.startAt ? moment(editDetail?.startAt) : null, editDetail?.endAt ? moment(editDetail?.endAt) : null]}
+          		onChange={(dateList, dateStringList) => {
+          			setEditDetail((d) => ({...d, startAt: dateList?.[0]?.toISOString(), endAt: dateList?.[1]?.toISOString()}))
+          		}}
+          	/>
           </Flex>
         </InputFormItem>
       </FormWrap>

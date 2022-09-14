@@ -583,7 +583,7 @@ export default function Login() {
 	                  setAccount(value)
 	                }}
 	                icon={<Image src='/zh.png' alt='zh' width={20} height={24} />}
-	                placeholder='请输入邮箱'
+	                placeholder='请输入手机号'
 	                err={accountErr}
 	              />
 	              <TextField

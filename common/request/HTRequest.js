@@ -132,12 +132,12 @@ export default class HTRequest {
 		resolve(response)
 	}
 
-	static gqlRequest = (item, operationName, paramList = {}, optionList = {}) => {
+	static gqlRequest = (item, operationName, paramList = {}, optionList = {}, headerList = {}) => {
 		return this.request('/graphql', 'POST', {
 			'operationName': operationName,
 			'variables': paramList,
 			'query': item
-		}, optionList)
+		}, optionList, headerList)
 	}
 
 	static gqlUpload = (config) => {

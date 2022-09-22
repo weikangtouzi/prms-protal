@@ -42,7 +42,7 @@ function JobExpectationItem({jobExp, ...props}: JProps) {
         />
         <Button
           onClick={() => {
-          	editRef.current.onSubmit(() => {
+          	editRef.current.onSubmit(null, () => {
           		setEdit(false)
           		props.onRefresh()
           	})

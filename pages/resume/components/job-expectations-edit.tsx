@@ -50,7 +50,7 @@ function JobExpectationItemEdit({ jobExp, css }: JProps, ref) {
   useImperativeHandle(
   	ref,
   	() => ({
-  		onSubmit: (complete) => {
+  		onSubmit: (token, complete) => {
   			HTAPI.CandidateEditJobExpectations({
       		info: {
       			id: jobExp?.id,
@@ -61,7 +61,7 @@ function JobExpectationItemEdit({ jobExp, css }: JProps, ref) {
             aimed_city: city[city.length - 1].value,
             industry_involved: jobIndustry.map((jo: any) => jo),
       		}
-      	}).then(response => {
+      	}, {}, { Authorization: token }).then(response => {
       		Toast.show('修改成功')
       		complete && complete(response)
       	})

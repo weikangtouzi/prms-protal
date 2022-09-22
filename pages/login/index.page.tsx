@@ -173,13 +173,13 @@ export default function Login() {
 		  		targetIdentity: 'PersonalUser',
 					role: 'PersonalUser'
 		  	}, {}, { Authorization: tempToken }).then(response => {
-  				HTAuthManager.updateKeyValueList({ userToken: response })
-		  		
-  				HTAPI.CandidateGetAllJobExpectations().then((response) => {
-						if ((response?.length ?? 0) <= 0) {
+  				HTAPI.CandidateGetAllJobExpectations({}, {}, { Authorization: response }).then((expectationList) => {
+						if ((expectationList?.length ?? 0) <= 0) {
+							setTempToken(response)
 							setStep(2)
 							return
 						}
+						HTAuthManager.updateKeyValueList({ userToken: response })
 						router.push('/')
 					})
 
@@ -191,16 +191,17 @@ export default function Login() {
 			}
 			case 'EnterpriseUser': {
 				chooseAdminAndHrRole().then(response => {
-					HTAuthManager.updateKeyValueList({ enterpriseToken: response.token, enterpriseRole: response.role })
-					
-  				reloadEnterpriseLocation()
+					HTAuthManager.updateKeyValueList({ enterpriseToken: response?.token, enterpriseRole: response?.role })
 
   				HTAPI.UserChooseOrSwitchIdentity({
 		    		targetIdentity: 'PersonalUser',
 						role: 'PersonalUser'
-		    	}, { showError: false }).then(response => {
+		    	}, { showError: false }, { Authorization: tempToken }).then(response => {
 		    		HTAuthManager.updateKeyValueList({ userToken: response })
 		    	})
+
+		    	reloadEnterpriseLocation()
+
 				}).catch(e => {
 					HTAPI.ENTCheckEnterpriseIdentification({}, {}, { Authorization: tempToken }).then(response => {
 		    		if (response.status == 'Waiting') {
@@ -703,7 +704,7 @@ export default function Login() {
             disabled={false}
             text='确定'
             onClick={() => {
-            	editRef.current.onSubmit((response) => {
+            	editRef.current.onSubmit(tempToken, (response) => {
             		switchIdentityDidTouch()
             	})
             }}

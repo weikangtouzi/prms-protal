@@ -88,6 +88,7 @@ export default function Login() {
   // 4 注册 填写企业认证补充
   // 5 注册 填写认证审核中
   const [step, setStep] = useState(0)
+  const [tempToken, setTempToken] = useState('')
   const [identityNum, setIdentityNum] = useState(0)
 
   const [jobPosition, setJobPosition] = useState('')
@@ -139,7 +140,7 @@ export default function Login() {
     			password
     		}
     	}).then(response => {
-    		HTAuthManager.updateKeyValueList({ userToken: response?.token })
+    		setTempToken(response.token)
 				setStep(1)
     	})
     }
@@ -147,20 +148,33 @@ export default function Login() {
 
 	const switchIdentityDidTouch = () => {
 		const selectedIdentity = identityCards[identityNum]
-		HTAPI.UserChooseOrSwitchIdentity({
-  		targetIdentity: selectedIdentity.identity,
-			role: selectedIdentity.role
-  	}, { showError: false }).then(response => {
-  		const tokenKey = selectedIdentity.identity == 'EnterpriseUser' ? 'enterpriseToken' : 'userToken'
-  		HTAuthManager.updateKeyValueList({ [tokenKey]: response, userRole: selectedIdentity.identity })
-  		switch(selectedIdentity.identity) {
-  			case 'PersonalUser': {
-  				HTAPI.UserChooseOrSwitchIdentity({
+		const chooseAdminAndHrRole = () => {
+			return new Promise((resolve, reject) => {
+				HTAPI.UserChooseOrSwitchIdentity({
+		  		targetIdentity: 'EnterpriseUser',
+					role: 'Admin'
+		  	}, { showError: false }, { Authorization: tempToken }).then(response => {
+		  		resolve({ token: response, role: 'Admin' })
+		  	}).catch(() => {
+		  		HTAPI.UserChooseOrSwitchIdentity({
 		    		targetIdentity: 'EnterpriseUser',
-						role: 'Admin'
-		    	}, { showError: false }).then(response => {
-		    		HTAuthManager.updateKeyValueList({ enterpriseToken: response })
-		    	})
+						role: 'HR'
+		    	}, { showError: false }, { Authorization: tempToken }).then(response => {
+		    		resolve({ token: response, role: 'HR' })
+		  		}).catch(e => {
+		  			reject(e)
+		  		})
+		  	})
+			})
+		}
+		switch(selectedIdentity.identity) {
+			case 'PersonalUser': {
+				HTAPI.UserChooseOrSwitchIdentity({
+		  		targetIdentity: 'PersonalUser',
+					role: 'PersonalUser'
+		  	}, {}, { Authorization: tempToken }).then(response => {
+  				HTAuthManager.updateKeyValueList({ userToken: response })
+		  		
   				HTAPI.CandidateGetAllJobExpectations().then((response) => {
 						if ((response?.length ?? 0) <= 0) {
 							setStep(2)
@@ -168,27 +182,27 @@ export default function Login() {
 						}
 						router.push('/')
 					})
-  				break
-  			}
-  			case 'EnterpriseUser': {
+
+					chooseAdminAndHrRole().then(response => {
+  					HTAuthManager.updateKeyValueList({ enterpriseToken: response.token, enterpriseRole: response.role })
+  				})
+		  	})
+				break
+			}
+			case 'EnterpriseUser': {
+				chooseAdminAndHrRole().then(response => {
+					HTAuthManager.updateKeyValueList({ enterpriseToken: response.token, enterpriseRole: response.role })
+					
+  				reloadEnterpriseLocation()
+
   				HTAPI.UserChooseOrSwitchIdentity({
 		    		targetIdentity: 'PersonalUser',
 						role: 'PersonalUser'
 		    	}, { showError: false }).then(response => {
 		    		HTAuthManager.updateKeyValueList({ userToken: response })
 		    	})
-  				reloadEnterpriseLocation()
-  				break
-  			}
-  		}
-  	}).catch(e => {
-  		switch(selectedIdentity.identity) {
-  			case 'PersonalUser': {
-  				Toast.show(e)
-  				break
-  			}
-  			case 'EnterpriseUser': {
-  				HTAPI.ENTCheckEnterpriseIdentification().then(response => {
+				}).catch(e => {
+					HTAPI.ENTCheckEnterpriseIdentification({}, {}, { Authorization: tempToken }).then(response => {
 		    		if (response.status == 'Waiting') {
 		    			setStep(5)
 		    		} else if (response.status == 'Passed') {
@@ -197,10 +211,10 @@ export default function Login() {
 		    			setStep(3)
 		    		}
 		    	})
-  				break
-  			}
-  		}
-  	})
+				})
+				break
+			}
+		}
 	}
 
 	if (process.browser) {

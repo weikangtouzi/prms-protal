@@ -28,7 +28,7 @@ export default class HTRequest {
 		.finally(finallyAll)
 	}
 
-	static request = (url = '', method = 'GET', paramList = {}, optionList = {}) => {
+	static request = (url = '', method = 'GET', paramList = {}, optionList = {}, headerList = {}) => {
 		return new Promise((resolve, reject) => {
 			let reloadUrl = url.indexOf('http') == -1 ? `${process.env.NEXT_PUBLIC_URI}${url}` : url
 			let isFormData = false
@@ -80,6 +80,7 @@ export default class HTRequest {
 				this._fetch(reloadUrl, method, {
 					...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
 					...((optionList?.needToken ?? true) ? { 'Authorization': HTAuthManager?.syncReadKeyValueList()?.userToken ?? '' } : {}),
+					...headerList
 				}, body, reloadResolve, reloadReject)
 			}
 			fetchRequest()

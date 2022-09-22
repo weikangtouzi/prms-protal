@@ -880,12 +880,13 @@ let RELOAD_ITEM_LIST = {}
 ITEM_LIST.map(item => {
 	let matchList = item.match(/(\S)* (\S)*(?=(\(|( \{)))/)[0].split(' ')
 	let operationName = matchList[1]
-	RELOAD_ITEM_LIST[operationName] = (paramList = {}, optionList = {}) => {
+	RELOAD_ITEM_LIST[operationName] = (paramList = {}, optionList = {}, headerList = {}) => {
 		return HTRequest.gqlRequest(
 			item, 
 			operationName, 
 			paramList, 
-			{ showLoading: matchList[0] != 'query', ...optionList}
+			{ showLoading: matchList[0] != 'query', ...optionList},
+			headerList
 		)
 	}
 })

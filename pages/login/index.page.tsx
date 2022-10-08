@@ -824,7 +824,6 @@ export default function Login() {
           <Button
             text='知道了'
             onClick={() => {
-            	HTAuthManager.clearLoginInfo()
               // to 2/3
               // router.push('/')
               setStep(0)

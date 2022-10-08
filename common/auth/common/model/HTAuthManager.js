@@ -15,7 +15,7 @@ export default class HTAuthManager {
 
 
 
-	static kHTAuthKeyValueStorageKey = 'kHTChenZaoZhaoAuthKeyValueStorageKey1'
+	static kHTAuthKeyValueStorageKey = 'kHT1ChenZaoZhaoAuthKeyValueStorageKey'
 
 	static keyValueList = {}
 

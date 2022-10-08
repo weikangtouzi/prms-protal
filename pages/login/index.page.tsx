@@ -197,7 +197,12 @@ export default function Login() {
 		    		targetIdentity: 'PersonalUser',
 						role: 'PersonalUser'
 		    	}, { showError: false }, { Authorization: tempToken }).then(response => {
-		    		HTAuthManager.updateKeyValueList({ userToken: response })
+		    		HTAPI.CandidateGetAllJobExpectations({}, {}, { Authorization: response }).then((expectationList) => {
+							if ((expectationList?.length ?? 0) <= 0) {
+								return
+							}
+							HTAuthManager.updateKeyValueList({ userToken: response })
+						})
 		    	})
 
 		    	reloadEnterpriseLocation()

@@ -15,13 +15,23 @@ export default class HTAuthManager {
 
 
 
-	static kHTAuthKeyValueStorageKey = 'kHT1ChenZaoZhaoAuthKeyValueStorageKey'
+	static kHTAuthKeyValueStorageKey = 'kHTChenZaoZhaoAuthKeyValueStorageKey'
 
 	static keyValueList = {}
 
 	static init = () => {
 		this.syncReadKeyValueList()
 	}
+
+	static domainKey = () => {
+		let domainKey = 'chenzaozhao.com'
+		if ((window?.location?.port?.length ?? 0) > 0) {
+			domainKey = window.location.hostname
+		}
+		return domainKey
+	}
+
+	static userTokenDidChangeListener = []
 
 	static updateKeyValueList = (valueList) => {
 		let updateValueList = valueList ?? {}
@@ -32,11 +42,13 @@ export default class HTAuthManager {
 			// localStorage.setItem(this.kHTAuthKeyValueStorageKey, JSON.stringify(reloadValueList))
 			const exp = new Date()
 	  		exp.setTime(exp.getTime() + 30 * 24 * 60 * 60 * 1000)
-			document.cookie = `${this.kHTAuthKeyValueStorageKey}=${escape(JSON.stringify(reloadValueList))};domain=chenzaozhao.com;path=/;expires=${exp.toUTCString()}`
-			document.cookie = `${this.kHTAuthKeyValueStorageKey}=${escape(JSON.stringify(reloadValueList))};path=/;expires=${exp.toUTCString()}`
+			document.cookie = `${this.domainKey()}${this.kHTAuthKeyValueStorageKey}=${escape(JSON.stringify(reloadValueList))};domain=${this.domainKey()};path=/;expires=${exp.toUTCString()}`
 		}
 		if (lastValueList.userToken != reloadValueList.userToken) {
 			// DeviceEventEmitter.emit(this.kHTUserTokenDidChangeNotice)
+			this.userTokenDidChangeListener.map(callback => {
+				callback()
+			})
 		}
 		if (lastValueList.userRole != reloadValueList.userRole) {
 			this.sendUserRoleDidChangeNotice()
@@ -56,7 +68,7 @@ export default class HTAuthManager {
 		try {
 			if (process.browser) {
 				// value = localStorage.getItem(this.kHTAuthKeyValueStorageKey) ?? {}
-				value = unescape(document.cookie.match(new RegExp(`(^| )${this.kHTAuthKeyValueStorageKey}=([^;]*)(;|$)`))[2])
+				value = unescape(document.cookie.match(new RegExp(`(^| )${this.domainKey()}${this.kHTAuthKeyValueStorageKey}=([^;]*)(;|$)`))[2])
 			}
 			value = JSON.parse(value)
 		} catch(e) {}

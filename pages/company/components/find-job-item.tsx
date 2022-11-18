@@ -11,6 +11,10 @@ interface JobIProps {
 export default function FindJobItem({item}: JobIProps) {
   const {job, subs, money, id, time, isUrgent, company, companyText, fl = [], logo, hr, onLine} = item
   const [active, setActive] = useState(false)
+  let salaryTitle = `${item.min_salary}-${item.max_salary}`
+  if (item.min_salary == 0 && item.max_salary == 0) {
+  	salaryTitle = '面议'
+  }
 
   return (
     <FindJobItemWrap
@@ -22,7 +26,7 @@ export default function FindJobItem({item}: JobIProps) {
         setActive(false)
       }}
     >
-      <a href={`/job/${item.id}`} target='_blank' rel='noreferrer'>
+      <a href={`/job/${item.id ?? item.job_id}`} target='_blank' rel='noreferrer'>
         <Flex css={{justifyContent: 'space-between', pb: 20, borderBottom: '1px dashed rgba(0,0,0,0.1)'}}>
           <Flex css={{flexDirection: 'column'}}>
             <Flex css={{alignItems: 'center'}}>
@@ -35,8 +39,8 @@ export default function FindJobItem({item}: JobIProps) {
               <TitleText css={{fs: 14, fw: 400, color: '#616A67', ff: '$fr'}}>{time}</TitleText>
             </Flex>
             <Flex css={{alignItems: 'center', mt: 13}}>
-              <TitleText css={{color: '#FF6500', fs: 18}}>{reformSalary([item.min_salary, item.max_salary])}</TitleText>
-              <TitleText css={{fs: 14, fw: 400, color: '#616A67', ml: 15, ff: '$fr'}}>{[`${item.min_experience}年及以上`, item?.address_description?.[4], reformEducationLevel(item.min_education)].filter(x => x).join('  |  ')}</TitleText>
+              <TitleText css={{color: '#FF6500', fs: 18}}>{salaryTitle}</TitleText>
+              <TitleText css={{fs: 14, fw: 400, color: '#616A67', ml: 15, ff: '$fr'}}>{[`${item.min_experience}年及以上`, item?.address_description?.[4], reformEducationLevel(item?.min_education?.name ?? item?.min_education)].filter(x => x).join('  |  ')}</TitleText>
             </Flex>
           </Flex>
           <Flex css={{justifyContent: 'space-between', w: 398, alignItems: 'center'}}>

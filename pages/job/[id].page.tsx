@@ -13,6 +13,7 @@ import {
   OutlinedText,
   RealInput,
 } from '../company/components/styled'
+import moment from 'moment'
 
 import { reformComFinancing, reformCompanySize, reformEducationLevel, reformSalary, stringForFullTime, createMapImageUrl } from '@/utils/utils'
 
@@ -72,7 +73,7 @@ export default function JobDetail() {
 
   return (
     <Main>
-      <CompanyHead css={{h: 209}}>
+      <CompanyHead css={{h: 240}}>
         <Flex>
           <Flex css={{justifyContent: 'space-between', w: 817}}>
             <Flex css={{flexDirection: 'column', ml: 10, w: 822}}>
@@ -107,6 +108,7 @@ export default function JobDetail() {
                   </Flex>
                 ))}
               </Flex>
+              <TitleText css={{fs: 18, fw: 400, ff: '$fr', mt: 20, mb: 20, lineHeight: '25px', color: '#3C4441'}}>最后更新时间: {moment(Number(jobDetailInfo?.job?.updated_at)).format('YYYY-MM-DD HH:mm')}</TitleText>
             </Flex>
             <Flex css={{flexDirection: 'column', alignItems: 'flex-end'}}>
               <TitleText css={{fs: 18, fw: 400, mt: 9}}></TitleText>
@@ -219,7 +221,7 @@ export default function JobDetail() {
               <img alt='name' className='use-image-round' width={48} height={48} src={jobDetailInfo?.hr?.logo} />
               <Flex css={{flexDirection: 'column', ml: 15}}>
                 <Flex css={{fs: 16, color: '#3C4441'}}>{jobDetailInfo?.hr?.name} · {jobDetailInfo?.hr?.pos}</Flex>
-                <Flex css={{fs: 14, color: '#616A67', mt: 6}}>刚刚活跃</Flex>
+                <Flex css={{fs: 14, color: '#616A67', mt: 6}}>{jobDetailInfo?.hr?.last_log_out_time && moment(Number(jobDetailInfo?.hr?.last_log_out_time)).fromNow()}</Flex>
               </Flex>
             </Flex>
           </Flex>

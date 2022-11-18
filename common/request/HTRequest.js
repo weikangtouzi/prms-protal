@@ -126,6 +126,9 @@ export default class HTRequest {
 				resolve()
 				return
 			}
+			if (error == 'Validation len on username failed') {
+				error = '需要输入更长的用户名'
+			}
 			reject(error)
 			return
 		}

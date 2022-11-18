@@ -34,7 +34,9 @@ const ZhiYeItem = ({item, isFold}: any) => {
           <ItemsHead>{title}</ItemsHead>
           {item.sublist.map((d: any, index: number) => (
             <Flex css={{mt: 15}} key={index}>
-              <ItemRightText css={{ml: 0, w: 94}} active={false}>
+              <ItemRightText css={{ml: 0, w: 94, cursor: 'pointer'}} active={false} onClick={() => {
+              	router.push(`/job?category=${d.title}`)
+              }}>
                 {d.title}
               </ItemRightText>
               <Flex css={{flexDirection: 'column'}}>

@@ -286,7 +286,7 @@ query CandidateGetJobList($filter: JobFilter!) {
 				tags
 				hr_pos
 				comp_size
-				id
+				id: job_id
 				logo
 				title
 				ontop
@@ -300,11 +300,12 @@ query CandidateGetJobList($filter: JobFilter!) {
 				min_salary
 				comp_size
 				comp_name
-				address_coordinate
+				#address_coordinate
 				address_description
 				hr_name
 				category
 				emergency
+				#createdAt
 			}
 		}
 	}
@@ -412,6 +413,7 @@ query UserGetJob($jobid: Int!) {
 				required_num
 				full_time_job
 				tags
+				updated_at
 			}
 			hr {
 				id
@@ -600,7 +602,7 @@ query UserSearchEnterprise(
 			job_counter
 			abbreviation
 			jobs {
-				id title min_salary max_salary min_experience min_education min_education address_description createdAt
+				title min_salary max_salary min_experience min_education min_education address_description createdAt
 			}
 		}
 	}

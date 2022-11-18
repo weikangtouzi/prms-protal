@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "release": "next build && scp -r ./.next/* way@chenzaozhao.com:/usr/dev/web-server/static/web-protal/.next",
     "lint": "next lint"
   },
   "dependencies": {

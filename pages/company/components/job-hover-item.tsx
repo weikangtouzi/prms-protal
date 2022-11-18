@@ -42,8 +42,8 @@ export default function JobHoverItem({active, item}: JHProps) {
   		return
   	}
   	HTAPI.UserGetJob({
-  		jobid: item.id
-  	}).then(response => {
+  		jobid: item.id ?? item.job_id
+  	}, { showError: false }).then(response => {
   		setJobDetailInfo(response)
   	})
   }, [active])

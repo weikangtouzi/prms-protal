@@ -58,6 +58,9 @@ export function reformSalary(salary) {
   }
   let showSalary = ''
   if (typeof(salary) === 'object') {
+  	if (salary[0] == 0 && salary[1] == 0) {
+  	  showSalary = '面议'
+  	}
     if (salary[0]) {
       showSalary = Number(salary[0]) > 999 ? `${Number(salary[0]) / 1000}K` : salary[0]
     }
@@ -177,7 +180,7 @@ export function createMapImageUrl(coordinates = []) {
 }
 
 export function reloadEnterpriseLocation() {
-	const location = (window?.location?.port?.length > 0) ? `http://${window.location.hostname}:8000` : 'https://ent.chenzaozhao.com/'
+	const location = ((window?.location?.port?.length ?? 0) > 0) ? `http://${window.location.hostname}:8000` : 'https://ent.chenzaozhao.com/'
 	window.location = location
 }
 

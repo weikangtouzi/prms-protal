@@ -69,7 +69,7 @@ export default function Footer() {
       <TopWrap>
         <TopLeftWrap>
           <Image src='/logo-black.png' alt='ht' width={94.62} height={30.62} />
-          <TextWrap>深圳市趁早找信息科技有限公司</TextWrap>
+          <TextWrap>德兴市微康投资发展有限公司</TextWrap>
           <BottomBtn onClick={global.TODO_TOAST}>下载趁早找APP</BottomBtn>
         </TopLeftWrap>
         <TopRightWrap>
@@ -121,7 +121,7 @@ export default function Footer() {
       </TopWrap>
       <BottomWrap>
         <a target='_blank' rel='noopener noreferrer'>
-          Copyright © {new Date().getFullYear()}趁早找（北京）信息科技股份有限公司. All Rights Reserved
+          Copyright © {new Date().getFullYear()} 德兴市微康投资发展有限公司. All Rights Reserved
         </a>
       </BottomWrap>
     </FooterWrap>

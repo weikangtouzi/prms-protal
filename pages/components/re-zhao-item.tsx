@@ -14,7 +14,7 @@ import { reformComFinancing, reformCompanySize, reformEducationLevel, reformSala
 
 const ReZhaoItem = ({item}: any) => {
 	const router = useRouter()
-  const {zy, price, needs = [`${item.min_experience}年及以上`, item?.address_description?.[4], reformEducationLevel(item.min_education)].filter(x => x), companyImg, companyName, companyNeeds = [reformComFinancing(item.comp_financing), reformCompanySize(item.comp_size)].filter(x => x)} = item
+  const {zy, price, needs = [ item.min_experience <= 0 ? '无经验要求' : `${item.min_experience}年及以上`, item?.address_description?.[4], reformEducationLevel(item.min_education)].filter(x => x), companyImg, companyName, companyNeeds = [reformComFinancing(item.comp_financing), reformCompanySize(item.comp_size)].filter(x => x)} = item
   const [active, setActive] = useState(false)
   return (
     <ReZhaoItemWrap
@@ -25,7 +25,7 @@ const ReZhaoItem = ({item}: any) => {
         setActive(false)
       }}
       onClick={() => {
-      	router.push(`/job/${item.id}`)
+      	router.push(`/job/${item.id ?? item.job_id}`)
       }}
     >
       <ReZhaoFirstLine>

@@ -1,4 +1,5 @@
 import type {ReactElement, ReactNode} from 'react'
+import {useEffect} from 'react'
 import type {NextPage} from 'next'
 import type {AppProps} from 'next/app'
 import {IdProvider} from '@radix-ui/react-id'
@@ -8,35 +9,60 @@ import HTGlobalTool from '@/common/global/HTGlobalTool'
 HTGlobalTool
 import HTToast from '@/components/modal/HTToast'
 import HTHud from '@/components/modal/HTHud'
-import { ConfigProvider } from 'antd'
+import {ConfigProvider} from 'antd'
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 import locale from 'antd/lib/locale/zh_CN'
 
 type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode
+	getLayout?: (page: ReactElement) => ReactNode
 }
 
 type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout
+	Component: NextPageWithLayout
 }
 
-export default function MyApp({Component, pageProps}: AppPropsWithLayout) {
-  const getLayout = Component.getLayout ?? ((page) => (
-  	<Layout>
-  		{ page }
-  	</Layout>
-  ))
+import HTAuthManager from '@/common/auth/common/model/HTAuthManager'
 
-  return (
-  	<ConfigProvider locale={locale}>
-	    {
-	  		getLayout(
-	  			<Component {...pageProps} />
-	  		)
-	  	}
-	    <HTToast ref={ref => { global.Toast = ref }} />
-	    <HTHud ref={ref => { global.Hud = ref }} />
-    </ConfigProvider>
-  )
+export default function MyApp({Component, pageProps}: AppPropsWithLayout) {
+	useEffect(() => {
+		let socket
+		let callback = () => {
+			socket && socket.close()
+			socket = null
+
+			const token = HTAuthManager.syncReadKeyValueList()?.userToken
+			if ((token?.length ?? 0) <= 0) {
+				return
+			}
+			socket = new WebSocket(process.env.NEXT_PUBLIC_URI.replace('https', 'wss') + '/ws', [
+				'graphql-ws',
+				'graphql-transport-ws',
+			])
+			socket.onopen = () => {
+				const value = JSON.stringify({type: 'connection_init', payload: {Authorization: token}})
+				socket.send(value)
+			}
+		}
+		HTAuthManager.userTokenDidChangeListener.push(callback)
+		callback()
+	}, [])
+
+	const getLayout = Component.getLayout ?? ((page) => <Layout>{page}</Layout>)
+
+	return (
+		<ConfigProvider locale={locale}>
+			{getLayout(<Component {...pageProps} />)}
+			<HTToast
+				ref={(ref) => {
+					global.Toast = ref
+				}}
+			/>
+			<HTHud
+				ref={(ref) => {
+					global.Hud = ref
+				}}
+			/>
+		</ConfigProvider>
+	)
 }

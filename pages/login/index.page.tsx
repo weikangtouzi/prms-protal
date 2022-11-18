@@ -121,29 +121,42 @@ export default function Login() {
 		setAccountErr('')
     setPasswordErr('')
 
-    if (!account) {
+    if (!account && !isYzm) {
       setAccountErr('请输入账号')
       return
     }
-    if (!password) {
+    if (!password && !isYzm) {
       setPasswordErr('请输入密码')
       return
     }
 
-    localStorage.clear()
-    if(isYzm) {
-
-    } else {
+    const callLoginApi = () => {
     	HTAPI.UserLogIn({
-    		info: {
-    			account, 
-    			password
-    		}
-    	}).then(response => {
-    		setTempToken(response.token)
+	  		info: {
+	  			account: !isYzm ? account : phone, 
+	  			password: !isYzm ? password : undefined,
+	  		}
+	  	}).then(response => {
+	  		setTempToken(response.token)
 				setStep(1)
-    	})
+	  	})
     }
+
+    if (isYzm) {
+    	HTAPI.UserVerifyCodeConsume({
+    		info: {
+    			phoneNumber: phone,
+          verifyCode: yzm,
+          operation: 'UserLogIn'
+    		}
+    	}).then(() => {
+    		callLoginApi()
+    	})
+    } else {
+    	callLoginApi()
+    }
+
+    
 	}
 
 	const switchIdentityDidTouch = () => {
@@ -180,7 +193,7 @@ export default function Login() {
 							return
 						}
 						HTAuthManager.updateKeyValueList({ userToken: response })
-						router.push('/')
+						router.replace('/')
 					})
 
 					chooseAdminAndHrRole().then(response => {
@@ -199,13 +212,19 @@ export default function Login() {
 		    	}, { showError: false }, { Authorization: tempToken }).then(response => {
 		    		HTAPI.CandidateGetAllJobExpectations({}, {}, { Authorization: response }).then((expectationList) => {
 							if ((expectationList?.length ?? 0) <= 0) {
+								reloadEnterpriseLocation()
 								return
 							}
 							HTAuthManager.updateKeyValueList({ userToken: response })
-						})
+							reloadEnterpriseLocation()
+						}).catch(() => {
+		    			reloadEnterpriseLocation()
+		    		})
+		    	}).catch(() => {
+		    		reloadEnterpriseLocation()
 		    	})
 
-		    	reloadEnterpriseLocation()
+		    	
 
 				}).catch(e => {
 					HTAPI.ENTCheckEnterpriseIdentification({}, {}, { Authorization: tempToken }).then(response => {
@@ -397,7 +416,7 @@ export default function Login() {
 		                phoneNumber: phone
 	            		}
 	            	}).then((res) => {
-	                HTAuthManager.updateKeyValueList({ userToken: res })
+	            		setTempToken(res)
 	                setStep(1)
 	              })
 	              // setStep(1)
@@ -542,14 +561,14 @@ export default function Login() {
 	      <RightPart>
 	        <BWrap>
 	          <TabWrap>
-	            {/*<Tab*/}
-	            {/*  active={isYzm}*/}
-	            {/*  onClick={() => {*/}
-	            {/*    setIsYzm(true)*/}
-	            {/*  }}*/}
-	            {/*>*/}
-	            {/*  验证码登录*/}
-	            {/*</Tab>*/}
+	            <Tab
+	              active={isYzm}
+	            	onClick={() => {
+	                setIsYzm(true)
+	              }}
+	            >
+	              验证码登录
+	            </Tab>
 	            <Tab
 	              active={!isYzm}
 	              onClick={() => {

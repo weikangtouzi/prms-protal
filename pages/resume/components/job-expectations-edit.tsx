@@ -61,7 +61,7 @@ function JobExpectationItemEdit({ jobExp, css }: JProps, ref) {
             aimed_city: city[city.length - 1].value,
             industry_involved: jobIndustry.map((jo: any) => jo),
       		}
-      	}, {}, { Authorization: token }).then(response => {
+      	}, {}, token ? { Authorization: token } : {}).then(response => {
       		Toast.show('修改成功')
       		complete && complete(response)
       	})

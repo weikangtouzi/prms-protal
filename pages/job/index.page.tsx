@@ -91,12 +91,13 @@ const jobList = [
 ]
 
 const gzjyList = [
-	{ value: '在校/应届', key: 0 },
-	{ value: '3年及以下', key: 1 },
-	{ value: '3-5年', key: 3 },
-	{ value: '5-10年', key: 5 },
-	{ value: '10年以上', key: 10 },
-	{ value: '经验不限', key: null },
+	// { value: '在校/应届', key: 0 },
+	{ value: '1年及以上', key: 1 },
+	{ value: '3年及以上', key: 3 },
+	{ value: '5年及以上', key: 5 },
+	{ value: '10年及以上', key: 10 },
+	{ value: '经验不限', key: undefined },
+	
 ]
 
 const xlList = [
@@ -134,7 +135,7 @@ const ls = ['我的', '益田假日', '深圳湾', '深圳湾2', '深圳湾3', '
 export default function Job(props) {
 	const router = useRouter()
   const [current, setCurrent] = useState(1)
-  const [total, setTotal] = useState(0)
+  const [total, setTotal] = useState(1)
 
   const [keyword, setKeyword] = useState('')
   const [category, setCategory] = useState('')
@@ -289,9 +290,14 @@ export default function Job(props) {
         </Flex>
         <Flex>
           <Flex css={{flexDirection: 'column'}}>
-            {jobList.map((j) => (
-              <FindJobItem key={j.id} item={j}></FindJobItem>
+            {jobList.map((j, index) => (
+              <FindJobItem key={index} item={j}></FindJobItem>
             ))}
+            {
+            	total <= 0 && (
+            		<img width={300} src={'/empty@2x.png'} />
+            	)
+            }
             <Pagination
               css={{justifyContent: 'center', mt: 30, mb: 80}}
               current={current}
@@ -300,9 +306,9 @@ export default function Job(props) {
             />
           </Flex>
           <Flex css={{w: 284, ml: 16, mt: 16, flexDirection: 'column', h: 662, justifyContent: 'space-between'}}>
+            {/*<Image alt='name' width={284} height={210} src={imgUrl} />
             <Image alt='name' width={284} height={210} src={imgUrl} />
-            <Image alt='name' width={284} height={210} src={imgUrl} />
-            <Image alt='name' width={284} height={210} src={imgUrl} />
+            <Image alt='name' width={284} height={210} src={imgUrl} />*/}
           </Flex>
         </Flex>
       </Flex>

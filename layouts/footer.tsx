@@ -74,7 +74,7 @@ export default function Footer() {
         </TopLeftWrap>
         <TopRightWrap>
           <FirstLine>
-            <FirstLineText>企业服务</FirstLineText>
+            <FirstLineText>企业服务:</FirstLineText>
             <FirstLineText>用户帮助</FirstLineText>
             <FirstLineText>链接方式</FirstLineText>
           </FirstLine>
@@ -124,6 +124,17 @@ export default function Footer() {
           Copyright © {new Date().getFullYear()} 德兴市微康投资发展有限公司. All Rights Reserved
         </a>
       </BottomWrap>
+      <BottomWrap>
+        <a target='_blank' rel='noopener noreferrer'>
+          赣ICP备2022011119号 
+        </a>
+      </BottomWrap>
+      <BottomWrap>
+        <a href='https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36118102000044' rel='noopener noreferrer'>
+          赣公网安备36118102000044号
+        </a>
+      </BottomWrap>
     </FooterWrap>
   )
 }
+//  https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802020134
